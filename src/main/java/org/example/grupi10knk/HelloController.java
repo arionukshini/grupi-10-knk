@@ -1,7 +1,10 @@
 package org.example.grupi10knk;
 
+import database.DBConnection;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+
+import java.sql.Connection;
 
 public class HelloController {
     @FXML
@@ -9,6 +12,11 @@ public class HelloController {
 
     @FXML
     protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+        Connection conn = DBConnection.connect();
+        if (conn == null) {
+            welcomeText.setText("Connection failed!");
+        } else {
+            welcomeText.setText("Connection worked!");
+        }
     }
 }
