@@ -1,4 +1,4 @@
-package database;
+package com.company.system.db;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
