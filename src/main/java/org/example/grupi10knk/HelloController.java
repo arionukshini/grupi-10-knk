@@ -3,8 +3,8 @@ package org.example.grupi10knk;
 import database.DBConnection;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-
 import java.sql.Connection;
+import org.example.grupi10knk.help.HelpWindow;
 
 public class HelloController {
     @FXML
@@ -19,4 +19,10 @@ public class HelloController {
             welcomeText.setText("Connection worked!");
         }
     }
+
+    @FXML
+    protected void onHelpButtonClick() {
+        HelpWindow.show();
+    }
+
 }
