@@ -1,9 +1,11 @@
-module org.example.grupi10knk {
+module com.company.system {
+
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
 
+    opens com.company.system to javafx.fxml;
+    opens com.company.system.ui to javafx.fxml;
 
-    opens org.example.grupi10knk to javafx.fxml;
-    exports org.example.grupi10knk;
+    exports com.company.system;
 }
