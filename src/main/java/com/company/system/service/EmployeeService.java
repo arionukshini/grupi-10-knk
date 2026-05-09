@@ -1,0 +1,90 @@
+package com.company.system.service;
+
+import com.company.system.db.DBConnection;
+import com.company.system.model.Employee;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EmployeeService {
+
+    public static List<Employee> getAllEmployees() {
+
+        List<Employee> employees = new ArrayList<>();
+
+        String sql = "SELECT * FROM employees";
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()
+        ) {
+
+            while (rs.next()) {
+
+                Employee employee = new Employee(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("position"),
+                        rs.getInt("department_id"),
+                        rs.getDate("hire_date"),
+                        rs.getDouble("base_salary"),
+                        rs.getString("status")
+                );
+
+                employees.add(employee);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return employees;
+    }
+
+    public static void addEmployee(Employee employee) {
+
+        String sql = """
+                INSERT INTO employees
+                (
+                    first_name,
+                    last_name,
+                    email,
+                    phone,
+                    position,
+                    department_id,
+                    hire_date,
+                    base_salary,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, employee.getFirstName());
+            stmt.setString(2, employee.getLastName());
+            stmt.setString(3, employee.getEmail());
+            stmt.setString(4, employee.getPhone());
+            stmt.setString(5, employee.getPosition());
+            stmt.setInt(6, employee.getDepartmentId());
+            stmt.setDate(7, employee.getHireDate());
+            stmt.setDouble(8, employee.getBaseSalary());
+            stmt.setString(9, employee.getStatus());
+
+            stmt.executeUpdate();
+
+            System.out.println("Employee added successfully!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
