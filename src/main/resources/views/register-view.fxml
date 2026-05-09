@@ -30,6 +30,10 @@
                        promptText="Password"
                        prefHeight="40"/>
 
+        <PasswordField fx:id="confirmPasswordField"
+                       promptText="Confirm Password"
+                       prefHeight="40"/>
+
         <Button text="Register"
                 onAction="#handleRegister"
                 prefWidth="200"
