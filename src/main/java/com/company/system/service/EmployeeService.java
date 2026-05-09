@@ -25,9 +25,15 @@ public class EmployeeService {
 
                 Employee employee = new Employee(
                         rs.getInt("id"),
-                        rs.getString("name"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
                         rs.getString("position"),
-                        rs.getDouble("salary")
+                        rs.getInt("department_id"),
+                        rs.getDate("hire_date"),
+                        rs.getDouble("base_salary"),
+                        rs.getString("status")
                 );
 
                 employees.add(employee);
@@ -42,16 +48,36 @@ public class EmployeeService {
 
     public static void addEmployee(Employee employee) {
 
-        String sql = "INSERT INTO employees(name, position, salary) VALUES (?, ?, ?)";
+        String sql = """
+                INSERT INTO employees
+                (
+                    first_name,
+                    last_name,
+                    email,
+                    phone,
+                    position,
+                    department_id,
+                    hire_date,
+                    base_salary,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
 
-            stmt.setString(1, employee.getName());
-            stmt.setString(2, employee.getPosition());
-            stmt.setDouble(3, employee.getSalary());
+            stmt.setString(1, employee.getFirstName());
+            stmt.setString(2, employee.getLastName());
+            stmt.setString(3, employee.getEmail());
+            stmt.setString(4, employee.getPhone());
+            stmt.setString(5, employee.getPosition());
+            stmt.setInt(6, employee.getDepartmentId());
+            stmt.setDate(7, employee.getHireDate());
+            stmt.setDouble(8, employee.getBaseSalary());
+            stmt.setString(9, employee.getStatus());
 
             stmt.executeUpdate();
 
