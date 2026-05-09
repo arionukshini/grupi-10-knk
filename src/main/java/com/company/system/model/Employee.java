@@ -1,4 +1,4 @@
-package org.example.grupi10knk;
+package com.company.system.model;
 
 public class Employee {
     private final int id;

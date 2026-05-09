@@ -8,4 +8,6 @@ module com.company.system {
     opens com.company.system.ui to javafx.fxml;
 
     exports com.company.system;
+    exports com.company.system.model;
+    opens com.company.system.model to javafx.fxml;
 }

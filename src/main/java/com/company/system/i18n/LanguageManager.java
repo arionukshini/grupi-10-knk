@@ -1,4 +1,4 @@
-package org.example.grupi10knk.i18n;
+package com.company.system.i18n;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
