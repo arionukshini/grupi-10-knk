@@ -4,7 +4,8 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.tablecontroller">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.company.system.controller.TableController"
+>
         <TableView layoutX="20.0" layoutY="20.0" prefHeight="300.0" prefWidth="560.0">
             <columns>
                 <TableColumn  fx:id="idColumn" prefWidth="80.0" text="ID" />
