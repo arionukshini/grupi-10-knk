@@ -5,5 +5,7 @@ module org.example.grupi10knk {
 
 
     opens org.example.grupi10knk to javafx.fxml;
+    opens controller to javafx.fxml;
+
     exports org.example.grupi10knk;
 }
