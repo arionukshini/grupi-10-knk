@@ -1,21 +1,20 @@
 package com.company.system.controller;
 
+import com.company.system.MainApp;
 import com.company.system.service.UserService;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import javafx.scene.Node;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
-public class RegisterController {
+public class ResetPasswordController {
 
     @FXML
     private TextField usernameField;
 
     @FXML
-    private PasswordField passwordField;
+    private PasswordField newPasswordField;
 
     @FXML
     private PasswordField confirmPasswordField;
@@ -24,31 +23,45 @@ public class RegisterController {
     private Label messageLabel;
 
     @FXML
-    public void handleRegister(ActionEvent event) {
+    public void handleReset() {
 
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String newPassword = newPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setText("Fill all fields!");
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
-        if (!password.equals(confirmPassword)) {
+        if (!newPassword.equals(confirmPassword)) {
             messageLabel.setText("Passwords do not match!");
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
+        
+        String oldPassword = UserService.getPasswordByUsername(username);
 
-        boolean success = UserService.register(username, password);
+        if (oldPassword == null) {
+            messageLabel.setText("User not found!");
+            messageLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        if (oldPassword.equals(newPassword)) {
+            messageLabel.setText("New password cannot be same as old password!");
+            messageLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        boolean success = UserService.resetPassword(username, newPassword);
 
         if (success) {
-            messageLabel.setText("Registered successfully!");
+            messageLabel.setText("Password reset successful!");
             messageLabel.setStyle("-fx-text-fill: green;");
         } else {
-            messageLabel.setText("Registration failed!");
+            messageLabel.setText("Reset failed!");
             messageLabel.setStyle("-fx-text-fill: red;");
         }
     }

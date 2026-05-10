@@ -64,4 +64,44 @@ public class UserService {
 
         return false;
     }
+
+    public static boolean resetPassword(String username, String newPassword) {
+
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, newPassword);
+            stmt.setString(2, username);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String getPasswordByUsername(String username) {
+
+        String sql = "SELECT password FROM users WHERE username = ?";
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("password");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
