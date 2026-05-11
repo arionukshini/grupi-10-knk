@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.MainController">
+
+    <!-- ===================== TOP ===================== -->
+    <top>
+        <VBox spacing="5">
+
+            <!-- SAFE STYLE PADDING -->
+            <style>
+                -fx-padding: 5;
+            </style>
+
+            <!-- MENU BAR -->
+            <MenuBar>
+
+                <menus>
+
+                    <!-- FILE -->
+                    <Menu text="File">
+                        <items>
+                            <MenuItem text="Exit"
+                                      onAction="#handleExit"/>
+                        </items>
+                    </Menu>
+
+                    <!-- MANAGE -->
+                    <Menu text="Manage">
+                        <items>
+                            <MenuItem text="Employees"
+                                      onAction="#showEmployees"/>
+
+                            <MenuItem text="Contracts"
+                                      onAction="#showContracts"/>
+
+                            <MenuItem text="Salaries"
+                                      onAction="#showSalaries"/>
+                        </items>
+                    </Menu>
+
+                    <!-- VIEW -->
+                    <Menu text="View">
+                        <items>
+                            <MenuItem text="Dashboard"
+                                      onAction="#showDashboard"/>
+                        </items>
+                    </Menu>
+
+                    <!-- HELP -->
+                    <Menu text="Help">
+                        <items>
+                            <MenuItem text="Help"
+                                      onAction="#showHelp"/>
+                        </items>
+                    </Menu>
+
+                </menus>
+
+            </MenuBar>
+
+<!--            &lt;!&ndash; TOOLBAR &ndash;&gt;-->
+<!--            <ToolBar>-->
+<!--                <Button text="Employees" onAction="#showEmployees"/>-->
+<!--                <Button text="Contracts" onAction="#showContracts"/>-->
+<!--                <Button text="Salaries" onAction="#showSalaries"/>-->
+<!--                <Button text="Dashboard" onAction="#showDashboard"/>-->
+<!--            </ToolBar>-->
+
+        </VBox>
+    </top>
+
+    <!-- ===================== CENTER ===================== -->
+    <center>
+        <StackPane fx:id="contentArea"
+                   style="-fx-padding: 10;">
+            <children>
+                <Label text="Welcome to Contract &amp; Payroll System"/>
+            </children>
+        </StackPane>
+    </center>
+
+    <!-- ===================== BOTTOM ===================== -->
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 5;">
+            <children>
+                <Label fx:id="statusLabel" text="Ready"/>
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,6 +1,5 @@
 package com.company.system;
 
-import com.company.system.ui.MainLayout;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -48,9 +47,13 @@ public class MainApp extends Application {
     public static void openMainApp() {
 
         try {
-            MainLayout root = new MainLayout();
 
-            Scene scene = new Scene(root,
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/views/main-view.fxml")
+            );
+
+            Scene scene = new Scene(
+                    loader.load(),
                     primaryStage.getWidth(),
                     primaryStage.getHeight()
             );

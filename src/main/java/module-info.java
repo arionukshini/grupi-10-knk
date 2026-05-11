@@ -10,7 +10,6 @@ module com.company.system {
     exports com.company.system.db;
 
     opens com.company.system to javafx.fxml;
-    opens com.company.system.ui to javafx.fxml;
     opens com.company.system.model to javafx.fxml;
     opens com.company.system.controller to javafx.fxml;
 }
