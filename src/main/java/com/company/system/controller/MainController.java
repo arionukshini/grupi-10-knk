@@ -4,6 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import com.company.system.i18n.LanguageManager;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
+
 
 public class MainController {
 
@@ -72,9 +76,33 @@ public class MainController {
 
     @FXML
     public void showHelp() {
-        setStatus("Help opened");
+        setStatus(LanguageManager.get("help.title"));
 
-        Label view = new Label("Help Module");
-        setContent(view);
+        Label title = new Label(LanguageManager.get("help.title"));
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        TextArea content = new TextArea(LanguageManager.get("help.content"));
+        content.setWrapText(true);
+        content.setEditable(false);
+        content.setPrefHeight(250);
+
+        VBox helpView = new VBox(10, title, content);
+        helpView.setStyle("-fx-padding: 20;");
+
+        setContent(helpView);
     }
+
+    @FXML
+    public void setAlbanian() {
+        LanguageManager.setLanguage("sq");
+        setStatus(LanguageManager.get("status.ready"));
+    }
+
+    @FXML
+    public void setEnglish() {
+        LanguageManager.setLanguage("en");
+        setStatus(LanguageManager.get("status.ready"));
+    }
+
+
 }
