@@ -52,6 +52,17 @@
                         </items>
                     </Menu>
 
+                    <!-- LANGUAGE -->
+                    <Menu text="Language">
+                        <items>
+                            <MenuItem text="Shqip"
+                                      onAction="#setAlbanian"/>
+
+                            <MenuItem text="English"
+                                      onAction="#setEnglish"/>
+                        </items>
+                    </Menu>
+
                     <!-- HELP -->
                     <Menu text="Help">
                         <items>
