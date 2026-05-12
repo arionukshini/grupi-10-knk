@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -12,76 +11,74 @@
     <top>
         <VBox spacing="5">
 
-            <!-- SAFE STYLE PADDING -->
             <style>
                 -fx-padding: 5;
             </style>
 
             <!-- MENU BAR -->
             <MenuBar>
-
                 <menus>
 
                     <!-- FILE -->
-                    <Menu text="File">
+                    <Menu fx:id="fileMenu" text="File">
                         <items>
-                            <MenuItem text="Exit"
+                            <MenuItem fx:id="exitMenuItem"
+                                      text="Exit"
                                       onAction="#handleExit"/>
                         </items>
                     </Menu>
 
                     <!-- MANAGE -->
-                    <Menu text="Manage">
+                    <Menu fx:id="manageMenu" text="Manage">
                         <items>
-                            <MenuItem text="Employees"
+                            <MenuItem fx:id="employeesMenuItem"
+                                      text="Employees"
                                       onAction="#showEmployees"/>
 
-                            <MenuItem text="Contracts"
+                            <MenuItem fx:id="contractsMenuItem"
+                                      text="Contracts"
                                       onAction="#showContracts"/>
 
-                            <MenuItem text="Salaries"
+                            <MenuItem fx:id="salariesMenuItem"
+                                      text="Salaries"
                                       onAction="#showSalaries"/>
                         </items>
                     </Menu>
 
                     <!-- VIEW -->
-                    <Menu text="View">
+                    <Menu fx:id="viewMenu" text="View">
                         <items>
-                            <MenuItem text="Dashboard"
+                            <MenuItem fx:id="dashboardMenuItem"
+                                      text="Dashboard"
                                       onAction="#showDashboard"/>
                         </items>
                     </Menu>
 
                     <!-- LANGUAGE -->
-                    <Menu text="Language">
+                    <Menu fx:id="languageMenu" text="Language">
                         <items>
-                            <MenuItem text="Shqip"
+                            <MenuItem fx:id="albanianMenuItem"
+                                      text="Shqip"
                                       onAction="#setAlbanian"/>
 
-                            <MenuItem text="English"
+                            <MenuItem fx:id="englishMenuItem"
+                                      text="English"
                                       onAction="#setEnglish"/>
                         </items>
                     </Menu>
 
+
                     <!-- HELP -->
-                    <Menu text="Help">
+                    <Menu fx:id="helpMenu" text="Help">
                         <items>
-                            <MenuItem text="Help"
+                            <MenuItem fx:id="helpMenuItem"
+                                      text="Help"
                                       onAction="#showHelp"/>
                         </items>
                     </Menu>
 
                 </menus>
-
             </MenuBar>
-
-<!--            &lt;!&ndash; TOOLBAR &ndash;&gt;-->
-<!--            <ToolBar>-->
-<!--                <Button text="Employees" onAction="#showEmployees"/>-->
-<!--                <Button text="Contracts" onAction="#showContracts"/>-->
-<!--                <Button text="Salaries" onAction="#showSalaries"/>-->
-<!--                <Button text="Dashboard" onAction="#showDashboard"/>-->
-<!--            </ToolBar>-->
 
         </VBox>
     </top>

@@ -1,76 +1,101 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
-import com.company.system.i18n.LanguageManager;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 
 public class MainController {
 
-    @FXML
-    private StackPane contentArea;
+    @FXML private StackPane contentArea;
+    @FXML private Label statusLabel;
 
-    @FXML
-    private Label statusLabel;
+    @FXML private Menu fileMenu;
+    @FXML private Menu manageMenu;
+    @FXML private Menu viewMenu;
+    @FXML private Menu languageMenu;
+    @FXML private Menu helpMenu;
+
+    @FXML private MenuItem exitMenuItem;
+    @FXML private MenuItem employeesMenuItem;
+    @FXML private MenuItem contractsMenuItem;
+    @FXML private MenuItem salariesMenuItem;
+    @FXML private MenuItem dashboardMenuItem;
+    @FXML private MenuItem albanianMenuItem;
+    @FXML private MenuItem englishMenuItem;
+    @FXML private MenuItem helpMenuItem;
 
     @FXML
     public void initialize() {
-        setStatus("Application loaded");
+        updateTexts();
+        setStatus(LanguageManager.get("status.ready"));
     }
 
-    // EXIT APP
     @FXML
     private void handleExit() {
         System.exit(0);
     }
 
-    // CORE NAVIGATION METHOD
     public void setContent(Node node) {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(node);
     }
 
-    // STATUS BAR
     public void setStatus(String message) {
         statusLabel.setText(message);
     }
 
-    // MENU ACTIONS (UI ROUTING)
+    private void updateTexts() {
+        fileMenu.setText(LanguageManager.get("menu.file"));
+        manageMenu.setText(LanguageManager.get("menu.manage"));
+        viewMenu.setText(LanguageManager.get("menu.view"));
+        languageMenu.setText(LanguageManager.get("menu.language"));
+        helpMenu.setText(LanguageManager.get("menu.help"));
+
+        exitMenuItem.setText(LanguageManager.get("menu.exit"));
+        employeesMenuItem.setText(LanguageManager.get("menu.employees"));
+        contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
+        salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
+        dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
+        albanianMenuItem.setText(LanguageManager.get("language.albanian"));
+        englishMenuItem.setText(LanguageManager.get("language.english"));
+        helpMenuItem.setText(LanguageManager.get("menu.help"));
+    }
 
     @FXML
     public void showEmployees() {
-        setStatus("Employees view opened");
+        setStatus(LanguageManager.get("menu.employees"));
 
-        // TODO: later replace with real EmployeeView
-        Label view = new Label("Employees Module");
+        Label view = new Label(LanguageManager.get("menu.employees"));
         setContent(view);
     }
 
     @FXML
     public void showContracts() {
-        setStatus("Contracts view opened");
+        setStatus(LanguageManager.get("menu.contracts"));
 
-        Label view = new Label("Contracts Module");
+        Label view = new Label(LanguageManager.get("menu.contracts"));
         setContent(view);
     }
 
     @FXML
     public void showSalaries() {
-        setStatus("Salaries view opened");
+        setStatus(LanguageManager.get("menu.salaries"));
 
-        Label view = new Label("Salaries Module");
+        Label view = new Label(LanguageManager.get("menu.salaries"));
         setContent(view);
     }
 
     @FXML
     public void showDashboard() {
-        setStatus("Dashboard opened");
+        setStatus(LanguageManager.get("menu.dashboard"));
 
-        Label view = new Label("Dashboard Module");
+        Label view = new Label(LanguageManager.get("menu.dashboard"));
         setContent(view);
     }
 
@@ -95,14 +120,14 @@ public class MainController {
     @FXML
     public void setAlbanian() {
         LanguageManager.setLanguage("sq");
+        updateTexts();
         setStatus(LanguageManager.get("status.ready"));
     }
 
     @FXML
     public void setEnglish() {
         LanguageManager.setLanguage("en");
+        updateTexts();
         setStatus(LanguageManager.get("status.ready"));
     }
-
-
 }
