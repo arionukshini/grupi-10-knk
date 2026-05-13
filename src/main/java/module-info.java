@@ -5,7 +5,7 @@ module com.company.system {
     requires java.sql;
 
     opens com.company.system to javafx.fxml;
-    opens com.company.system.ui to javafx.fxml;
+    opens com.company.system.controller to javafx.fxml;
 
     exports com.company.system;
 }
