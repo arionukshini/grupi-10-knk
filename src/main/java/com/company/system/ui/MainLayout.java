@@ -9,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 
 
 public class MainLayout extends BorderPane {
@@ -56,9 +58,23 @@ public class MainLayout extends BorderPane {
 
         menuBar.getMenus().addAll(fileMenu, manageMenu, viewMenu, helpMenu);
 
-        Label toolbarPlaceholder = new Label("Tool Bar (placeholder)");
+        ToolBar toolBar = new ToolBar();
+        toolBar.setPadding(new Insets(5));
 
-        topContainer.getChildren().addAll(menuBar, toolbarPlaceholder);
+        Button employeesBtn = new Button("Employees");
+        Button contractsBtn = new Button("Contracts");
+        Button salariesBtn = new Button("Salaries");
+        Button dashboardBtn = new Button("Dashboard");
+
+        toolBar.getItems().addAll(
+                employeesBtn,
+                contractsBtn,
+                salariesBtn,
+                dashboardBtn
+        );
+
+
+        topContainer.getChildren().addAll(menuBar, toolBar);
         setTop(topContainer);
 
         // ===================== CENTER =====================
