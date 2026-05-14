@@ -4,15 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.MainController">
 
     <top>
         <VBox spacing="5">
+
             <padding>
                 <Insets top="5" right="5" bottom="5" left="5"/>
             </padding>
 
+            <!-- MENU BAR -->
             <MenuBar>
 
                 <Menu fx:id="fileMenu">
@@ -60,6 +63,24 @@
                 </Menu>
 
             </MenuBar>
+
+            <!-- TOOLBAR -->
+            <ToolBar>
+
+                <Button text="Employees"
+                        onAction="#showEmployees"/>
+
+                <Button text="Contracts"
+                        onAction="#showContracts"/>
+
+                <Button text="Salaries"
+                        onAction="#showSalaries"/>
+
+                <Button text="Dashboard"
+                        onAction="#showDashboard"/>
+
+            </ToolBar>
+
         </VBox>
     </top>
 
