@@ -1,5 +1,6 @@
 package com.company.system;
 
+import com.company.system.db.DBConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,6 +20,7 @@ public class MainApp extends Application {
 
         primaryStage.setTitle("Contract & Payroll System");
 
+        DBConnection.initializeDatabase();
         showLogin();
     }
 
