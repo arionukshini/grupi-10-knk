@@ -77,8 +77,48 @@ public class MainController {
 
     @FXML
     public void initialize() {
+
         updateTexts();
+        setStatus(LanguageManager.get("status.ready"));
+
+        initializeContextMenu();
         setupKeyboardShortcuts();
+    }
+
+    private void initializeContextMenu() {
+
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem refreshItem = new MenuItem("Refresh");
+        MenuItem helpItem = new MenuItem("Help");
+        MenuItem exitItem = new MenuItem("Exit");
+
+        // ACTIONS
+        refreshItem.setOnAction(e ->
+                setStatus("Content refreshed")
+        );
+
+        helpItem.setOnAction(e ->
+                showHelp()
+        );
+
+        exitItem.setOnAction(e ->
+                System.exit(0)
+        );
+
+        contextMenu.getItems().addAll(
+                refreshItem,
+                helpItem,
+                exitItem
+        );
+
+        contentArea.setOnContextMenuRequested(event ->
+                contextMenu.show(
+                        contentArea,
+                        event.getScreenX(),
+                        event.getScreenY()
+                )
+        );
     }
 
     private void setupKeyboardShortcuts() {
@@ -207,7 +247,7 @@ public class MainController {
     public void showAccount() {
         setStatus(LanguageManager.get("status.account"));
 
-        User user = com.company.system.utils.Session.getUser();
+        User user = Session.getUser();
 
         if (user == null) {
             setContent(new Label("No user logged in"));
