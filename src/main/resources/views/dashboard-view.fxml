@@ -1,14 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.company.system.controller.DashboardController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="com.company.system.controller.DashboardController">
 
-</AnchorPane>
+    <!-- TOP -->
+    <top>
+        <VBox spacing="10">
+
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+
+            <Label fx:id="dashboardTitleLabel"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+        </VBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+
+        <VBox spacing="20">
+
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- STATISTICS -->
+            <HBox spacing="20">
+
+                <VBox spacing="5"
+                      style="-fx-background-color: #E3F2FD; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="employeesLabel"/>
+                    <Label fx:id="totalEmployeesLabel"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                </VBox>
+
+                <VBox spacing="5"
+                      style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="departmentsLabel"/>
+                    <Label fx:id="totalDepartmentsLabel"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                </VBox>
+
+                <VBox spacing="5"
+                      style="-fx-background-color: #FFF3E0; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="contractsLabel"/>
+                    <Label fx:id="activeContractsLabel"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                </VBox>
+
+                <VBox spacing="5"
+                      style="-fx-background-color: #F3E5F5; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="salaryLabel"/>
+                    <Label fx:id="averageSalaryLabel"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                </VBox>
+
+            </HBox>
+
+            <!-- CHART -->
+            <BarChart fx:id="employeesChart"
+                      prefHeight="400">
+
+                <xAxis>
+                    <CategoryAxis fx:id="xAxis"/>
+                </xAxis>
+
+                <yAxis>
+                    <NumberAxis fx:id="yAxis"/>
+                </yAxis>
+
+            </BarChart>
+
+        </VBox>
+
+    </center>
+
+    <!-- BOTTOM -->
+    <bottom>
+
+        <HBox style="-fx-background-color: #EEEEEE;">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+
+            <Label fx:id="aiInsightLabel"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+
+        </HBox>
+
+    </bottom>
+
+</BorderPane>
