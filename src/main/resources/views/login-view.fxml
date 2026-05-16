@@ -10,19 +10,6 @@
             prefHeight="500" prefWidth="400"
             style="-fx-background-color: #f4f6f8;">
 
-    <HBox alignment="CENTER_RIGHT" spacing="8"
-          AnchorPane.topAnchor="15"
-          AnchorPane.rightAnchor="20">
-        <Button fx:id="albanianButton"
-                text="SHQIP"
-                onAction="#switchToAlbanian"
-                prefWidth="45"/>
-        <Button fx:id="englishButton"
-                text="ENGLISH"
-                onAction="#switchToEnglish"
-                prefWidth="45"/>
-    </HBox>
-
     <VBox alignment="CENTER" spacing="15"
           AnchorPane.leftAnchor="50"
           AnchorPane.rightAnchor="50"
@@ -51,9 +38,9 @@
         <Button fx:id="loginButton"
                 text="Login"
                 onAction="#handleLogin"
+                defaultButton="true"
                 prefWidth="200"
                 style="-fx-background-color: #2563eb; -fx-text-fill: white;"/>
-
         <Button fx:id="registerButton"
                 text="Go to Register"
                 onAction="#goToRegister"
@@ -62,4 +49,17 @@
         <Label fx:id="messageLabel"
                style="-fx-text-fill: red;"/>
     </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="8"
+          AnchorPane.topAnchor="15"
+          AnchorPane.rightAnchor="20">
+        <Button fx:id="albanianButton"
+                text="SQ"
+                onAction="#switchToAlbanian"
+                prefWidth="45"/>
+        <Button fx:id="englishButton"
+                text="EN"
+                onAction="#switchToEnglish"
+                prefWidth="45"/>
+    </HBox>
 </AnchorPane>
