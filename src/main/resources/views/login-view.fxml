@@ -41,6 +41,7 @@
                 defaultButton="true"
                 prefWidth="200"
                 style="-fx-background-color: #2563eb; -fx-text-fill: white;"/>
+
         <Button fx:id="registerButton"
                 text="Go to Register"
                 onAction="#goToRegister"
@@ -49,17 +50,4 @@
         <Label fx:id="messageLabel"
                style="-fx-text-fill: red;"/>
     </VBox>
-
-    <HBox alignment="CENTER_RIGHT" spacing="8"
-          AnchorPane.topAnchor="15"
-          AnchorPane.rightAnchor="20">
-        <Button fx:id="albanianButton"
-                text="SQ"
-                onAction="#switchToAlbanian"
-                prefWidth="45"/>
-        <Button fx:id="englishButton"
-                text="EN"
-                onAction="#switchToEnglish"
-                prefWidth="45"/>
-    </HBox>
 </AnchorPane>
