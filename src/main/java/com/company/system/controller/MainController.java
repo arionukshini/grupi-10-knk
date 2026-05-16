@@ -24,9 +24,6 @@ public class MainController {
     private Menu viewMenu;
 
     @FXML
-    private Menu languageMenu;
-
-    @FXML
     private Menu helpMenu;
 
     @FXML
@@ -43,12 +40,6 @@ public class MainController {
 
     @FXML
     private MenuItem dashboardMenuItem;
-
-    @FXML
-    private MenuItem albanianMenuItem;
-
-    @FXML
-    private MenuItem englishMenuItem;
 
     @FXML
     private MenuItem helpMenuItem;
@@ -71,7 +62,6 @@ public class MainController {
         fileMenu.setText(LanguageManager.get("menu.file"));
         manageMenu.setText(LanguageManager.get("menu.manage"));
         viewMenu.setText(LanguageManager.get("menu.view"));
-        languageMenu.setText(LanguageManager.get("menu.language"));
         helpMenu.setText(LanguageManager.get("menu.help"));
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
@@ -79,8 +69,6 @@ public class MainController {
         contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
         dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
-        albanianMenuItem.setText(LanguageManager.get("language.albanian"));
-        englishMenuItem.setText(LanguageManager.get("language.english"));
         helpMenuItem.setText(LanguageManager.get("menu.help"));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
@@ -102,31 +90,6 @@ public class MainController {
 
     public void setStatus(String message) {
         statusLabel.setText(message);
-    }
-
-    @FXML
-    private void switchToAlbanian() {
-        LanguageManager.setLanguage("sq");
-        updateTexts();
-        refreshCurrentView();
-    }
-
-    @FXML
-    private void switchToEnglish() {
-        LanguageManager.setLanguage("en");
-        updateTexts();
-        refreshCurrentView();
-    }
-
-    private void refreshCurrentView() {
-        switch (currentView) {
-            case "employees" -> showEmployees();
-            case "contracts" -> showContracts();
-            case "salaries" -> showSalaries();
-            case "dashboard" -> showDashboard();
-            case "help" -> showHelp();
-            default -> setStatus(LanguageManager.get("status.ready"));
-        }
     }
 
     @FXML
