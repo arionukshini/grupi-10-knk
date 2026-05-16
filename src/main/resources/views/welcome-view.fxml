@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.system.controller.WelcomeController"
+            prefHeight="500"
+            prefWidth="800"
+            style="-fx-background-color: #f4f6f8;">
+
+    <top>
+        <AnchorPane prefHeight="82"
+                    style="-fx-background-color: linear-gradient(to right, #19316c, #01b3c9);">
+            <children>
+                <Label fx:id="appTitleLabel"
+                       text="Contract and Salary Management System"
+                       textFill="WHITE"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"
+                       AnchorPane.leftAnchor="28"
+                       AnchorPane.topAnchor="18"/>
+
+                <Label text="contact@company-system.com"
+                       textFill="WHITE"
+                       style="-fx-opacity: 0.85;"
+                       AnchorPane.leftAnchor="28"
+                       AnchorPane.topAnchor="49"/>
+
+                <HBox alignment="CENTER_RIGHT"
+                      spacing="8"
+                      AnchorPane.rightAnchor="24"
+                      AnchorPane.topAnchor="24">
+                    <Button fx:id="albanianButton"
+                            text="SQ"
+                            onAction="#switchToAlbanian"
+                            prefWidth="48"/>
+                    <Button fx:id="englishButton"
+                            text="EN"
+                            onAction="#switchToEnglish"
+                            prefWidth="48"/>
+                </HBox>
+            </children>
+        </AnchorPane>
+    </top>
+
+    <center>
+        <StackPane style="-fx-background-color: linear-gradient(to bottom, #eaf7fb, #f8fafc);">
+            <padding>
+                <Insets top="42" right="48" bottom="42" left="48"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="18"
+                  maxWidth="680">
+                <Label fx:id="welcomeLabel"
+                       text="Welcome to the Contract and Salary Management System"
+                       wrapText="true"
+                       textAlignment="CENTER"
+                       style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #102a43;"/>
+
+                <Label fx:id="subtitleLabel"
+                       text="Manage employees, contracts and salaries in one system."
+                       wrapText="true"
+                       textAlignment="CENTER"
+                       style="-fx-font-size: 16px; -fx-text-fill: #486581;"/>
+
+                <Button fx:id="accessButton"
+                        text="Login"
+                        onAction="#openLogin"
+                        prefHeight="52"
+                        prefWidth="180"
+                        style="-fx-background-color: linear-gradient(to right, #19316c, #01b3c9); -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 8;"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER"
+              prefHeight="46"
+              style="-fx-background-color: linear-gradient(to right, #19316c, #01b3c9);">
+            <Label text="Contract &amp; Payroll System"
+                   textFill="WHITE"
+                   style="-fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -21,7 +21,28 @@ public class MainApp extends Application {
         primaryStage.setTitle("Contract & Payroll System");
 
         DBConnection.initializeDatabase();
-        showLogin();
+        showWelcome();
+    }
+
+    // WELCOME
+    public static void showWelcome() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/views/welcome-view.fxml")
+            );
+
+            Scene scene = new Scene(loader.load(),
+                    primaryStage.getWidth() > 0 ? primaryStage.getWidth() : 800,
+                    primaryStage.getHeight() > 0 ? primaryStage.getHeight() : 500
+            );
+
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // LOGIN
