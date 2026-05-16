@@ -93,7 +93,6 @@ public class MainController {
         MenuItem helpItem = new MenuItem("Help");
         MenuItem exitItem = new MenuItem("Exit");
 
-        // ACTIONS
         refreshItem.setOnAction(e ->
                 setStatus("Content refreshed")
         );
