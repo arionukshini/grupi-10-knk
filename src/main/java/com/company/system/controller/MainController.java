@@ -1,19 +1,19 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.model.User;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Button;
-import com.company.system.model.User;
 
 public class MainController {
 
@@ -63,7 +63,7 @@ public class MainController {
 
     @FXML
     private Button dashboardButton;
-  
+
     @FXML
     private MenuItem accountMenuItem;
 
@@ -79,6 +79,15 @@ public class MainController {
     @FXML
     public void initialize() {
         updateTexts();
+        setupKeyboardShortcuts();
+    }
+
+    private void setupKeyboardShortcuts() {
+        employeesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+E"));
+        contractsMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+K"));
+        salariesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+S"));
+        dashboardMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
+        helpMenuItem.setAccelerator(KeyCombination.keyCombination("F1"));
     }
 
     public void updateTexts() {
@@ -179,7 +188,6 @@ public class MainController {
 
     @FXML
     public void showAccount() {
-
         setStatus(LanguageManager.get("status.account"));
 
         User user = com.company.system.utils.Session.getUser();
@@ -233,7 +241,6 @@ public class MainController {
         Label langMsg = new Label();
 
         languageBox.setOnAction(e -> {
-
             if ("Shqip".equals(languageBox.getValue())) {
                 LanguageManager.setLanguage("sq");
             } else {
