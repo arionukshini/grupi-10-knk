@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.MainController">
-
     <!-- ===================== TOP ===================== -->
     <top>
         <VBox spacing="5">
-
+            <!-- SAFE STYLE PADDING -->
             <style>
                 -fx-padding: 5;
             </style>
-
             <!-- MENU BAR -->
             <MenuBar>
                 <menus>
-
                     <!-- FILE -->
                     <Menu fx:id="fileMenu" text="File">
                         <items>
@@ -27,24 +23,20 @@
                                       onAction="#handleExit"/>
                         </items>
                     </Menu>
-
                     <!-- MANAGE -->
                     <Menu fx:id="manageMenu" text="Manage">
                         <items>
                             <MenuItem fx:id="employeesMenuItem"
                                       text="Employees"
                                       onAction="#showEmployees"/>
-
                             <MenuItem fx:id="contractsMenuItem"
                                       text="Contracts"
                                       onAction="#showContracts"/>
-
                             <MenuItem fx:id="salariesMenuItem"
                                       text="Salaries"
                                       onAction="#showSalaries"/>
                         </items>
                     </Menu>
-
                     <!-- VIEW -->
                     <Menu fx:id="viewMenu" text="View">
                         <items>
@@ -53,21 +45,17 @@
                                       onAction="#showDashboard"/>
                         </items>
                     </Menu>
-
                     <!-- LANGUAGE -->
                     <Menu fx:id="languageMenu" text="Language">
                         <items>
                             <MenuItem fx:id="albanianMenuItem"
                                       text="Shqip"
-                                      onAction="#setAlbanian"/>
-
+                                      onAction="#switchToAlbanian"/>
                             <MenuItem fx:id="englishMenuItem"
                                       text="English"
-                                      onAction="#setEnglish"/>
+                                      onAction="#switchToEnglish"/>
                         </items>
                     </Menu>
-
-
                     <!-- HELP -->
                     <Menu fx:id="helpMenu" text="Help">
                         <items>
@@ -76,23 +64,26 @@
                                       onAction="#showHelp"/>
                         </items>
                     </Menu>
-
                 </menus>
             </MenuBar>
-
+            <!--            &lt;!&ndash; TOOLBAR &ndash;&gt;-->
+            <!--            <ToolBar>-->
+            <!--                <Button text="Employees" onAction="#showEmployees"/>-->
+            <!--                <Button text="Contracts" onAction="#showContracts"/>-->
+            <!--                <Button text="Salaries" onAction="#showSalaries"/>-->
+            <!--                <Button text="Dashboard" onAction="#showDashboard"/>-->
+            <!--            </ToolBar>-->
         </VBox>
     </top>
-
     <!-- ===================== CENTER ===================== -->
     <center>
         <StackPane fx:id="contentArea"
                    style="-fx-padding: 10;">
             <children>
-                <Label text="Welcome to Contract &amp; Payroll System"/>
+                <Label fx:id="welcomeLabel" text="Welcome to Contract &amp; Payroll System"/>
             </children>
         </StackPane>
     </center>
-
     <!-- ===================== BOTTOM ===================== -->
     <bottom>
         <HBox spacing="10" style="-fx-padding: 5;">
@@ -101,5 +92,4 @@
             </children>
         </HBox>
     </bottom>
-
 </BorderPane>
