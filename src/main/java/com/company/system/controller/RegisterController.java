@@ -38,6 +38,7 @@ public class RegisterController {
     @FXML
     public void initialize() {
         updateTexts();
+        setupKeyboardAccess();
     }
 
     private void updateTexts() {
@@ -47,6 +48,15 @@ public class RegisterController {
         confirmPasswordField.setPromptText(LanguageManager.get("register.confirmPassword"));
         registerButton.setText(LanguageManager.get("register.button"));
         backToLoginButton.setText(LanguageManager.get("register.backToLogin"));
+    }
+
+    private void setupKeyboardAccess() {
+        usernameField.setOnAction(event -> passwordField.requestFocus());
+        passwordField.setOnAction(event -> confirmPasswordField.requestFocus());
+        confirmPasswordField.setOnAction(event -> registerButton.fire());
+
+        registerButton.setAccessibleText("Register");
+        backToLoginButton.setAccessibleText("Back to login");
     }
 
     @FXML
@@ -81,13 +91,10 @@ public class RegisterController {
     @FXML
     public void goToLogin(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/login-view.fxml")
-            );
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource("/views/login-view.fxml"));
 
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
             stage.getScene().setRoot(loader.load());
 

@@ -48,7 +48,23 @@ public class LoginController {
     @FXML
     public void initialize() {
         updateTexts();
+        setupKeyboardAccess();
     }
+
+    private void setupKeyboardAccess() {
+        usernameField.setOnAction(event -> passwordField.requestFocus());
+        passwordField.setOnAction(event -> loginButton.fire());
+
+        loginButton.setAccessibleText("Login");
+        registerButton.setAccessibleText("Register");
+        forgotPasswordLink.setAccessibleText("Forgot password");
+        albanianButton.setAccessibleText("Switch language to Albanian");
+        englishButton.setAccessibleText("Switch language to English");
+
+
+    }
+
+
 
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("login.title"));
