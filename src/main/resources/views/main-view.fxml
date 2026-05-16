@@ -87,6 +87,20 @@
 
                     </Menu>
 
+                    <!-- ACCOUNT -->
+
+                    <Menu fx:id="accountMenu" text="Account">
+
+                        <items>
+
+                            <MenuItem fx:id="accountMenuItem"
+                                      text="Account"
+                                      onAction="#showAccount"/>
+
+                        </items>
+
+                    </Menu>
+
                 </menus>
 
             </MenuBar>

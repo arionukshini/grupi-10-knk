@@ -4,6 +4,7 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -96,6 +97,8 @@ public class LoginController {
         if (user != null) {
             messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
             messageLabel.setStyle("-fx-text-fill: green;");
+
+            Session.setUser(user);
             MainApp.openMainApp();
         } else {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
