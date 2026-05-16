@@ -78,6 +78,15 @@ public class MainController {
     @FXML
     public void initialize() {
         updateTexts();
+        setupKeyboardShortcuts();
+    }
+
+    private void setupKeyboardShortcuts() {
+        employeesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+E"));
+        contractsMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+K"));
+        salariesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+S"));
+        dashboardMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
+        helpMenuItem.setAccelerator(KeyCombination.keyCombination("F1"));
     }
 
     public void updateTexts() {
@@ -196,7 +205,6 @@ public class MainController {
 
     @FXML
     public void showAccount() {
-
         setStatus(LanguageManager.get("status.account"));
 
         User user = com.company.system.utils.Session.getUser();
@@ -250,7 +258,6 @@ public class MainController {
         Label langMsg = new Label();
 
         languageBox.setOnAction(e -> {
-
             if ("Shqip".equals(languageBox.getValue())) {
                 LanguageManager.setLanguage("sq");
             } else {
