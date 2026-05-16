@@ -1,20 +1,16 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.model.User;
 import com.company.system.utils.Session;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Button;
-import com.company.system.model.User;
 
 import static com.company.system.MainApp.showLogin;
 
@@ -66,7 +62,7 @@ public class MainController {
 
     @FXML
     private Button dashboardButton;
-  
+
     @FXML
     private MenuItem accountMenuItem;
 
@@ -154,11 +150,29 @@ public class MainController {
 
     @FXML
     public void showDashboard() {
-        currentView = "dashboard";
-        setStatus(LanguageManager.get("status.dashboard"));
 
-        Label view = new Label(LanguageManager.get("module.dashboard"));
-        setContent(view);
+        currentView = "dashboard";
+
+        setStatus(
+                LanguageManager.get("status.dashboard")
+        );
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/dashboard-view.fxml")
+            );
+
+            Parent dashboardView = loader.load();
+
+            setContent(dashboardView);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            setStatus("Failed to load dashboard.");
+        }
     }
 
     @FXML
@@ -272,9 +286,9 @@ public class MainController {
         );
 
         rightSide.setStyle("""
-        -fx-padding: 25;
-        -fx-alignment: center-left;
-    """);
+                    -fx-padding: 25;
+                    -fx-alignment: center-left;
+                """);
 
         setContent(rightSide);
     }
