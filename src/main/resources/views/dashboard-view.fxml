@@ -9,104 +9,72 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.DashboardController">
 
+    <!-- TOP -->
     <top>
         <VBox spacing="10">
 
             <padding>
-                <Insets top="15"
-                        right="15"
-                        bottom="15"
-                        left="15"/>
+                <Insets top="15" right="15" bottom="15" left="15"/>
             </padding>
 
-            <Label text="Dashboard"
-                   style="-fx-font-size: 24px;
-                          -fx-font-weight: bold;"/>
+            <Label fx:id="dashboardTitleLabel"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
         </VBox>
     </top>
 
+    <!-- CENTER -->
     <center>
 
         <VBox spacing="20">
 
             <padding>
-                <Insets top="20"
-                        right="20"
-                        bottom="20"
-                        left="20"/>
+                <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
             <!-- STATISTICS -->
-
             <HBox spacing="20">
 
                 <VBox spacing="5"
-                      style="-fx-background-color: #E3F2FD;
-                             -fx-padding: 15;
-                             -fx-background-radius: 10;">
-
-                    <Label text="Employees"/>
-
+                      style="-fx-background-color: #E3F2FD; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="employeesLabel"/>
                     <Label fx:id="totalEmployeesLabel"
-                           text="0"
-                           style="-fx-font-size: 20px;
-                                  -fx-font-weight: bold;"/>
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 </VBox>
 
                 <VBox spacing="5"
-                      style="-fx-background-color: #E8F5E9;
-                             -fx-padding: 15;
-                             -fx-background-radius: 10;">
-
-                    <Label text="Departments"/>
-
+                      style="-fx-background-color: #E8F5E9; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="departmentsLabel"/>
                     <Label fx:id="totalDepartmentsLabel"
-                           text="0"
-                           style="-fx-font-size: 20px;
-                                  -fx-font-weight: bold;"/>
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 </VBox>
 
                 <VBox spacing="5"
-                      style="-fx-background-color: #FFF3E0;
-                             -fx-padding: 15;
-                             -fx-background-radius: 10;">
-
-                    <Label text="Active Contracts"/>
-
+                      style="-fx-background-color: #FFF3E0; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="contractsLabel"/>
                     <Label fx:id="activeContractsLabel"
-                           text="0"
-                           style="-fx-font-size: 20px;
-                                  -fx-font-weight: bold;"/>
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 </VBox>
 
                 <VBox spacing="5"
-                      style="-fx-background-color: #F3E5F5;
-                             -fx-padding: 15;
-                             -fx-background-radius: 10;">
-
-                    <Label text="Average Salary"/>
-
+                      style="-fx-background-color: #F3E5F5; -fx-padding: 15; -fx-background-radius: 10;">
+                    <Label fx:id="salaryLabel"/>
                     <Label fx:id="averageSalaryLabel"
-                           text="0"
-                           style="-fx-font-size: 20px;
-                                  -fx-font-weight: bold;"/>
+                           style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 </VBox>
 
             </HBox>
 
             <!-- CHART -->
-
             <BarChart fx:id="employeesChart"
-                      prefHeight="400"
-                      title="Employees per Department">
+                      prefHeight="400">
 
                 <xAxis>
-                    <CategoryAxis label="Department"/>
+                    <CategoryAxis fx:id="xAxis"/>
                 </xAxis>
 
                 <yAxis>
-                    <NumberAxis label="Employees"/>
+                    <NumberAxis fx:id="yAxis"/>
                 </yAxis>
 
             </BarChart>
@@ -115,6 +83,7 @@
 
     </center>
 
+    <!-- BOTTOM -->
     <bottom>
 
         <HBox style="-fx-background-color: #EEEEEE;">
@@ -123,9 +92,7 @@
             </padding>
 
             <Label fx:id="aiInsightLabel"
-                   text="AI Insight"
-                   style="-fx-font-size: 14px;
-                          -fx-font-weight: bold;"/>
+                   style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
 
         </HBox>
 

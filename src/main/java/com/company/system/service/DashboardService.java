@@ -3,11 +3,9 @@ package com.company.system.service;
 import com.company.system.db.DBConnection;
 import com.company.system.model.DashboardStats;
 import com.company.system.model.DepartmentStats;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,6 @@ public class DashboardService {
                 Connection conn = DBConnection.connect()
         ) {
 
-            // TOTAL EMPLOYEES
             String employeesQuery =
                     "SELECT COUNT(*) AS total FROM employees";
 
@@ -37,7 +34,6 @@ public class DashboardService {
                 totalEmployees = empRs.getInt("total");
             }
 
-            // TOTAL DEPARTMENTS
             String departmentsQuery =
                     "SELECT COUNT(*) AS total FROM departments";
 
@@ -50,7 +46,6 @@ public class DashboardService {
                 totalDepartments = depRs.getInt("total");
             }
 
-            // ACTIVE CONTRACTS
             String contractsQuery =
                     """
                     SELECT COUNT(*) AS total
@@ -67,7 +62,6 @@ public class DashboardService {
                 activeContracts = conRs.getInt("total");
             }
 
-            // AVERAGE SALARY
             String salaryQuery =
                     "SELECT AVG(base_salary) AS avg_salary FROM employees";
 
