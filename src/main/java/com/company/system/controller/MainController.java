@@ -8,8 +8,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
+import com.company.system.model.User;
 
 public class MainController {
 
@@ -26,6 +30,9 @@ public class MainController {
 
     @FXML
     private Menu helpMenu;
+
+    @FXML
+    private Menu accountMenu;
 
     @FXML
     private MenuItem exitMenuItem;
@@ -56,6 +63,9 @@ public class MainController {
 
     @FXML
     private Button dashboardButton;
+  
+    @FXML
+    private MenuItem accountMenuItem;
 
     @FXML
     private StackPane contentArea;
@@ -71,11 +81,12 @@ public class MainController {
         updateTexts();
     }
 
-    private void updateTexts() {
+    public void updateTexts() {
         fileMenu.setText(LanguageManager.get("menu.file"));
         manageMenu.setText(LanguageManager.get("menu.manage"));
         viewMenu.setText(LanguageManager.get("menu.view"));
         helpMenu.setText(LanguageManager.get("menu.help"));
+        accountMenu.setText(LanguageManager.get("menu.account"));
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
         employeesMenuItem.setText(LanguageManager.get("menu.employees"));
@@ -83,6 +94,7 @@ public class MainController {
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
         dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
         helpMenuItem.setText(LanguageManager.get("menu.help"));
+        accountMenuItem.setText(LanguageManager.get("menu.account"));
 
         employeesButton.setText(LanguageManager.get("menu.employees"));
         contractsButton.setText(LanguageManager.get("menu.contracts"));
@@ -163,5 +175,96 @@ public class MainController {
         helpView.setStyle("-fx-padding: 20;");
 
         setContent(helpView);
+    }
+
+    @FXML
+    public void showAccount() {
+
+        setStatus(LanguageManager.get("status.account"));
+
+        User user = com.company.system.utils.Session.getUser();
+
+        if (user == null) {
+            setContent(new Label("No user logged in"));
+            return;
+        }
+
+        String username = user.getUsername();
+        String password = user.getPassword();
+
+        Label icon = new Label("👤");
+        icon.setStyle("-fx-font-size: 60px;");
+
+        Label usernameLabel = new Label(username);
+        usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        HBox header = new HBox(15, icon, usernameLabel);
+        header.setStyle("-fx-alignment: center-left;");
+
+        Label passwordTitle = new Label(LanguageManager.get("login.password"));
+        passwordTitle.setStyle("-fx-font-weight: bold;");
+
+        Label passwordLabel = new Label("******");
+
+        Button togglePassword = new Button(LanguageManager.get("account.showpassword"));
+
+        final boolean[] visible = {false};
+
+        togglePassword.setOnAction(e -> {
+            visible[0] = !visible[0];
+            passwordLabel.setText(visible[0] ? password : "******");
+        });
+
+        VBox passwordBox = new VBox(5,
+                passwordTitle,
+                passwordLabel,
+                togglePassword
+        );
+
+        Label langTitle = new Label(LanguageManager.get("account.language"));
+        langTitle.setStyle("-fx-font-weight: bold;");
+
+        ComboBox<String> languageBox = new ComboBox<>();
+        languageBox.getItems().addAll("English", "Shqip");
+
+        String currentLang = LanguageManager.getCurrentLocale().getLanguage();
+        languageBox.setValue(currentLang.equals("sq") ? "Shqip" : "English");
+
+        Label langMsg = new Label();
+
+        languageBox.setOnAction(e -> {
+
+            if ("Shqip".equals(languageBox.getValue())) {
+                LanguageManager.setLanguage("sq");
+            } else {
+                LanguageManager.setLanguage("en");
+            }
+
+            updateTexts();
+            langMsg.setText("✔ " + LanguageManager.get("account.language.success"));
+        });
+
+        HBox languageMiniContainer = new HBox(15,
+                languageBox,
+                langMsg
+        );
+
+        VBox languageBoxContainer = new VBox(5,
+                langTitle,
+                languageMiniContainer
+        );
+
+        VBox rightSide = new VBox(20,
+                header,
+                passwordBox,
+                languageBoxContainer
+        );
+
+        rightSide.setStyle("""
+        -fx-padding: 25;
+        -fx-alignment: center-left;
+    """);
+
+        setContent(rightSide);
     }
 }
