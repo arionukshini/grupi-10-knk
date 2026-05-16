@@ -38,6 +38,7 @@ public class ResetPasswordController {
     @FXML
     public void initialize() {
         updateTexts();
+        setupKeyboardAccess();
     }
 
     private void updateTexts() {
@@ -47,6 +48,15 @@ public class ResetPasswordController {
         confirmPasswordField.setPromptText(LanguageManager.get("reset.confirmPassword"));
         resetButton.setText(LanguageManager.get("reset.button"));
         backToLoginButton.setText(LanguageManager.get("reset.backToLogin"));
+    }
+
+    private void setupKeyboardAccess() {
+        usernameField.setOnAction(event -> newPasswordField.requestFocus());
+        newPasswordField.setOnAction(event -> confirmPasswordField.requestFocus());
+        confirmPasswordField.setOnAction(event -> resetButton.fire());
+
+        resetButton.setAccessibleText("Reset password");
+        backToLoginButton.setAccessibleText("Back to login");
     }
 
     @FXML

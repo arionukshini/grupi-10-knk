@@ -38,6 +38,7 @@
         <Button fx:id="registerButton"
                 text="Register"
                 onAction="#handleRegister"
+                defaultButton="true"
                 prefWidth="200"
                 style="-fx-background-color: #16a34a; -fx-text-fill: white;"/>
 
