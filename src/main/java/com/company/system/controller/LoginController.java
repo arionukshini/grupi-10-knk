@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import com.company.system.utils.Session;
+
 
 public class LoginController {
 
@@ -76,6 +78,7 @@ public class LoginController {
         User user = UserService.login(username, password);
 
         if (user != null) {
+            Session.setUser(user);
             messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
             messageLabel.setStyle("-fx-text-fill: green;");
             MainApp.openMainApp();
@@ -83,6 +86,7 @@ public class LoginController {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+
     }
 
     @FXML
