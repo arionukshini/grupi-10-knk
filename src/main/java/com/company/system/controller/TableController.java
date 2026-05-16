@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javafx.beans.property.SimpleStringProperty;
 
 
 public class TableController {
@@ -34,7 +35,11 @@ public class TableController {
     @FXML
     public void initialize() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        nameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getFirstName() + " " + cellData.getValue().getLastName()
+                )
+        );
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         salaryColumn.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
 
@@ -48,6 +53,11 @@ public class TableController {
                 System.out.println("Selected employee: " + newSelection.getFirstName());
             }
         });
+    }
+    @FXML
+    private void handleRefresh() {
+        loadEmployeesFromDatabase();
+        System.out.println("Table refreshed.");
     }
 
     private void loadEmployeesFromDatabase() {

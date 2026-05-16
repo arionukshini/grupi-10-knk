@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.company.system.controller.TableController"
->
-        <TableView layoutX="20.0" layoutY="20.0" prefHeight="300.0" prefWidth="560.0">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.company.system.controller.TableController">
+    <Button fx:id="refreshButton" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" onAction="#handleRefresh" text="Refresh" />
+    <TableView fx:id="employeeTable" layoutX="20.0" layoutY="60.0" prefHeight="300.0" prefWidth="560.0">
+
             <columns>
                 <TableColumn  fx:id="idColumn" prefWidth="80.0" text="ID" />
                 <TableColumn fx:id="nameColumn" prefWidth="160.0" text="Name" />
