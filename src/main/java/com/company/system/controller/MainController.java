@@ -1,6 +1,7 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.utils.Session;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -14,6 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 import com.company.system.model.User;
+
+import static com.company.system.MainApp.showLogin;
 
 public class MainController {
 
@@ -254,10 +257,18 @@ public class MainController {
                 languageMiniContainer
         );
 
+        Button logout = new Button(LanguageManager.get("account.logout"));
+
+        logout.setOnAction(e -> {
+            Session.clear();
+            showLogin();
+        });
+
         VBox rightSide = new VBox(20,
                 header,
                 passwordBox,
-                languageBoxContainer
+                languageBoxContainer,
+                logout
         );
 
         rightSide.setStyle("""
