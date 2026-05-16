@@ -4,7 +4,6 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
-import com.company.system.utils.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,12 +36,6 @@ public class LoginController {
     private Button registerButton;
 
     @FXML
-    private Button albanianButton;
-
-    @FXML
-    private Button englishButton;
-
-    @FXML
     private Label messageLabel;
 
     @FXML
@@ -58,13 +51,7 @@ public class LoginController {
         loginButton.setAccessibleText("Login");
         registerButton.setAccessibleText("Register");
         forgotPasswordLink.setAccessibleText("Forgot password");
-        albanianButton.setAccessibleText("Switch language to Albanian");
-        englishButton.setAccessibleText("Switch language to English");
-
-
     }
-
-
 
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("login.title"));
@@ -73,28 +60,6 @@ public class LoginController {
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
         registerButton.setText(LanguageManager.get("login.goToRegister"));
-
-        if (albanianButton != null) {
-            albanianButton.setText("SQ");
-        }
-
-        if (englishButton != null) {
-            englishButton.setText("EN");
-        }
-    }
-
-    @FXML
-    private void switchToAlbanian() {
-        LanguageManager.setLanguage("sq");
-        updateTexts();
-        messageLabel.setText("");
-    }
-
-    @FXML
-    private void switchToEnglish() {
-        LanguageManager.setLanguage("en");
-        updateTexts();
-        messageLabel.setText("");
     }
 
     @FXML
@@ -113,8 +78,6 @@ public class LoginController {
         if (user != null) {
             messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
             messageLabel.setStyle("-fx-text-fill: green;");
-
-            Session.setUser(user);
             MainApp.openMainApp();
         } else {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
