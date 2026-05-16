@@ -12,42 +12,59 @@ import javafx.scene.layout.VBox;
 
 public class MainController {
 
-    @FXML private StackPane contentArea;
-    @FXML private Label statusLabel;
+    private String currentView = "welcome";
 
-    @FXML private Menu fileMenu;
-    @FXML private Menu manageMenu;
-    @FXML private Menu viewMenu;
-    @FXML private Menu languageMenu;
-    @FXML private Menu helpMenu;
+    @FXML
+    private Menu fileMenu;
 
-    @FXML private MenuItem exitMenuItem;
-    @FXML private MenuItem employeesMenuItem;
-    @FXML private MenuItem contractsMenuItem;
-    @FXML private MenuItem salariesMenuItem;
-    @FXML private MenuItem dashboardMenuItem;
-    @FXML private MenuItem albanianMenuItem;
-    @FXML private MenuItem englishMenuItem;
-    @FXML private MenuItem helpMenuItem;
+    @FXML
+    private Menu manageMenu;
+
+    @FXML
+    private Menu viewMenu;
+
+    @FXML
+    private Menu languageMenu;
+
+    @FXML
+    private Menu helpMenu;
+
+    @FXML
+    private MenuItem exitMenuItem;
+
+    @FXML
+    private MenuItem employeesMenuItem;
+
+    @FXML
+    private MenuItem contractsMenuItem;
+
+    @FXML
+    private MenuItem salariesMenuItem;
+
+    @FXML
+    private MenuItem dashboardMenuItem;
+
+    @FXML
+    private MenuItem albanianMenuItem;
+
+    @FXML
+    private MenuItem englishMenuItem;
+
+    @FXML
+    private MenuItem helpMenuItem;
+
+    @FXML
+    private StackPane contentArea;
+
+    @FXML
+    private Label welcomeLabel;
+
+    @FXML
+    private Label statusLabel;
 
     @FXML
     public void initialize() {
         updateTexts();
-        setStatus(LanguageManager.get("status.ready"));
-    }
-
-    @FXML
-    private void handleExit() {
-        System.exit(0);
-    }
-
-    public void setContent(Node node) {
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(node);
-    }
-
-    public void setStatus(String message) {
-        statusLabel.setText(message);
     }
 
     private void updateTexts() {
@@ -65,43 +82,93 @@ public class MainController {
         albanianMenuItem.setText(LanguageManager.get("language.albanian"));
         englishMenuItem.setText(LanguageManager.get("language.english"));
         helpMenuItem.setText(LanguageManager.get("menu.help"));
+
+        welcomeLabel.setText(LanguageManager.get("app.welcome"));
+
+        if ("welcome".equals(currentView)) {
+            setStatus(LanguageManager.get("status.ready"));
+        }
+    }
+
+    @FXML
+    private void handleExit() {
+        System.exit(0);
+    }
+
+    public void setContent(Node node) {
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(node);
+    }
+
+    public void setStatus(String message) {
+        statusLabel.setText(message);
+    }
+
+    @FXML
+    private void switchToAlbanian() {
+        LanguageManager.setLanguage("sq");
+        updateTexts();
+        refreshCurrentView();
+    }
+
+    @FXML
+    private void switchToEnglish() {
+        LanguageManager.setLanguage("en");
+        updateTexts();
+        refreshCurrentView();
+    }
+
+    private void refreshCurrentView() {
+        switch (currentView) {
+            case "employees" -> showEmployees();
+            case "contracts" -> showContracts();
+            case "salaries" -> showSalaries();
+            case "dashboard" -> showDashboard();
+            case "help" -> showHelp();
+            default -> setStatus(LanguageManager.get("status.ready"));
+        }
     }
 
     @FXML
     public void showEmployees() {
-        setStatus(LanguageManager.get("menu.employees"));
+        currentView = "employees";
+        setStatus(LanguageManager.get("status.employees"));
 
-        Label view = new Label(LanguageManager.get("menu.employees"));
+        Label view = new Label(LanguageManager.get("module.employees"));
         setContent(view);
     }
 
     @FXML
     public void showContracts() {
-        setStatus(LanguageManager.get("menu.contracts"));
+        currentView = "contracts";
+        setStatus(LanguageManager.get("status.contracts"));
 
-        Label view = new Label(LanguageManager.get("menu.contracts"));
+        Label view = new Label(LanguageManager.get("module.contracts"));
         setContent(view);
     }
 
     @FXML
     public void showSalaries() {
-        setStatus(LanguageManager.get("menu.salaries"));
+        currentView = "salaries";
+        setStatus(LanguageManager.get("status.salaries"));
 
-        Label view = new Label(LanguageManager.get("menu.salaries"));
+        Label view = new Label(LanguageManager.get("module.salaries"));
         setContent(view);
     }
 
     @FXML
     public void showDashboard() {
-        setStatus(LanguageManager.get("menu.dashboard"));
+        currentView = "dashboard";
+        setStatus(LanguageManager.get("status.dashboard"));
 
-        Label view = new Label(LanguageManager.get("menu.dashboard"));
+        Label view = new Label(LanguageManager.get("module.dashboard"));
         setContent(view);
     }
 
     @FXML
     public void showHelp() {
-        setStatus(LanguageManager.get("help.title"));
+        currentView = "help";
+        setStatus(LanguageManager.get("status.help"));
 
         Label title = new Label(LanguageManager.get("help.title"));
         title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
@@ -109,25 +176,11 @@ public class MainController {
         TextArea content = new TextArea(LanguageManager.get("help.content"));
         content.setWrapText(true);
         content.setEditable(false);
-        content.setPrefHeight(250);
+        content.setPrefRowCount(8);
 
         VBox helpView = new VBox(10, title, content);
         helpView.setStyle("-fx-padding: 20;");
 
         setContent(helpView);
-    }
-
-    @FXML
-    public void setAlbanian() {
-        LanguageManager.setLanguage("sq");
-        updateTexts();
-        setStatus(LanguageManager.get("status.ready"));
-    }
-
-    @FXML
-    public void setEnglish() {
-        LanguageManager.setLanguage("en");
-        updateTexts();
-        setStatus(LanguageManager.get("status.ready"));
     }
 }
