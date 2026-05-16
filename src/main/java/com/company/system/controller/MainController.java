@@ -28,6 +28,9 @@ public class MainController {
     private Menu viewMenu;
 
     @FXML
+    private Menu languageMenu;
+
+    @FXML
     private Menu helpMenu;
 
     @FXML
@@ -47,6 +50,12 @@ public class MainController {
 
     @FXML
     private MenuItem dashboardMenuItem;
+
+    @FXML
+    private MenuItem albanianMenuItem;
+
+    @FXML
+    private MenuItem englishMenuItem;
 
     @FXML
     private MenuItem helpMenuItem;
@@ -93,6 +102,7 @@ public class MainController {
         fileMenu.setText(LanguageManager.get("menu.file"));
         manageMenu.setText(LanguageManager.get("menu.manage"));
         viewMenu.setText(LanguageManager.get("menu.view"));
+        languageMenu.setText(LanguageManager.get("menu.language"));
         helpMenu.setText(LanguageManager.get("menu.help"));
         accountMenu.setText(LanguageManager.get("menu.account"));
 
@@ -101,6 +111,8 @@ public class MainController {
         contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
         dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
+        albanianMenuItem.setText(LanguageManager.get("language.albanian"));
+        englishMenuItem.setText(LanguageManager.get("language.english"));
         helpMenuItem.setText(LanguageManager.get("menu.help"));
         accountMenuItem.setText(LanguageManager.get("menu.account"));
 
@@ -113,6 +125,47 @@ public class MainController {
 
         if ("welcome".equals(currentView)) {
             setStatus(LanguageManager.get("status.ready"));
+        }
+    }
+
+    @FXML
+    private void switchToAlbanian() {
+        LanguageManager.setLanguage("sq");
+        updateTexts();
+        refreshCurrentView();
+    }
+
+    @FXML
+    private void switchToEnglish() {
+        LanguageManager.setLanguage("en");
+        updateTexts();
+        refreshCurrentView();
+    }
+
+    private void refreshCurrentView() {
+        switch (currentView) {
+            case "employees":
+                showEmployees();
+                break;
+            case "contracts":
+                showContracts();
+                break;
+            case "salaries":
+                showSalaries();
+                break;
+            case "dashboard":
+                showDashboard();
+                break;
+            case "help":
+                showHelp();
+                break;
+            case "account":
+                showAccount();
+                break;
+            default:
+                setContent(welcomeLabel);
+                setStatus(LanguageManager.get("status.ready"));
+                break;
         }
     }
 
@@ -205,6 +258,7 @@ public class MainController {
 
     @FXML
     public void showAccount() {
+        currentView = "account";
         setStatus(LanguageManager.get("status.account"));
 
         User user = com.company.system.utils.Session.getUser();
