@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -61,6 +62,9 @@ public class MainController {
     private MenuItem helpMenuItem;
 
     @FXML
+    private MenuItem accountMenuItem;
+
+    @FXML
     private Button employeesButton;
 
     @FXML
@@ -71,9 +75,6 @@ public class MainController {
 
     @FXML
     private Button dashboardButton;
-
-    @FXML
-    private MenuItem accountMenuItem;
 
     @FXML
     private StackPane contentArea;
@@ -99,12 +100,12 @@ public class MainController {
     }
 
     public void updateTexts() {
-        fileMenu.setText(LanguageManager.get("menu.file"));
-        manageMenu.setText(LanguageManager.get("menu.manage"));
-        viewMenu.setText(LanguageManager.get("menu.view"));
-        languageMenu.setText(LanguageManager.get("menu.language"));
-        helpMenu.setText(LanguageManager.get("menu.help"));
-        accountMenu.setText(LanguageManager.get("menu.account"));
+        fileMenu.setText("☰");
+        manageMenu.setText("");
+        viewMenu.setText("");
+        languageMenu.setText("");
+        helpMenu.setText("");
+        accountMenu.setText("");
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
         employeesMenuItem.setText(LanguageManager.get("menu.employees"));
@@ -212,7 +213,6 @@ public class MainController {
 
     @FXML
     public void showDashboard() {
-
         currentView = "dashboard";
 
         setStatus(
@@ -220,7 +220,6 @@ public class MainController {
         );
 
         try {
-
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/views/dashboard-view.fxml")
             );
@@ -230,7 +229,6 @@ public class MainController {
             setContent(dashboardView);
 
         } catch (Exception e) {
-
             e.printStackTrace();
 
             setStatus("Failed to load dashboard.");
@@ -261,7 +259,7 @@ public class MainController {
         currentView = "account";
         setStatus(LanguageManager.get("status.account"));
 
-        User user = com.company.system.utils.Session.getUser();
+        User user = Session.getUser();
 
         if (user == null) {
             setContent(new Label("No user logged in"));

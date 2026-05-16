@@ -10,24 +10,20 @@
 
     <top>
         <VBox spacing="5">
-
             <padding>
                 <Insets top="5" right="5" bottom="5" left="5"/>
             </padding>
 
             <MenuBar>
                 <menus>
-
-                    <Menu fx:id="fileMenu" text="File">
+                    <Menu fx:id="fileMenu" text="☰">
                         <items>
                             <MenuItem fx:id="exitMenuItem"
                                       text="Exit"
                                       onAction="#handleExit"/>
-                        </items>
-                    </Menu>
 
-                    <Menu fx:id="manageMenu" text="Manage">
-                        <items>
+                            <SeparatorMenuItem/>
+
                             <MenuItem fx:id="employeesMenuItem"
                                       text="Employees"
                                       onAction="#showEmployees"/>
@@ -39,19 +35,13 @@
                             <MenuItem fx:id="salariesMenuItem"
                                       text="Salaries"
                                       onAction="#showSalaries"/>
-                        </items>
-                    </Menu>
 
-                    <Menu fx:id="viewMenu" text="View">
-                        <items>
                             <MenuItem fx:id="dashboardMenuItem"
                                       text="Dashboard"
                                       onAction="#showDashboard"/>
-                        </items>
-                    </Menu>
 
-                    <Menu fx:id="languageMenu" text="Language">
-                        <items>
+                            <SeparatorMenuItem/>
+
                             <MenuItem fx:id="albanianMenuItem"
                                       text="Shqip"
                                       onAction="#switchToAlbanian"/>
@@ -59,25 +49,24 @@
                             <MenuItem fx:id="englishMenuItem"
                                       text="English"
                                       onAction="#switchToEnglish"/>
-                        </items>
-                    </Menu>
 
-                    <Menu fx:id="helpMenu" text="Help">
-                        <items>
+                            <SeparatorMenuItem/>
+
                             <MenuItem fx:id="helpMenuItem"
                                       text="Help"
                                       onAction="#showHelp"/>
-                        </items>
-                    </Menu>
 
-                    <Menu fx:id="accountMenu" text="Account">
-                        <items>
                             <MenuItem fx:id="accountMenuItem"
                                       text="Account"
                                       onAction="#showAccount"/>
                         </items>
                     </Menu>
 
+                    <Menu fx:id="manageMenu" text="" visible="false"/>
+                    <Menu fx:id="viewMenu" text="" visible="false"/>
+                    <Menu fx:id="languageMenu" text="" visible="false"/>
+                    <Menu fx:id="helpMenu" text="" visible="false"/>
+                    <Menu fx:id="accountMenu" text="" visible="false"/>
                 </menus>
             </MenuBar>
 
@@ -98,7 +87,6 @@
                         text="Dashboard"
                         onAction="#showDashboard"/>
             </ToolBar>
-
         </VBox>
     </top>
 
