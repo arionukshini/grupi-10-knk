@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.MainController">
+
+    <top>
+        <VBox spacing="5">
+
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+
+            <!-- MENU BAR -->
+            <MenuBar>
+
+                <Menu fx:id="fileMenu">
+                    <items>
+                        <MenuItem fx:id="exitMenuItem"
+                                  onAction="#handleExit"/>
+                    </items>
+                </Menu>
+
+                <Menu fx:id="manageMenu">
+                    <items>
+                        <MenuItem fx:id="employeesMenuItem"
+                                  onAction="#showEmployees"/>
+
+                        <MenuItem fx:id="contractsMenuItem"
+                                  onAction="#showContracts"/>
+
+                        <MenuItem fx:id="salariesMenuItem"
+                                  onAction="#showSalaries"/>
+                    </items>
+                </Menu>
+
+                <Menu fx:id="viewMenu">
+                    <items>
+                        <MenuItem fx:id="dashboardMenuItem"
+                                  onAction="#showDashboard"/>
+                    </items>
+                </Menu>
+
+                <Menu fx:id="languageMenu">
+                    <items>
+                        <MenuItem fx:id="albanianMenuItem"
+                                  onAction="#setAlbanian"/>
+
+                        <MenuItem fx:id="englishMenuItem"
+                                  onAction="#setEnglish"/>
+                    </items>
+                </Menu>
+
+                <Menu fx:id="helpMenu">
+                    <items>
+                        <MenuItem fx:id="helpMenuItem"
+                                  onAction="#showHelp"/>
+                    </items>
+                </Menu>
+
+            </MenuBar>
+
+            <!-- TOOLBAR -->
+            <ToolBar>
+
+                <Button text="Employees"
+                        onAction="#showEmployees"/>
+
+                <Button text="Contracts"
+                        onAction="#showContracts"/>
+
+                <Button text="Salaries"
+                        onAction="#showSalaries"/>
+
+                <Button text="Dashboard"
+                        onAction="#showDashboard"/>
+
+            </ToolBar>
+
+        </VBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="contentArea">
+            <Label text="Content Area"/>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox padding="5">
+            <Label fx:id="statusLabel"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
