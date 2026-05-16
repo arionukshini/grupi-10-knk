@@ -3,6 +3,7 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -52,6 +53,18 @@ public class MainController {
     private MenuItem helpMenuItem;
 
     @FXML
+    private Button employeesButton;
+
+    @FXML
+    private Button contractsButton;
+
+    @FXML
+    private Button salariesButton;
+
+    @FXML
+    private Button dashboardButton;
+  
+    @FXML
     private MenuItem accountMenuItem;
 
     @FXML
@@ -82,6 +95,11 @@ public class MainController {
         dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
         helpMenuItem.setText(LanguageManager.get("menu.help"));
         accountMenuItem.setText(LanguageManager.get("menu.account"));
+
+        employeesButton.setText(LanguageManager.get("menu.employees"));
+        contractsButton.setText(LanguageManager.get("menu.contracts"));
+        salariesButton.setText(LanguageManager.get("menu.salaries"));
+        dashboardButton.setText(LanguageManager.get("menu.dashboard"));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
 

@@ -109,16 +109,20 @@
 
             <ToolBar>
 
-                <Button text="Employees"
+                <Button fx:id="employeesButton"
+                        text="Employees"
                         onAction="#showEmployees"/>
 
-                <Button text="Contracts"
+                <Button fx:id="contractsButton"
+                        text="Contracts"
                         onAction="#showContracts"/>
 
-                <Button text="Salaries"
+                <Button fx:id="salariesButton"
+                        text="Salaries"
                         onAction="#showSalaries"/>
 
-                <Button text="Dashboard"
+                <Button fx:id="dashboardButton"
+                        text="Dashboard"
                         onAction="#showDashboard"/>
 
             </ToolBar>
