@@ -10,7 +10,6 @@ import java.sql.SQLException;
 
 public class UserService {
 
-    // LOGIN
     public static User login(String username, String password) {
 
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -29,7 +28,8 @@ public class UserService {
                 return new User(
                         rs.getInt("id"),
                         rs.getString("username"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getTimestamp("created_at")
                 );
             }
 
@@ -40,17 +40,19 @@ public class UserService {
         return null;
     }
 
-
-    // REGISTER
     public static boolean register(String username, String password) {
 
-        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String sql =
+                "INSERT INTO users (username, password) VALUES (?, ?)";
 
         try (Connection conn = DBConnection.connect()) {
 
-            if (conn == null) return false;
+            if (conn == null) {
+                return false;
+            }
 
             PreparedStatement stmt = conn.prepareStatement(sql);
+
             stmt.setString(1, username);
             stmt.setString(2, password);
 

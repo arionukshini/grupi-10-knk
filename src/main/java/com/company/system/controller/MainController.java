@@ -3,19 +3,22 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.utils.Session;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import static com.company.system.MainApp.showLogin;
-import javafx.application.Platform;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+
+import java.sql.Timestamp;
+
+import static com.company.system.MainApp.showWelcome;
 
 public class MainController {
 
@@ -99,6 +102,7 @@ public class MainController {
 
         employeesButton.requestFocus();
     }
+
     private void focusActiveButton(Button activeButton) {
         activeButton.requestFocus();
     }
@@ -384,6 +388,10 @@ public class MainController {
 
         String username = user.getUsername();
         String password = user.getPassword();
+        Timestamp createdAt = user.getCreatedAt();
+
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = createdAt.toLocalDateTime().format(formatter);
 
         Label icon = new Label("👤");
         icon.setStyle("-fx-font-size: 60px;");
@@ -391,7 +399,12 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        HBox header = new HBox(15, icon, usernameLabel);
+        Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
+        createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
+
+        VBox headerContent = new VBox(15, usernameLabel, createdAtLable);
+        HBox header = new HBox(15, icon, headerContent);
+
         header.setStyle("-fx-alignment: center-left;");
 
         Label passwordTitle = new Label(LanguageManager.get("login.password"));
@@ -450,7 +463,7 @@ public class MainController {
 
         logout.setOnAction(e -> {
             Session.clear();
-            showLogin();
+            showWelcome();
         });
 
         VBox rightSide = new VBox(20,
