@@ -71,21 +71,27 @@
             </MenuBar>
 
             <ToolBar>
+
                 <Button fx:id="employeesButton"
                         text="Employees"
+                        focusTraversable="true"
                         onAction="#showEmployees"/>
 
                 <Button fx:id="contractsButton"
                         text="Contracts"
+                        focusTraversable="true"
                         onAction="#showContracts"/>
 
                 <Button fx:id="salariesButton"
                         text="Salaries"
+                        focusTraversable="true"
                         onAction="#showSalaries"/>
 
                 <Button fx:id="dashboardButton"
                         text="Dashboard"
+                        focusTraversable="true"
                         onAction="#showDashboard"/>
+
             </ToolBar>
         </VBox>
     </top>

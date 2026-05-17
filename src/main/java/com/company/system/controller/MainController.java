@@ -85,6 +85,7 @@ public class MainController {
     @FXML
     private Label statusLabel;
 
+
     @FXML
     public void initialize() {
 
@@ -93,6 +94,8 @@ public class MainController {
 
         initializeContextMenu();
         setupKeyboardShortcuts();
+
+        employeesButton.requestFocus();
     }
 
     private void initializeContextMenu() {
