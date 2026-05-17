@@ -15,34 +15,52 @@ import javafx.scene.control.Label;
 public class DashboardController {
 
     @FXML
+    private Label dashboardTitleLabel;
+
+    @FXML
+    private Label dashboardSubtitleLabel;
+
+    @FXML
+    private Label employeesTitleLabel;
+
+    @FXML
+    private Label contractsTitleLabel;
+
+    @FXML
+    private Label salariesTitleLabel;
+
+    @FXML
+    private Label activeContractsTitleLabel;
+
+    @FXML
+    private Label expiringContractsTitleLabel;
+
+    @FXML
+    private Label averageSalaryTitleLabel;
+
+    @FXML
     private Label totalEmployeesLabel;
 
     @FXML
-    private Label totalDepartmentsLabel;
+    private Label totalContractsLabel;
+
+    @FXML
+    private Label totalSalariesLabel;
 
     @FXML
     private Label activeContractsLabel;
 
     @FXML
+    private Label expiringContractsLabel;
+
+    @FXML
     private Label averageSalaryLabel;
 
     @FXML
+    private Label insightTitleLabel;
+
+    @FXML
     private Label aiInsightLabel;
-
-    @FXML
-    private Label dashboardTitleLabel;
-
-    @FXML
-    private Label employeesLabel;
-
-    @FXML
-    private Label departmentsLabel;
-
-    @FXML
-    private Label contractsLabel;
-
-    @FXML
-    private Label salaryLabel;
 
     @FXML
     private CategoryAxis xAxis;
@@ -55,43 +73,48 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-
+        loadTexts();
         loadStatistics();
         loadDepartmentChart();
-        generateAIInsight();
+        generateInsight();
+    }
+
+    private void loadTexts() {
+        dashboardTitleLabel.setText(LanguageManager.get("dashboard.title"));
+        dashboardSubtitleLabel.setText(LanguageManager.get("dashboard.subtitle"));
+
+        employeesTitleLabel.setText(LanguageManager.get("dashboard.employees"));
+        contractsTitleLabel.setText(LanguageManager.get("dashboard.contracts"));
+        salariesTitleLabel.setText(LanguageManager.get("dashboard.salaries"));
+        activeContractsTitleLabel.setText(LanguageManager.get("dashboard.activeContracts"));
+        expiringContractsTitleLabel.setText(LanguageManager.get("dashboard.expiringContracts"));
+        averageSalaryTitleLabel.setText(LanguageManager.get("dashboard.averageSalary"));
+        insightTitleLabel.setText(LanguageManager.get("dashboard.insight.title"));
+
+        xAxis.setLabel(LanguageManager.get("dashboard.axis.department"));
+        yAxis.setLabel(LanguageManager.get("dashboard.axis.employees"));
+        employeesChart.setTitle(LanguageManager.get("dashboard.chart.title"));
     }
 
     private void loadStatistics() {
-
         DashboardStats stats = DashboardService.getDashboardStats();
 
         totalEmployeesLabel.setText(String.valueOf(stats.getTotalEmployees()));
-        totalDepartmentsLabel.setText(String.valueOf(stats.getTotalDepartments()));
+        totalContractsLabel.setText(String.valueOf(stats.getTotalContracts()));
+        totalSalariesLabel.setText(String.valueOf(stats.getTotalSalaries()));
         activeContractsLabel.setText(String.valueOf(stats.getActiveContracts()));
+        expiringContractsLabel.setText(String.valueOf(stats.getExpiringContracts()));
 
         averageSalaryLabel.setText(
                 String.format("%.2f €", stats.getAverageSalary())
         );
-
-        dashboardTitleLabel.setText(LanguageManager.get("dashboard.title"));
-
-        employeesLabel.setText(LanguageManager.get("dashboard.employees"));
-        departmentsLabel.setText(LanguageManager.get("dashboard.departments"));
-        contractsLabel.setText(LanguageManager.get("dashboard.contracts"));
-        salaryLabel.setText(LanguageManager.get("dashboard.salary"));
-
-        xAxis.setLabel(LanguageManager.get("dashboard.axis.department"));
-        yAxis.setLabel(LanguageManager.get("dashboard.axis.employees"));
     }
 
     private void loadDepartmentChart() {
-
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-
         series.setName(LanguageManager.get("dashboard.chart.series"));
 
         for (DepartmentStats stats : DashboardService.getEmployeesPerDepartment()) {
-
             series.getData().add(
                     new XYChart.Data<>(
                             stats.getDepartmentName(),
@@ -100,25 +123,18 @@ public class DashboardController {
             );
         }
 
-        employeesChart.setData(
-                FXCollections.observableArrayList(series)
-        );
-
-        employeesChart.setTitle(LanguageManager.get("dashboard.chart.title"));
+        employeesChart.setData(FXCollections.observableArrayList(series));
     }
 
-    private void generateAIInsight() {
-
+    private void generateInsight() {
         DashboardStats stats = DashboardService.getDashboardStats();
 
-        String insight;
-
-        if (stats.getAverageSalary() > 1400) {
-            insight = LanguageManager.get("dashboard.insight.high");
+        if (stats.getExpiringContracts() > 0) {
+            aiInsightLabel.setText(LanguageManager.get("dashboard.insight.expiring"));
+        } else if (stats.getActiveContracts() >= stats.getTotalContracts()) {
+            aiInsightLabel.setText(LanguageManager.get("dashboard.insight.good"));
         } else {
-            insight = LanguageManager.get("dashboard.insight.low");
+            aiInsightLabel.setText(LanguageManager.get("dashboard.insight.normal"));
         }
-
-        aiInsightLabel.setText(insight);
     }
 }
