@@ -46,7 +46,7 @@ public class EmployeeService {
         return employees;
     }
 
-    public static void addEmployee(Employee employee) {
+    public static boolean addEmployee(Employee employee) {
 
         String sql = """
                 INSERT INTO employees
@@ -82,9 +82,73 @@ public class EmployeeService {
             stmt.executeUpdate();
 
             System.out.println("Employee added successfully!");
+            return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
+    }
+
+    public static boolean updateEmployee(Employee employee) {
+
+        String sql = """
+                UPDATE employees
+                SET
+                    first_name = ?,
+                    last_name = ?,
+                    email = ?,
+                    phone = ?,
+                    position = ?,
+                    department_id = ?,
+                    hire_date = ?,
+                    base_salary = ?,
+                    status = ?
+                WHERE id = ?
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, employee.getFirstName());
+            stmt.setString(2, employee.getLastName());
+            stmt.setString(3, employee.getEmail());
+            stmt.setString(4, employee.getPhone());
+            stmt.setString(5, employee.getPosition());
+            stmt.setInt(6, employee.getDepartmentId());
+            stmt.setDate(7, employee.getHireDate());
+            stmt.setDouble(8, employee.getBaseSalary());
+            stmt.setString(9, employee.getStatus());
+            stmt.setInt(10, employee.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean deleteEmployee(int employeeId) {
+
+        String sql = "DELETE FROM employees WHERE id = ?";
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, employeeId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

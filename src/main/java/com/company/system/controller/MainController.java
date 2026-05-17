@@ -246,9 +246,19 @@ public class MainController {
         currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
 
-        Label view = new Label(LanguageManager.get("module.employees"));
-        setContent(view);
-        focusActiveButton(employeesButton);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/employees-view.fxml")
+            );
+
+            Parent employeesView = loader.load();
+            setContent(employeesView);
+            focusActiveButton(employeesButton);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus("Failed to load employees.");
+        }
     }
 
     @FXML
