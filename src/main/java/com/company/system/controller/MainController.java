@@ -12,8 +12,10 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 import static com.company.system.MainApp.showLogin;
+import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class MainController {
 
@@ -94,6 +96,9 @@ public class MainController {
         initializeContextMenu();
         setupKeyboardShortcuts();
     }
+    private void focusActiveButton(Button activeButton) {
+        activeButton.requestFocus();
+    }
 
     private void initializeContextMenu() {
 
@@ -135,7 +140,13 @@ public class MainController {
         contractsMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+K"));
         salariesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+S"));
         dashboardMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
-        helpMenuItem.setAccelerator(KeyCombination.keyCombination("F1"));
+        helpMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+H"));
+        Platform.runLater(() -> contentArea.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.F1 || (event.isShortcutDown() && event.getCode() == KeyCode.H)) {
+                showHelp();
+                event.consume();
+            }
+        }));
     }
 
     public void updateTexts() {
@@ -230,6 +241,7 @@ public class MainController {
 
         Label view = new Label(LanguageManager.get("module.employees"));
         setContent(view);
+        focusActiveButton(employeesButton);
     }
 
     @FXML
@@ -239,6 +251,7 @@ public class MainController {
 
         Label view = new Label(LanguageManager.get("module.contracts"));
         setContent(view);
+        focusActiveButton(contractsButton);
     }
 
     @FXML
@@ -248,6 +261,7 @@ public class MainController {
 
         Label view = new Label(LanguageManager.get("module.salaries"));
         setContent(view);
+        focusActiveButton(salariesButton);
     }
 
     @FXML
@@ -263,6 +277,7 @@ public class MainController {
 
             Parent dashboardView = loader.load();
             setContent(dashboardView);
+            focusActiveButton(dashboardButton);
 
         } catch (Exception e) {
             e.printStackTrace();

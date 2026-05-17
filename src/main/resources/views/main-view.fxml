@@ -18,26 +18,20 @@
                 <menus>
                     <Menu fx:id="fileMenu" text="☰">
                         <items>
-                            <MenuItem fx:id="exitMenuItem"
-                                      text="Exit"
-                                      onAction="#handleExit"/>
-
-                            <SeparatorMenuItem/>
-
                             <MenuItem fx:id="employeesMenuItem"
-                                      text="Employees"
+                                      text="Punetoret"
                                       onAction="#showEmployees"/>
 
                             <MenuItem fx:id="contractsMenuItem"
-                                      text="Contracts"
+                                      text="Kontratat"
                                       onAction="#showContracts"/>
 
                             <MenuItem fx:id="salariesMenuItem"
-                                      text="Salaries"
+                                      text="Pagat"
                                       onAction="#showSalaries"/>
 
                             <MenuItem fx:id="dashboardMenuItem"
-                                      text="Dashboard"
+                                      text="Paneli"
                                       onAction="#showDashboard"/>
 
                             <SeparatorMenuItem/>
@@ -47,18 +41,24 @@
                                       onAction="#switchToAlbanian"/>
 
                             <MenuItem fx:id="englishMenuItem"
-                                      text="English"
+                                      text="Anglisht"
                                       onAction="#switchToEnglish"/>
 
                             <SeparatorMenuItem/>
 
                             <MenuItem fx:id="helpMenuItem"
-                                      text="Help"
+                                      text="Ndihma"
                                       onAction="#showHelp"/>
 
                             <MenuItem fx:id="accountMenuItem"
-                                      text="Account"
+                                      text="Llogaria"
                                       onAction="#showAccount"/>
+
+                            <SeparatorMenuItem/>
+
+                            <MenuItem fx:id="exitMenuItem"
+                                      text="Dalje"
+                                      onAction="#handleExit"/>
                         </items>
                     </Menu>
 
