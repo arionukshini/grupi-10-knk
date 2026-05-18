@@ -25,6 +25,9 @@ public class MainController {
     private String currentView = "welcome";
 
     @FXML
+    private MenuBar menuBar;
+
+    @FXML
     private Menu fileMenu;
 
     @FXML
@@ -99,6 +102,7 @@ public class MainController {
 
         initializeContextMenu();
         setupKeyboardShortcuts();
+        setupMenuKeyboardAccess();
 
         employeesButton.requestFocus();
     }
@@ -154,6 +158,20 @@ public class MainController {
                 event.consume();
             }
         }));
+    }
+
+    private void setupMenuKeyboardAccess() {
+
+        menuBar.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+
+            if (menuBar.isFocused()
+                    && (event.getCode() == KeyCode.ENTER
+                    || event.getCode() == KeyCode.SPACE)) {
+
+                fileMenu.show();
+                event.consume();
+            }
+        });
     }
 
     public void updateTexts() {
@@ -441,21 +459,24 @@ public class MainController {
         langTitle.setStyle("-fx-font-weight: bold;");
 
         ComboBox<String> languageBox = new ComboBox<>();
-        languageBox.getItems().addAll("English", "Shqip");
+        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
 
         String currentLang = LanguageManager.getCurrentLocale().getLanguage();
-        languageBox.setValue(currentLang.equals("sq") ? "Shqip" : "English");
+        languageBox.setValue(currentLang.equals("sq") ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
 
         Label langMsg = new Label();
+        Button logout = new Button(LanguageManager.get("account.logout"));
 
         languageBox.setOnAction(e -> {
-            if ("Shqip".equals(languageBox.getValue())) {
-                LanguageManager.setLanguage("sq");
+
+            String selected = languageBox.getValue();
+
+            if (LanguageManager.get("language.albanian").equals(selected)) {
+                switchToAlbanian();
             } else {
-                LanguageManager.setLanguage("en");
+                switchToEnglish();
             }
 
-            updateTexts();
             langMsg.setText("✔ " + LanguageManager.get("account.language.success"));
         });
 
@@ -469,7 +490,6 @@ public class MainController {
                 languageMiniContainer
         );
 
-        Button logout = new Button(LanguageManager.get("account.logout"));
 
         logout.setOnAction(e -> {
             Session.clear();
