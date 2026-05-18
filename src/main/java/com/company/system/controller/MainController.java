@@ -93,6 +93,8 @@ public class MainController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Label langMsg;
 
     @FXML
     public void initialize() {
@@ -464,7 +466,7 @@ public class MainController {
         String currentLang = LanguageManager.getCurrentLocale().getLanguage();
         languageBox.setValue(currentLang.equals("sq") ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
 
-        Label langMsg = new Label();
+        langMsg = new Label();
         Button logout = new Button(LanguageManager.get("account.logout"));
 
         languageBox.setOnAction(e -> {
