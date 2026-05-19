@@ -90,7 +90,7 @@ public class DBConnection {
                     
                         hire_date DATE,
                     
-                        base_salary DECIMAL(10,2)
+                        base_salary DECIMAL(10,2),
                     
                         status VARCHAR(20),
                     
