@@ -92,7 +92,7 @@ public class DBConnection {
                     
                         base_salary DECIMAL(10,2),
                     
-                        status VARCHAR(20),
+                        status ENUM('Active', 'Inactive', 'Suspended', 'Pending'),
                     
                         FOREIGN KEY (department_id)
                         REFERENCES departments(id)
@@ -112,7 +112,7 @@ public class DBConnection {
                     
                         salary DOUBLE,
                     
-                        status ENUM('ACTIVE', 'EXPIRED', 'PENDING'),
+                        status ENUM('Active', 'Expired', 'Pending'),
                     
                         FOREIGN KEY (employee_id)
                         REFERENCES employees(id)
@@ -178,38 +178,38 @@ public class DBConnection {
                         INSERT INTO employees\s
                          (first_name, last_name, email, phone, position, department_id, hire_date, base_salary, status)
                          VALUES
-                         ('Arion', 'Ukshini', 'arion.ukshini@company.com', '+38344111222', 'Software Engineer', 3, '2024-01-15', 1200.00, 'ACTIVE'),
+                         ('Arion', 'Ukshini', 'arion.ukshini@company.com', '+38344111222', 'Software Engineer', 3, '2024-01-15', 1200.00, 'Active'),
                         
-                         ('Sara', 'Berisha', 'sara.berisha@company.com', '+38344111333', 'HR Manager', 1, '2023-06-10', 1100.00, 'ACTIVE'),
+                         ('Sara', 'Berisha', 'sara.berisha@company.com', '+38344111333', 'HR Manager', 1, '2023-06-10', 1100.00, 'Active'),
                         
-                         ('Leon', 'Krasniqi', 'leon.krasniqi@company.com', '+38344111444', 'Accountant', 2, '2022-09-01', 1000.00, 'ACTIVE'),
+                         ('Leon', 'Krasniqi', 'leon.krasniqi@company.com', '+38344111444', 'Accountant', 2, '2022-09-01', 1000.00, 'Active'),
                         
-                         ('Diona', 'Gashi', 'diona.gashi@company.com', '+38344111555', 'Marketing Specialist', 4, '2024-03-20', 950.00, 'ACTIVE'),
+                         ('Diona', 'Gashi', 'diona.gashi@company.com', '+38344111555', 'Marketing Specialist', 4, '2024-03-20', 950.00, 'Active'),
                         
-                         ('Albin', 'Rexhepi', 'albin.rexhepi@company.com', '+38344111666', 'Sales Representative', 5, '2023-11-05', 900.00, 'ACTIVE'),
+                         ('Albin', 'Rexhepi', 'albin.rexhepi@company.com', '+38344111666', 'Sales Representative', 5, '2023-11-05', 900.00, 'Inactive'),
                         
-                         ('Era', 'Hasani', 'era.hasani@company.com', '+38344111777', 'System Administrator', 3, '2021-12-12', 1300.00, 'ACTIVE'),
+                         ('Era', 'Hasani', 'era.hasani@company.com', '+38344111777', 'System Administrator', 3, '2021-12-12', 1300.00, 'Active'),
                         
-                         ('Blend', 'Shala', 'blend.shala@company.com', '+38344111888', 'Recruiter', 1, '2024-04-01', 850.00, 'PENDING');
+                         ('Blend', 'Shala', 'blend.shala@company.com', '+38344111888', 'Recruiter', 1, '2024-04-01', 850.00, 'Pending');
                         """);
 
                 stmt.executeUpdate("""
                         INSERT INTO contracts
                          (employee_id, contract_type, start_date, end_date, salary, status)
                          VALUES
-                         (1, 'Full-Time', '2024-01-15', '2026-01-15', 1200.00, 'ACTIVE'),
+                         (1, 'Full-Time', '2024-01-15', '2026-01-15', 1200.00, 'Active'),
                          
-                         (2, 'Full-Time', '2023-06-10', '2025-06-10', 1100.00, 'ACTIVE'),
+                         (2, 'Full-Time', '2023-06-10', '2025-06-10', 1100.00, 'Active'),
                          
-                         (3, 'Full-Time', '2022-09-01', '2025-09-01', 1000.00, 'ACTIVE'),
+                         (3, 'Full-Time', '2022-09-01', '2025-09-01', 1000.00, 'Active'),
                          
-                         (4, 'Part-Time', '2024-03-20', '2025-03-20', 950.00, 'ACTIVE'),
+                         (4, 'Part-Time', '2024-03-20', '2025-03-20', 950.00, 'Active'),
                          
-                         (5, 'Internship', '2023-11-05', '2024-11-05', 900.00, 'EXPIRED'),
+                         (5, 'Internship', '2023-11-05', '2024-11-05', 900.00, 'Expired'),
                          
-                         (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'ACTIVE'),
+                         (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'Active'),
                          
-                         (7, 'Temporary', '2024-04-01', '2024-10-01', 850.00, 'PENDING');
+                         (7, 'Temporary', '2024-04-01', '2024-10-01', 850.00, 'Pending');
                         """);
 
                 stmt.executeUpdate("""
