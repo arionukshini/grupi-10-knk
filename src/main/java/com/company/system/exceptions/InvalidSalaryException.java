@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 
 public class InvalidSalaryException extends RuntimeException {
     public InvalidSalaryException(double salary, String message) {
-        super(salary + " is not a valid salary!");
+        super(message + " " + salary + " is not a valid salary!");
         showInvalidSalaryExceptionAlert(salary, message);
     }
 

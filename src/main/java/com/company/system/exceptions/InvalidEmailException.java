@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 
 public class InvalidEmailException extends RuntimeException {
     public InvalidEmailException(String email, String message) {
-        super(email + " is not a valid email!");
+        super(message + " " + email + " is not a valid email!");
         showInvalidEmailExceptionAlert(email, message);
     }
 
