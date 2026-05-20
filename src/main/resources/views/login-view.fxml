@@ -27,9 +27,23 @@
                    promptText="Username"
                    prefHeight="40"/>
 
+        <StackPane prefWidth="300">
         <PasswordField fx:id="passwordField"
                        promptText="Password"
-                       prefHeight="40"/>
+                       prefHeight="40"
+                       maxWidth="1.7976931348623157E308"/>
+
+            <TextField fx:id="visiblePasswordField"
+                       promptText="Password"
+                       prefHeight="40"
+                       visible="false"
+                       managed="false"
+                       maxWidth="1.7976931348623157E308"/>
+        </StackPane>
+
+        <CheckBox fx:id="showPasswordCheckBox"
+                  text="Shfaq fjalëkalimin"
+                  onAction="#togglePasswordVisibility"/>
 
         <Hyperlink fx:id="forgotPasswordLink"
                    text="Forgot password?"
