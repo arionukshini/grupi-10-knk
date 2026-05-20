@@ -1,6 +1,7 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Employee;
 
 import java.sql.*;
@@ -112,6 +113,9 @@ public class EmployeeService {
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
+            if (!(employee.getBaseSalary() >= 0)) {
+                throw new InvalidSalaryException(employee.getBaseSalary());
+            }
 
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
