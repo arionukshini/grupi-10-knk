@@ -417,7 +417,7 @@ public class MainController {
         }
 
         String username = user.getUsername();
-        String password = user.getPassword();
+        String role = user.getRole();
         Timestamp createdAt = user.getCreatedAt();
 
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -429,10 +429,13 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
+        Label roleLabel = new Label("Role: " + role);
+        roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
+
         Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
         createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
 
-        VBox headerContent = new VBox(15, usernameLabel, createdAtLable);
+        VBox headerContent = new VBox(15, usernameLabel,roleLabel, createdAtLable);
         HBox header = new HBox(15, icon, headerContent);
 
         header.setStyle("-fx-alignment: center-left;");
@@ -440,16 +443,12 @@ public class MainController {
         Label passwordTitle = new Label(LanguageManager.get("login.password"));
         passwordTitle.setStyle("-fx-font-weight: bold;");
 
-        Label passwordLabel = new Label("******");
+        Label passwordLabel = new Label("Stored securely and cannot be displayed.");
 
         Button togglePassword = new Button(LanguageManager.get("account.showpassword"));
 
-        final boolean[] visible = {false};
+        togglePassword.setDisable(true);
 
-        togglePassword.setOnAction(e -> {
-            visible[0] = !visible[0];
-            passwordLabel.setText(visible[0] ? password : "******");
-        });
 
         VBox passwordBox = new VBox(5,
                 passwordTitle,
