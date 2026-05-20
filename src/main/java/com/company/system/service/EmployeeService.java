@@ -1,12 +1,16 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.InvalidEmailException;
 import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Employee;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.company.system.utils.Validator.emailValidator;
+import static com.company.system.utils.Validator.salaryValidator;
 
 public class EmployeeService {
 
@@ -69,6 +73,12 @@ public class EmployeeService {
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
+            if (!emailValidator(employee.getEmail())) {
+                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u shtua.");
+            }
+            if (!salaryValidator(employee.getBaseSalary())) {
+                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u shtua.");
+            }
 
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
@@ -113,7 +123,10 @@ public class EmployeeService {
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-            if (!(employee.getBaseSalary() >= 0)) {
+            if (!emailValidator(employee.getEmail())) {
+                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u perditesua.");
+            }
+            if (!salaryValidator(employee.getBaseSalary())) {
                 throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u perditesua.");
             }
 
