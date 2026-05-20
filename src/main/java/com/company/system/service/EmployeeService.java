@@ -114,7 +114,7 @@ public class EmployeeService {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             if (!(employee.getBaseSalary() >= 0)) {
-                throw new InvalidSalaryException(employee.getBaseSalary());
+                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u perditesua.");
             }
 
             stmt.setString(1, employee.getFirstName());
