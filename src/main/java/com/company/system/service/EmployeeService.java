@@ -95,8 +95,13 @@ public class EmployeeService {
             System.out.println("Employee added successfully!");
             return true;
 
+        } catch (InvalidEmailException | InvalidSalaryException e) {
+
+            System.out.println(e.getMessage());
+
         } catch (SQLException e) {
-            e.printStackTrace();
+
+            System.out.println("Database error: " + e.getMessage());
         }
 
         return false;
@@ -143,8 +148,13 @@ public class EmployeeService {
 
             return stmt.executeUpdate() > 0;
 
+        } catch (InvalidEmailException | InvalidSalaryException e) {
+
+            System.out.println(e.getMessage());
+
         } catch (SQLException e) {
-            e.printStackTrace();
+
+            System.out.println("Database error: " + e.getMessage());
         }
 
         return false;
