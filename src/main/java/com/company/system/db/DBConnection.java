@@ -1,6 +1,7 @@
 package com.company.system.db;
 
 import java.sql.*;
+import com.company.system.utils.PasswordUtils;
 
 public class DBConnection {
 
@@ -143,12 +144,14 @@ public class DBConnection {
                         id INT AUTO_INCREMENT PRIMARY KEY,
                     
                         username VARCHAR(50) UNIQUE NOT NULL,
-                        password VARCHAR(100) NOT NULL,
+                        password_hash VARCHAR(255) NOT NULL,
+                        role VARCHAR(20) NOT NULL DEFAULT 'USER',
                     
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                     """);
 
+            migrateUsersTable(conn);
 
             ResultSet rs =
                     stmt.executeQuery(
@@ -234,6 +237,7 @@ public class DBConnection {
                 System.out.println("Demo data inserted!");
             }
 
+            seedDefaultAdmin(conn);
             conn.close();
 
             System.out.println(
@@ -244,6 +248,74 @@ public class DBConnection {
 
             e.printStackTrace();
 
+        }
+    }
+    private static void migrateUsersTable(Connection conn) throws SQLException {
+        if (columnExists(conn, "users", "password") && !columnExists(conn, "users", "password_hash")) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("ALTER TABLE users CHANGE COLUMN password password_hash VARCHAR(255) NOT NULL");
+            }
+        }
+
+        if (!columnExists(conn, "users", "role")) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'USER'");
+            }
+        }
+
+        migratePlainTextPasswords(conn);
+    }
+
+    private static void migratePlainTextPasswords(Connection conn) throws SQLException {
+        String selectSql = "SELECT id, password_hash FROM users";
+        String updateSql = "UPDATE users SET password_hash = ? WHERE id = ?";
+
+        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+             ResultSet rs = selectStmt.executeQuery()) {
+
+            while (rs.next()) {
+                int userId = rs.getInt("id");
+                String storedValue = rs.getString("password_hash");
+
+                if (storedValue != null && !PasswordUtils.isHashed(storedValue)) {
+                    updateStmt.setString(1, PasswordUtils.hashPassword(storedValue));
+                    updateStmt.setInt(2, userId);
+                    updateStmt.addBatch();
+                }
+            }
+
+            updateStmt.executeBatch();
+        }
+    }
+
+    private static void seedDefaultAdmin(Connection conn) throws SQLException {
+        String countSql = "SELECT COUNT(*) FROM users";
+        String insertSql = "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)";
+
+        try (Statement countStmt = conn.createStatement();
+             ResultSet rs = countStmt.executeQuery(countSql)) {
+
+            rs.next();
+
+            if (rs.getInt(1) > 0) {
+                return;
+            }
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+            stmt.setString(1, "admin");
+            stmt.setString(2, PasswordUtils.hashPassword("admin123"));
+            stmt.setString(3, "ADMIN");
+            stmt.executeUpdate();
+        }
+    }
+
+    private static boolean columnExists(Connection conn, String tableName, String columnName) throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+
+        try (ResultSet rs = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
+            return rs.next();
         }
     }
 }

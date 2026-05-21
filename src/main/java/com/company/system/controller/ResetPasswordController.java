@@ -2,6 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.service.UserService;
+import com.company.system.utils.PasswordUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,15 +78,15 @@ public class ResetPasswordController {
             return;
         }
 
-        String oldPassword = UserService.getPasswordByUsername(username);
+        String oldPasswordHash = UserService.getPasswordHashByUsername(username);
 
-        if (oldPassword == null) {
+        if (oldPasswordHash == null) {
             messageLabel.setText(LanguageManager.get("message.userNotFound"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
-        if (oldPassword.equals(newPassword)) {
+        if (PasswordUtils.verifyPassword(newPassword, oldPasswordHash)) {
             messageLabel.setText(LanguageManager.get("message.passwordSameAsOld"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;

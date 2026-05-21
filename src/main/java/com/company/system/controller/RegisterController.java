@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -24,7 +25,16 @@ public class RegisterController {
     private PasswordField passwordField;
 
     @FXML
+    private TextField visiblePasswordField;
+
+    @FXML
     private PasswordField confirmPasswordField;
+
+    @FXML
+    private TextField visibleConfirmPasswordField;
+
+    @FXML
+    private CheckBox showPasswordCheckBox;
 
     @FXML
     private Button registerButton;
@@ -39,33 +49,48 @@ public class RegisterController {
     public void initialize() {
         updateTexts();
         setupKeyboardAccess();
+        setupPasswordToggle();
     }
 
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("register.title"));
         usernameField.setPromptText(LanguageManager.get("register.username"));
         passwordField.setPromptText(LanguageManager.get("register.password"));
+        visiblePasswordField.setPromptText(LanguageManager.get("register.password"));
         confirmPasswordField.setPromptText(LanguageManager.get("register.confirmPassword"));
+        visibleConfirmPasswordField.setPromptText(LanguageManager.get("register.confirmPassword"));
         registerButton.setText(LanguageManager.get("register.button"));
         backToLoginButton.setText(LanguageManager.get("register.backToLogin"));
+        showPasswordCheckBox.setText("Shfaq fjalëkalimin");
     }
 
     private void setupKeyboardAccess() {
         usernameField.setOnAction(event -> passwordField.requestFocus());
         passwordField.setOnAction(event -> confirmPasswordField.requestFocus());
+        visiblePasswordField.setOnAction(event -> visibleConfirmPasswordField.requestFocus());
         confirmPasswordField.setOnAction(event -> registerButton.fire());
+        visibleConfirmPasswordField.setOnAction(event -> registerButton.fire());
 
         registerButton.setAccessibleText("Register");
         backToLoginButton.setAccessibleText("Back to login");
     }
 
+    private void setupPasswordToggle() {
+        visiblePasswordField.textProperty().bindBidirectional(passwordField.textProperty());
+        visibleConfirmPasswordField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
+    }
+
     @FXML
     public void handleRegister(ActionEvent event) {
         String username = usernameField.getText();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+        String password = showPasswordCheckBox.isSelected()
+                ? visiblePasswordField.getText()
+                : passwordField.getText();
+        String confirmPassword = showPasswordCheckBox.isSelected()
+                ? visibleConfirmPasswordField.getText()
+                : confirmPasswordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
@@ -86,6 +111,21 @@ public class RegisterController {
             messageLabel.setText(LanguageManager.get("message.registrationFailed"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        boolean show = showPasswordCheckBox.isSelected();
+
+        visiblePasswordField.setVisible(show);
+        visiblePasswordField.setManaged(show);
+        passwordField.setVisible(!show);
+        passwordField.setManaged(!show);
+
+        visibleConfirmPasswordField.setVisible(show);
+        visibleConfirmPasswordField.setManaged(show);
+        confirmPasswordField.setVisible(!show);
+        confirmPasswordField.setManaged(!show);
     }
 
     @FXML

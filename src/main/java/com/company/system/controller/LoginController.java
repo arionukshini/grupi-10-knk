@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -29,6 +30,12 @@ public class LoginController {
     private PasswordField passwordField;
 
     @FXML
+    private TextField visiblePasswordField;
+
+    @FXML
+    private CheckBox showPasswordCheckBox;
+
+    @FXML
     private Hyperlink forgotPasswordLink;
 
     @FXML
@@ -44,30 +51,41 @@ public class LoginController {
     public void initialize() {
         updateTexts();
         setupKeyboardAccess();
+        setupPasswordToggle();
+
     }
 
     private void setupKeyboardAccess() {
         usernameField.setOnAction(event -> passwordField.requestFocus());
         passwordField.setOnAction(event -> loginButton.fire());
+        visiblePasswordField.setOnAction(event -> loginButton.fire());
 
         loginButton.setAccessibleText("Login");
         registerButton.setAccessibleText("Register");
         forgotPasswordLink.setAccessibleText("Forgot password");
     }
 
+    private void setupPasswordToggle() {
+        visiblePasswordField.textProperty().bindBidirectional(passwordField.textProperty());
+    }
+
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("login.title"));
         usernameField.setPromptText(LanguageManager.get("login.username"));
         passwordField.setPromptText(LanguageManager.get("login.password"));
+        visiblePasswordField.setPromptText(LanguageManager.get("login.password"));
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
         registerButton.setText(LanguageManager.get("login.goToRegister"));
+        showPasswordCheckBox.setText("Shfaq fjalëkalimin");
     }
 
     @FXML
     public void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String password = showPasswordCheckBox.isSelected()
+                ? visiblePasswordField.getText()
+                : passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
@@ -87,6 +105,15 @@ public class LoginController {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
 
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        boolean show = showPasswordCheckBox.isSelected();
+        visiblePasswordField.setVisible(show);
+        visiblePasswordField.setManaged(show);
+        passwordField.setVisible(!show);
+        passwordField.setManaged(!show);
     }
 
     @FXML
