@@ -105,6 +105,7 @@ public class MainController {
         initializeContextMenu();
         setupKeyboardShortcuts();
         setupMenuKeyboardAccess();
+        applyRolePermissions();
 
         employeesButton.requestFocus();
     }
@@ -175,7 +176,22 @@ public class MainController {
             }
         });
     }
+    private void applyRolePermissions() {
+        User user = Session.getUser();
 
+        if (user == null) {
+            return;
+        }
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+
+        contractsButton.setVisible(isAdmin);
+        contractsButton.setManaged(isAdmin);
+        salariesButton.setVisible(isAdmin);
+        salariesButton.setManaged(isAdmin);
+
+        contractsMenuItem.setVisible(isAdmin);
+        salariesMenuItem.setVisible(isAdmin);
+    }
     public void updateTexts() {
         fileMenu.setText("☰");
         manageMenu.setText("");
@@ -429,8 +445,10 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        Label roleLabel = new Label("Role: " + role);
+        String roleText = "ADMIN".equalsIgnoreCase(role) ? "Administrator" : "Perdorues";
+        Label roleLabel = new Label("Roli: " + roleText);
         roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
+
 
         Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
         createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");

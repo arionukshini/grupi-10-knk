@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -25,7 +26,16 @@ public class ResetPasswordController {
     private PasswordField newPasswordField;
 
     @FXML
+    private TextField visibleNewPasswordField;
+
+    @FXML
     private PasswordField confirmPasswordField;
+
+    @FXML
+    private TextField visibleConfirmPasswordField;
+
+    @FXML
+    private CheckBox showPasswordCheckBox;
 
     @FXML
     private Button resetButton;
@@ -40,31 +50,46 @@ public class ResetPasswordController {
     public void initialize() {
         updateTexts();
         setupKeyboardAccess();
+        setupPasswordToggle();
     }
 
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("reset.title"));
         usernameField.setPromptText(LanguageManager.get("reset.username"));
         newPasswordField.setPromptText(LanguageManager.get("reset.newPassword"));
+        visibleNewPasswordField.setPromptText(LanguageManager.get("reset.newPassword"));
         confirmPasswordField.setPromptText(LanguageManager.get("reset.confirmPassword"));
+        visibleConfirmPasswordField.setPromptText(LanguageManager.get("reset.confirmPassword"));
         resetButton.setText(LanguageManager.get("reset.button"));
         backToLoginButton.setText(LanguageManager.get("reset.backToLogin"));
+        showPasswordCheckBox.setText("Shfaq fjalëkalimin");
     }
 
     private void setupKeyboardAccess() {
         usernameField.setOnAction(event -> newPasswordField.requestFocus());
         newPasswordField.setOnAction(event -> confirmPasswordField.requestFocus());
+        visibleNewPasswordField.setOnAction(event -> visibleConfirmPasswordField.requestFocus());
         confirmPasswordField.setOnAction(event -> resetButton.fire());
+        visibleConfirmPasswordField.setOnAction(event -> resetButton.fire());
 
         resetButton.setAccessibleText("Reset password");
         backToLoginButton.setAccessibleText("Back to login");
     }
 
+    private void setupPasswordToggle() {
+        visibleNewPasswordField.textProperty().bindBidirectional(newPasswordField.textProperty());
+        visibleConfirmPasswordField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
+    }
+
     @FXML
     public void handleReset() {
         String username = usernameField.getText();
-        String newPassword = newPasswordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+        String newPassword = showPasswordCheckBox.isSelected()
+                ? visibleNewPasswordField.getText()
+                : newPasswordField.getText();
+        String confirmPassword = showPasswordCheckBox.isSelected()
+                ? visibleConfirmPasswordField.getText()
+                : confirmPasswordField.getText();
 
         if (username.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
@@ -101,6 +126,21 @@ public class ResetPasswordController {
             messageLabel.setText(LanguageManager.get("message.resetFailed"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        boolean show = showPasswordCheckBox.isSelected();
+
+        visibleNewPasswordField.setVisible(show);
+        visibleNewPasswordField.setManaged(show);
+        newPasswordField.setVisible(!show);
+        newPasswordField.setManaged(!show);
+
+        visibleConfirmPasswordField.setVisible(show);
+        visibleConfirmPasswordField.setManaged(show);
+        confirmPasswordField.setVisible(!show);
+        confirmPasswordField.setManaged(!show);
     }
 
     @FXML
