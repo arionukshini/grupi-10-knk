@@ -125,7 +125,28 @@ public class UserService {
 
             return null;
         }
+    public static boolean userExists(String username) {
+        String sql = "SELECT 1 FROM users WHERE username = ?";
 
+        try (Connection conn = DBConnection.connect()) {
+
+            if (conn == null || username == null || username.isBlank()) {
+                return false;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+
+                ResultSet rs = stmt.executeQuery();
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
         private static boolean userExists(String username, Connection conn) throws SQLException {
             String sql = "SELECT 1 FROM users WHERE username = ?";
 

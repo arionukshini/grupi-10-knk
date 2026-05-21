@@ -102,6 +102,12 @@ public class RegisterController {
             return;
         }
 
+        if (UserService.userExists(username)) {
+            messageLabel.setText(LanguageManager.get("message.userAlreadyExists"));
+            messageLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
         boolean success = UserService.register(username, password);
 
         if (success) {
