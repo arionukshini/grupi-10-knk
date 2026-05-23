@@ -20,4 +20,17 @@ public class LanguageManager {
     public static Locale getCurrentLocale() {
         return currentLocale;
     }
+
+    public static String getCurrentLanguage() {
+
+        String lang = currentLocale.getLanguage();
+
+        if (lang.equals("sq")) return "sq";
+
+        return "en";
+    }
+
+    public static String getLanguageCode() {
+        return currentLocale.getLanguage();
+    }
 }
