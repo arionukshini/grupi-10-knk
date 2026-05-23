@@ -46,6 +46,9 @@ public class MainController {
     private Menu accountMenu;
 
     @FXML
+    private MenuItem logoutMenuItem;
+
+    @FXML
     private MenuItem exitMenuItem;
 
     @FXML
@@ -176,6 +179,7 @@ public class MainController {
             }
         });
     }
+
     private void applyRolePermissions() {
         User user = Session.getUser();
 
@@ -192,6 +196,7 @@ public class MainController {
         contractsMenuItem.setVisible(isAdmin);
         salariesMenuItem.setVisible(isAdmin);
     }
+
     public void updateTexts() {
         fileMenu.setText("☰");
         manageMenu.setText("");
@@ -201,6 +206,7 @@ public class MainController {
         accountMenu.setText("");
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
+        logoutMenuItem.setText(LanguageManager.get("menu.logout"));
         employeesMenuItem.setText(LanguageManager.get("menu.employees"));
         contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
@@ -266,6 +272,12 @@ public class MainController {
     @FXML
     private void handleExit() {
         System.exit(0);
+    }
+
+    @FXML
+    private void handleLogout() {
+        Session.clear();
+        showWelcome();
     }
 
     public void setContent(Node node) {
@@ -453,7 +465,7 @@ public class MainController {
         Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
         createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
 
-        VBox headerContent = new VBox(15, usernameLabel,roleLabel, createdAtLable);
+        VBox headerContent = new VBox(15, usernameLabel, roleLabel, createdAtLable);
         HBox header = new HBox(15, icon, headerContent);
 
         header.setStyle("-fx-alignment: center-left;");

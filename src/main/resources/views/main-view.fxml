@@ -59,6 +59,10 @@
 
                                 <SeparatorMenuItem/>
 
+                                <MenuItem fx:id="logoutMenuItem"
+                                          text="Shkycu"
+                                          onAction="#handleLogout"/>
+
                                 <MenuItem fx:id="exitMenuItem"
                                           text="Dalje"
                                           onAction="#handleExit"/>
