@@ -6,10 +6,21 @@ public class Salary {
 
     private final int id;
     private final int employeeId;
-    private final double amount;
+    private final double grossSalary;
     private final double bonus;
     private final double deductions;
+
+    // fields te reja
+    private final int vacationDays;
+    private final double workHours;
+    private final double overtimeHours;
+    private final double dailyRate;
+    private final double overtimePay;
+    private final double netSalary;
+
     private final Date paymentDate;
+
+
 
     public Salary(
             int id,
