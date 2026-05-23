@@ -23,6 +23,18 @@ public class DashboardService {
                 WHERE status = 'Active'
                 """);
 
+        int pendingContracts = getCount("""
+                SELECT COUNT(*)
+                FROM contracts
+                WHERE status = 'Pending'
+                """);
+
+        int expiredContracts = getCount("""
+                SELECT COUNT(*)
+                FROM contracts
+                WHERE status = 'Expired'
+                """);
+
         int expiringContracts = getCount("""
                 SELECT COUNT(*)
                 FROM contracts
@@ -39,6 +51,8 @@ public class DashboardService {
                 totalContracts,
                 totalSalaries,
                 activeContracts,
+                pendingContracts,
+                expiredContracts,
                 expiringContracts,
                 averageSalary
         );
