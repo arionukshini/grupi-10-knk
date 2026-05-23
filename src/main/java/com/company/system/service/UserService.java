@@ -2,6 +2,7 @@ package com.company.system.service;
 
 import com.company.system.db.DBConnection;
 import com.company.system.model.User;
+import com.company.system.utils.PasswordUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,28 +13,35 @@ public class UserService {
 
     public static User login(String username, String password) {
 
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM users WHERE username = ? ";
 
         try (Connection conn = DBConnection.connect()) {
 
-            if (conn == null) return null;
-
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new User(
-                        rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getTimestamp("created_at")
-                );
+            if (conn == null || username == null || username.isBlank() || password == null || password.isBlank()) {
+                return null;
             }
 
-        } catch (SQLException e) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    String storedHash = rs.getString("password_hash");
+
+                    if (PasswordUtils.verifyPassword(password, storedHash)) {
+                        return new User(
+                                rs.getInt("id"),
+                                rs.getString("username"),
+                                storedHash,
+                                rs.getString("role"),
+                                rs.getTimestamp("created_at")
+                        );
+                    }
+
+                }
+            }
+        }catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -42,23 +50,25 @@ public class UserService {
 
     public static boolean register(String username, String password) {
 
-        String sql =
-                "INSERT INTO users (username, password) VALUES (?, ?)";
+        String sql ="INSERT INTO users (username,password_hash, role) VALUES (?, ?, ?)";
 
         try (Connection conn = DBConnection.connect()) {
 
-            if (conn == null) {
+            if (conn == null || username == null || username.isBlank() || password == null || password.isBlank()) {
+                return false;
+            }
+            if (userExists(username, conn)) {
                 return false;
             }
 
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+                stmt.setString(2, PasswordUtils.hashPassword(password));
+                stmt.setString(3, "USER");
 
-            stmt.setString(1, username);
-            stmt.setString(2, password);
+                return stmt.executeUpdate() > 0;
+            }
 
-            int rows = stmt.executeUpdate();
-
-            return rows > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,41 +79,82 @@ public class UserService {
 
     public static boolean resetPassword(String username, String newPassword) {
 
-        String sql = "UPDATE users SET password = ? WHERE username = ?";
+        String sql = "UPDATE users SET password_hash = ? WHERE username = ?";
 
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.connect()) {
 
-            stmt.setString(1, newPassword);
-            stmt.setString(2, username);
+            if (conn == null || username == null || username.isBlank() || newPassword == null || newPassword.isBlank()) {
+                return false;
+            }
 
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+                stmt.setString(1, PasswordUtils.hashPassword(newPassword));
+                stmt.setString(2, username.trim());
+
+                return stmt.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+        public static String getPasswordHashByUsername(String username) {
 
-    public static String getPasswordByUsername(String username) {
+            String sql = "SELECT password_hash FROM users WHERE username = ?";
 
-        String sql = "SELECT password FROM users WHERE username = ?";
+            try (Connection conn = DBConnection.connect()) {
 
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                if (conn == null || username == null || username.isBlank()) {
+                    return null;
+                }
 
-            stmt.setString(1, username);
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setString(1, username.trim());
 
-            ResultSet rs = stmt.executeQuery();
+                    ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                return rs.getString("password");
+                    if (rs.next()) {
+                        return rs.getString("password_hash");
+                    }
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    public static boolean userExists(String username) {
+        String sql = "SELECT 1 FROM users WHERE username = ?";
+
+        try (Connection conn = DBConnection.connect()) {
+
+            if (conn == null || username == null || username.isBlank()) {
+                return false;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+
+                ResultSet rs = stmt.executeQuery();
+                return rs.next();
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
+        private static boolean userExists(String username, Connection conn) throws SQLException {
+            String sql = "SELECT 1 FROM users WHERE username = ?";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+
+                ResultSet rs = stmt.executeQuery();
+                return rs.next();
+            }
+        }
 }

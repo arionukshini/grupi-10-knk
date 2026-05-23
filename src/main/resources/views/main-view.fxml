@@ -14,63 +14,64 @@
                 <Insets top="5" right="5" bottom="5" left="5"/>
             </padding>
 
-            <MenuBar>
-                <menus>
-                    <Menu fx:id="fileMenu" text="☰">
-                        <items>
-                            <MenuItem fx:id="employeesMenuItem"
-                                      text="Punetoret"
-                                      onAction="#showEmployees"/>
-
-                            <MenuItem fx:id="contractsMenuItem"
-                                      text="Kontratat"
-                                      onAction="#showContracts"/>
-
-                            <MenuItem fx:id="salariesMenuItem"
-                                      text="Pagat"
-                                      onAction="#showSalaries"/>
-
-                            <MenuItem fx:id="dashboardMenuItem"
-                                      text="Paneli"
-                                      onAction="#showDashboard"/>
-
-                            <SeparatorMenuItem/>
-
-                            <MenuItem fx:id="albanianMenuItem"
-                                      text="Shqip"
-                                      onAction="#switchToAlbanian"/>
-
-                            <MenuItem fx:id="englishMenuItem"
-                                      text="Anglisht"
-                                      onAction="#switchToEnglish"/>
-
-                            <SeparatorMenuItem/>
-
-                            <MenuItem fx:id="helpMenuItem"
-                                      text="Ndihma"
-                                      onAction="#showHelp"/>
-
-                            <MenuItem fx:id="accountMenuItem"
-                                      text="Llogaria"
-                                      onAction="#showAccount"/>
-
-                            <SeparatorMenuItem/>
-
-                            <MenuItem fx:id="exitMenuItem"
-                                      text="Dalje"
-                                      onAction="#handleExit"/>
-                        </items>
-                    </Menu>
-
-                    <Menu fx:id="manageMenu" text="" visible="false"/>
-                    <Menu fx:id="viewMenu" text="" visible="false"/>
-                    <Menu fx:id="languageMenu" text="" visible="false"/>
-                    <Menu fx:id="helpMenu" text="" visible="false"/>
-                    <Menu fx:id="accountMenu" text="" visible="false"/>
-                </menus>
-            </MenuBar>
-
             <ToolBar>
+
+                <MenuBar fx:id="menuBar" focusTraversable="true">
+                    <menus>
+                        <Menu fx:id="fileMenu" text="☰">
+
+                            <items>
+                                <MenuItem fx:id="employeesMenuItem"
+                                          text="Punetoret"
+                                          onAction="#showEmployees"/>
+
+                                <MenuItem fx:id="contractsMenuItem"
+                                          text="Kontratat"
+                                          onAction="#showContracts"/>
+
+                                <MenuItem fx:id="salariesMenuItem"
+                                          text="Pagat"
+                                          onAction="#showSalaries"/>
+
+                                <MenuItem fx:id="dashboardMenuItem"
+                                          text="Paneli"
+                                          onAction="#showDashboard"/>
+
+                                <SeparatorMenuItem/>
+
+                                <MenuItem fx:id="albanianMenuItem"
+                                          text="Shqip"
+                                          onAction="#switchToAlbanian"/>
+
+                                <MenuItem fx:id="englishMenuItem"
+                                          text="Anglisht"
+                                          onAction="#switchToEnglish"/>
+
+                                <SeparatorMenuItem/>
+
+                                <MenuItem fx:id="helpMenuItem"
+                                          text="Ndihma"
+                                          onAction="#showHelp"/>
+
+                                <MenuItem fx:id="accountMenuItem"
+                                          text="Llogaria"
+                                          onAction="#showAccount"/>
+
+                                <SeparatorMenuItem/>
+
+                                <MenuItem fx:id="exitMenuItem"
+                                          text="Dalje"
+                                          onAction="#handleExit"/>
+                            </items>
+                        </Menu>
+
+                        <Menu fx:id="manageMenu" text="" visible="false"/>
+                        <Menu fx:id="viewMenu" text="" visible="false"/>
+                        <Menu fx:id="languageMenu" text="" visible="false"/>
+                        <Menu fx:id="helpMenu" text="" visible="false"/>
+                        <Menu fx:id="accountMenu" text="" visible="false"/>
+                    </menus>
+                </MenuBar>
 
                 <Button fx:id="employeesButton"
                         text="Employees"

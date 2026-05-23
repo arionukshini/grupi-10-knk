@@ -25,6 +25,9 @@ public class MainController {
     private String currentView = "welcome";
 
     @FXML
+    private MenuBar menuBar;
+
+    @FXML
     private Menu fileMenu;
 
     @FXML
@@ -90,6 +93,8 @@ public class MainController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Label langMsg;
 
     @FXML
     public void initialize() {
@@ -99,6 +104,8 @@ public class MainController {
 
         initializeContextMenu();
         setupKeyboardShortcuts();
+        setupMenuKeyboardAccess();
+        applyRolePermissions();
 
         employeesButton.requestFocus();
     }
@@ -156,6 +163,35 @@ public class MainController {
         }));
     }
 
+    private void setupMenuKeyboardAccess() {
+
+        menuBar.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+
+            if (menuBar.isFocused()
+                    && (event.getCode() == KeyCode.ENTER
+                    || event.getCode() == KeyCode.SPACE)) {
+
+                fileMenu.show();
+                event.consume();
+            }
+        });
+    }
+    private void applyRolePermissions() {
+        User user = Session.getUser();
+
+        if (user == null) {
+            return;
+        }
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+
+        contractsButton.setVisible(isAdmin);
+        contractsButton.setManaged(isAdmin);
+        salariesButton.setVisible(isAdmin);
+        salariesButton.setManaged(isAdmin);
+
+        contractsMenuItem.setVisible(isAdmin);
+        salariesMenuItem.setVisible(isAdmin);
+    }
     public void updateTexts() {
         fileMenu.setText("☰");
         manageMenu.setText("");
@@ -246,9 +282,19 @@ public class MainController {
         currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
 
-        Label view = new Label(LanguageManager.get("module.employees"));
-        setContent(view);
-        focusActiveButton(employeesButton);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/employees-view.fxml")
+            );
+
+            Parent employeesView = loader.load();
+            setContent(employeesView);
+            focusActiveButton(employeesButton);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus("Failed to load employees.");
+        }
     }
 
     @FXML
@@ -387,7 +433,7 @@ public class MainController {
         }
 
         String username = user.getUsername();
-        String password = user.getPassword();
+        String role = user.getRole();
         Timestamp createdAt = user.getCreatedAt();
 
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -399,10 +445,15 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
+        String roleText = "ADMIN".equalsIgnoreCase(role) ? "Administrator" : "Perdorues";
+        Label roleLabel = new Label("Roli: " + roleText);
+        roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
+
+
         Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
         createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
 
-        VBox headerContent = new VBox(15, usernameLabel, createdAtLable);
+        VBox headerContent = new VBox(15, usernameLabel,roleLabel, createdAtLable);
         HBox header = new HBox(15, icon, headerContent);
 
         header.setStyle("-fx-alignment: center-left;");
@@ -410,16 +461,12 @@ public class MainController {
         Label passwordTitle = new Label(LanguageManager.get("login.password"));
         passwordTitle.setStyle("-fx-font-weight: bold;");
 
-        Label passwordLabel = new Label("******");
+        Label passwordLabel = new Label("Stored securely and cannot be displayed.");
 
         Button togglePassword = new Button(LanguageManager.get("account.showpassword"));
 
-        final boolean[] visible = {false};
+        togglePassword.setDisable(true);
 
-        togglePassword.setOnAction(e -> {
-            visible[0] = !visible[0];
-            passwordLabel.setText(visible[0] ? password : "******");
-        });
 
         VBox passwordBox = new VBox(5,
                 passwordTitle,
@@ -431,21 +478,24 @@ public class MainController {
         langTitle.setStyle("-fx-font-weight: bold;");
 
         ComboBox<String> languageBox = new ComboBox<>();
-        languageBox.getItems().addAll("English", "Shqip");
+        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
 
         String currentLang = LanguageManager.getCurrentLocale().getLanguage();
-        languageBox.setValue(currentLang.equals("sq") ? "Shqip" : "English");
+        languageBox.setValue(currentLang.equals("sq") ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
 
-        Label langMsg = new Label();
+        langMsg = new Label();
+        Button logout = new Button(LanguageManager.get("account.logout"));
 
         languageBox.setOnAction(e -> {
-            if ("Shqip".equals(languageBox.getValue())) {
-                LanguageManager.setLanguage("sq");
+
+            String selected = languageBox.getValue();
+
+            if (LanguageManager.get("language.albanian").equals(selected)) {
+                switchToAlbanian();
             } else {
-                LanguageManager.setLanguage("en");
+                switchToEnglish();
             }
 
-            updateTexts();
             langMsg.setText("✔ " + LanguageManager.get("account.language.success"));
         });
 
@@ -459,7 +509,6 @@ public class MainController {
                 languageMiniContainer
         );
 
-        Button logout = new Button(LanguageManager.get("account.logout"));
 
         logout.setOnAction(e -> {
             Session.clear();
