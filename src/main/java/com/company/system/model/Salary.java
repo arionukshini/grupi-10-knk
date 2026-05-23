@@ -9,8 +9,6 @@ public class Salary {
     private final double grossSalary;
     private final double bonus;
     private final double deductions;
-
-    // fields te reja
     private final int vacationDays;
     private final double workHours;
     private final double overtimeHours;
@@ -21,21 +19,32 @@ public class Salary {
     private final Date paymentDate;
 
 
-
     public Salary(
             int id,
             int employeeId,
-            double amount,
+            double grossSalary,
             double bonus,
             double deductions,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double dailyRate,
+            double overtimePay,
+            double netSalary,
             Date paymentDate
-    ) {
-
+    )
+    {
         this.id = id;
         this.employeeId = employeeId;
-        this.amount = amount;
+        this.grossSalary = grossSalary;
         this.bonus = bonus;
         this.deductions = deductions;
+        this.vacationDays = vacationDays;
+        this.workHours = workHours;
+        this.overtimeHours = overtimeHours;
+        this.dailyRate = dailyRate;
+        this.overtimePay = overtimePay;
+        this.netSalary = netSalary;
         this.paymentDate = paymentDate;
     }
 
