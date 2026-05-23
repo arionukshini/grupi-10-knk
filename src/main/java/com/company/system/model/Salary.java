@@ -15,7 +15,6 @@ public class Salary {
     private final double dailyRate;
     private final double overtimePay;
     private final double netSalary;
-
     private final Date paymentDate;
 
 
