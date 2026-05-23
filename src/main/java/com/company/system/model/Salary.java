@@ -47,16 +47,27 @@ public class Salary {
         this.netSalary = netSalary;
         this.paymentDate = paymentDate;
     }
-
     public int getId() { return id; }
 
     public int getEmployeeId() { return employeeId; }
 
-    public double getAmount() { return amount; }
+    public double getGrossSalary() { return grossSalary; }
 
     public double getBonus() { return bonus; }
 
     public double getDeductions() { return deductions; }
+
+    public int getVacationDays() { return vacationDays; }
+
+    public double getWorkHours() { return workHours; }
+
+    public double getOvertimeHours() { return overtimeHours; }
+
+    public double getDailyRate() { return dailyRate; }
+
+    public double getOvertimePay() { return overtimePay; }
+
+    public double getNetSalary() { return netSalary; }
 
     public Date getPaymentDate() { return paymentDate; }
 }
