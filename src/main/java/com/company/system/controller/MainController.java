@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -15,8 +16,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import static com.company.system.MainApp.showWelcome;
 
@@ -271,7 +275,38 @@ public class MainController {
 
     @FXML
     private void handleExit() {
-        System.exit(0);
+        Alert exit = new Alert(Alert.AlertType.CONFIRMATION);
+
+        exit.setTitle("Exit");
+        exit.setHeaderText("Are you sure you want to exit?");
+        exit.setContentText(null);
+
+        // Custom buttons
+        ButtonType mainMenuBtn = new ButtonType("Quit to Main Menu");
+        ButtonType desktopBtn = new ButtonType("Quit to Desktop");
+        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        exit.getButtonTypes().setAll(mainMenuBtn, desktopBtn, cancelBtn);
+
+        Optional<ButtonType> result = exit.showAndWait();
+
+        if (result.isPresent()) {
+
+            if (result.get() == mainMenuBtn) {
+
+                try {
+                    showWelcome();
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+            } else if (result.get() == desktopBtn) {
+
+                System.exit(0);
+
+            }
+        }
     }
 
     @FXML
