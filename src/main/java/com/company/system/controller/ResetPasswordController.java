@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -35,7 +34,7 @@ public class ResetPasswordController {
     private TextField visibleConfirmPasswordField;
 
     @FXML
-    private CheckBox showPasswordCheckBox;
+    private Button togglePasswordButton;
 
     @FXML
     private Button resetButton;
@@ -45,6 +44,9 @@ public class ResetPasswordController {
 
     @FXML
     private Label messageLabel;
+
+    private boolean passwordVisible = false;
+
 
     @FXML
     public void initialize() {
@@ -62,7 +64,7 @@ public class ResetPasswordController {
         visibleConfirmPasswordField.setPromptText(LanguageManager.get("reset.confirmPassword"));
         resetButton.setText(LanguageManager.get("reset.button"));
         backToLoginButton.setText(LanguageManager.get("reset.backToLogin"));
-        showPasswordCheckBox.setText("Shfaq fjalëkalimin");
+        togglePasswordButton.setText("👁");
     }
 
     private void setupKeyboardAccess() {
@@ -84,10 +86,10 @@ public class ResetPasswordController {
     @FXML
     public void handleReset() {
         String username = usernameField.getText();
-        String newPassword = showPasswordCheckBox.isSelected()
+        String newPassword = passwordVisible
                 ? visibleNewPasswordField.getText()
                 : newPasswordField.getText();
-        String confirmPassword = showPasswordCheckBox.isSelected()
+        String confirmPassword = passwordVisible
                 ? visibleConfirmPasswordField.getText()
                 : confirmPasswordField.getText();
 
@@ -130,17 +132,20 @@ public class ResetPasswordController {
 
     @FXML
     public void togglePasswordVisibility() {
-        boolean show = showPasswordCheckBox.isSelected();
+        passwordVisible = !passwordVisible;
 
-        visibleNewPasswordField.setVisible(show);
-        visibleNewPasswordField.setManaged(show);
-        newPasswordField.setVisible(!show);
-        newPasswordField.setManaged(!show);
+        visibleNewPasswordField.setVisible(passwordVisible);
+        visibleNewPasswordField.setManaged(passwordVisible);
+        newPasswordField.setVisible(!passwordVisible);
+        newPasswordField.setManaged(!passwordVisible);
 
-        visibleConfirmPasswordField.setVisible(show);
-        visibleConfirmPasswordField.setManaged(show);
-        confirmPasswordField.setVisible(!show);
-        confirmPasswordField.setManaged(!show);
+        visibleConfirmPasswordField.setVisible(passwordVisible);
+        visibleConfirmPasswordField.setManaged(passwordVisible);
+        confirmPasswordField.setVisible(!passwordVisible);
+        confirmPasswordField.setManaged(!passwordVisible);
+
+        togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
+
     }
 
     @FXML

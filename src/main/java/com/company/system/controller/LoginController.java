@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -33,7 +32,7 @@ public class LoginController {
     private TextField visiblePasswordField;
 
     @FXML
-    private CheckBox showPasswordCheckBox;
+    private Button togglePasswordButton;
 
     @FXML
     private Hyperlink forgotPasswordLink;
@@ -46,6 +45,8 @@ public class LoginController {
 
     @FXML
     private Label messageLabel;
+
+    private boolean passwordVisible = false;
 
     @FXML
     public void initialize() {
@@ -77,13 +78,13 @@ public class LoginController {
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
         registerButton.setText(LanguageManager.get("login.goToRegister"));
-        showPasswordCheckBox.setText("Shfaq fjalëkalimin");
+        togglePasswordButton.setText("👁");
     }
 
     @FXML
     public void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
-        String password = showPasswordCheckBox.isSelected()
+        String password = passwordVisible
                 ? visiblePasswordField.getText()
                 : passwordField.getText();
 
@@ -109,11 +110,14 @@ public class LoginController {
 
     @FXML
     public void togglePasswordVisibility() {
-        boolean show = showPasswordCheckBox.isSelected();
-        visiblePasswordField.setVisible(show);
-        visiblePasswordField.setManaged(show);
-        passwordField.setVisible(!show);
-        passwordField.setManaged(!show);
+        passwordVisible = !passwordVisible;
+
+        visiblePasswordField.setVisible(passwordVisible);
+        visiblePasswordField.setManaged(passwordVisible);
+        passwordField.setVisible(!passwordVisible);
+        passwordField.setManaged(!passwordVisible);
+
+        togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
     }
 
     @FXML
