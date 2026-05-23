@@ -66,6 +66,18 @@
                            text="0"
                            style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
                 </VBox>
+                <VBox GridPane.rowIndex="0" GridPane.columnIndex="3"
+                      spacing="10"
+                      prefWidth="205"
+                      minHeight="118"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-border-color: #d9e2ec; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);">
+                    <Label fx:id="averageSalaryTitleLabel"
+                           text="Paga mesatare"
+                           style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+                    <Label fx:id="averageSalaryLabel"
+                           text="0.00 EUR"
+                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                </VBox>
                 <VBox GridPane.rowIndex="1" GridPane.columnIndex="0"
                       spacing="10"
                       prefWidth="205"
@@ -83,10 +95,10 @@
                       prefWidth="205"
                       minHeight="118"
                       style="-fx-background-color: white; -fx-padding: 18; -fx-border-color: #d9e2ec; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);">
-                    <Label fx:id="expiringContractsTitleLabel"
-                           text="Skadojne se shpejti"
+                    <Label fx:id="pendingContractsTitleLabel"
+                           text="Kontratat ne pritje"
                            style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
-                    <Label fx:id="expiringContractsLabel"
+                    <Label fx:id="pendingContractsLabel"
                            text="0"
                            style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
                 </VBox>
@@ -95,12 +107,24 @@
                       prefWidth="205"
                       minHeight="118"
                       style="-fx-background-color: white; -fx-padding: 18; -fx-border-color: #d9e2ec; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);">
-                    <Label fx:id="averageSalaryTitleLabel"
-                           text="Paga mesatare"
+                    <Label fx:id="expiredContractsTitleLabel"
+                           text="Kontratat e skaduara"
                            style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
-                    <Label fx:id="averageSalaryLabel"
-                           text="0.00 EUR"
-                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <Label fx:id="expiredContractsLabel"
+                           text="0"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                </VBox>
+                <VBox GridPane.rowIndex="1" GridPane.columnIndex="3"
+                      spacing="10"
+                      prefWidth="205"
+                      minHeight="118"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-border-color: #d9e2ec; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 12, 0, 0, 4);">
+                    <Label fx:id="expiringContractsTitleLabel"
+                           text="Skadojne se shpejti"
+                           style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+                    <Label fx:id="expiringContractsLabel"
+                           text="0"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
                 </VBox>
             </GridPane>
             <HBox spacing="20">
