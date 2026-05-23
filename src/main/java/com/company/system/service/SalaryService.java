@@ -75,10 +75,16 @@ public class SalaryService {
         ) {
 
             stmt.setInt(1, salary.getEmployeeId());
-            stmt.setDouble(2, salary.getAmount());
+            stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setDate(5, salary.getPaymentDate());
+            stmt.setDouble(5, salary.getNetSalary());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDate(11, salary.getPaymentDate());
 
             stmt.executeUpdate();
 
