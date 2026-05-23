@@ -52,16 +52,22 @@ public class SalaryService {
     public static void addSalary(Salary salary) {
 
         String sql = """
-                INSERT INTO salaries
-                (
-                    employee_id,
-                    amount,
-                    bonus,
-                    deductions,
-                    payment_date
-                )
-                VALUES (?, ?, ?, ?, ?)
-                """;
+        INSERT INTO salaries
+        (
+            employee_id,
+            amount,
+            bonus,
+            deductions,
+            net_salary,
+            vacation_days,
+            work_hours,
+            overtime_hours,
+            daily_rate,
+            overtime_pay,
+            payment_date
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
 
         try (
                 Connection conn = DBConnection.connect();
