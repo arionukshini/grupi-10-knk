@@ -88,6 +88,7 @@ public class SalaryService {
 
             stmt.executeUpdate();
 
+
             System.out.println("Salary added successfully!");
 
         } catch (SQLException e) {
