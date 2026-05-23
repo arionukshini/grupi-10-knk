@@ -457,8 +457,8 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        String roleText = "ADMIN".equalsIgnoreCase(role) ? "Administrator" : "Perdorues";
-        Label roleLabel = new Label("Roli: " + roleText);
+        String roleText = "ADMIN".equalsIgnoreCase(role) ? LanguageManager.get("account.role.admin") : LanguageManager.get("account.role.user");
+        Label roleLabel = new Label(LanguageManager.get("account.role") + roleText);
         roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
 
 
