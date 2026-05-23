@@ -151,7 +151,7 @@ public class DBConnection {
                     )
                     """);
 
-            migrateUsersTable(conn);
+
 
             ResultSet rs =
                     stmt.executeQuery(
@@ -250,44 +250,6 @@ public class DBConnection {
 
         }
     }
-    private static void migrateUsersTable(Connection conn) throws SQLException {
-        if (columnExists(conn, "users", "password") && !columnExists(conn, "users", "password_hash")) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("ALTER TABLE users CHANGE COLUMN password password_hash VARCHAR(255) NOT NULL");
-            }
-        }
-
-        if (!columnExists(conn, "users", "role")) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'USER'");
-            }
-        }
-
-        migratePlainTextPasswords(conn);
-    }
-
-    private static void migratePlainTextPasswords(Connection conn) throws SQLException {
-        String selectSql = "SELECT id, password_hash FROM users";
-        String updateSql = "UPDATE users SET password_hash = ? WHERE id = ?";
-
-        try (PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-             PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-             ResultSet rs = selectStmt.executeQuery()) {
-
-            while (rs.next()) {
-                int userId = rs.getInt("id");
-                String storedValue = rs.getString("password_hash");
-
-                if (storedValue != null && !PasswordUtils.isHashed(storedValue)) {
-                    updateStmt.setString(1, PasswordUtils.hashPassword(storedValue));
-                    updateStmt.setInt(2, userId);
-                    updateStmt.addBatch();
-                }
-            }
-
-            updateStmt.executeBatch();
-        }
-    }
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
@@ -308,14 +270,6 @@ public class DBConnection {
             stmt.setString(2, PasswordUtils.hashPassword("admin123"));
             stmt.setString(3, "ADMIN");
             stmt.executeUpdate();
-        }
-    }
-
-    private static boolean columnExists(Connection conn, String tableName, String columnName) throws SQLException {
-        DatabaseMetaData metaData = conn.getMetaData();
-
-        try (ResultSet rs = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
-            return rs.next();
         }
     }
 }
