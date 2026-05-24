@@ -206,4 +206,42 @@ public class SalaryService {
 
         return false;
     }
+    public static Salary calculateSalary(
+            int id,
+            int employeeId,
+            double monthlySalary,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double bonus,
+            double deductions,
+            Date paymentDate
+    ) {
+
+        double dailyRate = monthlySalary / 22;
+
+        double overtimePay =
+                overtimeHours * (dailyRate / 8) * 1.5;
+
+        double grossSalary =
+                monthlySalary + overtimePay;
+
+        double netSalary =
+                grossSalary + bonus - deductions;
+
+        return new Salary(
+                id,
+                employeeId,
+                grossSalary,
+                bonus,
+                deductions,
+                vacationDays,
+                workHours,
+                overtimeHours,
+                dailyRate,
+                overtimePay,
+                netSalary,
+                paymentDate
+        );
+    }
 }
