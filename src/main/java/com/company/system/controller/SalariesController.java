@@ -77,4 +77,31 @@ public class SalariesController {
     @FXML
     private TableColumn<Salary, Double> historyNetColumn;
 
+    @FXML
+    private TextField employeeIdField;
+
+    @FXML
+    private TextField baseSalaryField;
+
+    @FXML
+    private TextField workedDaysField;
+
+    @FXML
+    private TextField vacationDaysField;
+
+    @FXML
+    private TextField workHoursField;
+
+    @FXML
+    private TextField overtimeHoursField;
+
+    @FXML
+    private TextField bonusField;
+
+    @FXML
+    private TextField deductionsField;
+
+    @FXML
+    private DatePicker paymentDatePicker;
+
 }
