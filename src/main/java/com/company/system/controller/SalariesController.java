@@ -104,4 +104,13 @@ public class SalariesController {
     @FXML
     private DatePicker paymentDatePicker;
 
+    @FXML
+    private Button calculateButton;
+
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private Button deleteButton;
+
 }
