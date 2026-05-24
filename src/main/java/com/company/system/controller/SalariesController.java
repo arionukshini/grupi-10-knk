@@ -29,6 +29,37 @@ public class SalariesController {
 
     private Salary calculatedSalary;
 
+    @FXML
+    private TableView<Salary> salariesTable;
 
+    @FXML
+    private TableColumn<Salary, Integer> idColumn;
+
+    @FXML
+    private TableColumn<Salary, Integer> employeeColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> grossColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> bonusColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> deductionsColumn;
+
+    @FXML
+    private TableColumn<Salary, Integer> vacationColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> workHoursColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> overtimeColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> netColumn;
+
+    @FXML
+    private TableColumn<Salary, Date> dateColumn;
 
 }
