@@ -62,4 +62,19 @@ public class SalariesController {
     @FXML
     private TableColumn<Salary, Date> dateColumn;
 
+    @FXML
+    private TableView<Salary> historyTable;
+
+    @FXML
+    private TableColumn<Salary, Date> historyDateColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> historyGrossColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> historyBonusColumn;
+
+    @FXML
+    private TableColumn<Salary, Double> historyNetColumn;
+
 }
