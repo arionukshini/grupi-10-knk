@@ -113,4 +113,52 @@ public class SalariesController {
     @FXML
     private Button deleteButton;
 
+    @FXML
+    public void initialize() {
+
+        idColumn.setCellValueFactory(
+                new PropertyValueFactory<>("id"));
+
+        employeeColumn.setCellValueFactory(
+                new PropertyValueFactory<>("employeeId"));
+
+        grossColumn.setCellValueFactory(
+                new PropertyValueFactory<>("grossSalary"));
+
+        bonusColumn.setCellValueFactory(
+                new PropertyValueFactory<>("bonus"));
+
+        deductionsColumn.setCellValueFactory(
+                new PropertyValueFactory<>("deductions"));
+
+        vacationColumn.setCellValueFactory(
+                new PropertyValueFactory<>("vacationDays"));
+
+        workHoursColumn.setCellValueFactory(
+                new PropertyValueFactory<>("workHours"));
+
+        overtimeColumn.setCellValueFactory(
+                new PropertyValueFactory<>("overtimeHours"));
+
+        netColumn.setCellValueFactory(
+                new PropertyValueFactory<>("netSalary"));
+
+        dateColumn.setCellValueFactory(
+                new PropertyValueFactory<>("paymentDate"));
+
+        historyDateColumn.setCellValueFactory(
+                new PropertyValueFactory<>("paymentDate"));
+
+        historyGrossColumn.setCellValueFactory(
+                new PropertyValueFactory<>("grossSalary"));
+
+        historyBonusColumn.setCellValueFactory(
+                new PropertyValueFactory<>("bonus"));
+
+        historyNetColumn.setCellValueFactory(
+                new PropertyValueFactory<>("netSalary"));
+
+        loadSalaries();
+    }
+
 }
