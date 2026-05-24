@@ -1,7 +1,11 @@
 package com.company.system.db;
 
-import models.Contract;
+import com.company.system.model.Contract;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -17,7 +21,7 @@ public class ContractDatabase {
                        "FROM contracts c " +
                        "JOIN employees e ON c.employee_id = e.employee_id";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
@@ -38,7 +42,7 @@ public class ContractDatabase {
     
     public static boolean addContract(int employeeId, String status) {
         String query = "INSERT INTO contracts (employee_id, status) VALUES (?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
             pstmt.setInt(1, employeeId);
@@ -53,7 +57,7 @@ public class ContractDatabase {
     
     public static boolean updateContract(int contractId, String status) {
         String query = "UPDATE contracts SET status = ? WHERE contract_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
             pstmt.setString(1, status);
@@ -68,7 +72,7 @@ public class ContractDatabase {
   
     public static boolean deleteContract(int contractId) {
         String query = "DELETE FROM contracts WHERE contract_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             
             pstmt.setInt(1, contractId);

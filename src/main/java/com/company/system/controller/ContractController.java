@@ -1,7 +1,7 @@
-package controllers;
+package com.company.system.controller;
 
-import models.Contract;
-import database.ContractDatabase;
+import com.company.system.model.Contract;
+import com.company.system.db.ContractDatabase;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
