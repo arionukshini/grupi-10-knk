@@ -142,4 +142,49 @@ public class SalaryService {
 
         return salaries;
     }
+    public static boolean updateSalary(Salary salary) {
+
+        String sql = """
+            UPDATE salaries
+            SET
+                employee_id = ?,
+                amount = ?,
+                bonus = ?,
+                deductions = ?,
+                net_salary = ?,
+                vacation_days = ?,
+                work_hours = ?,
+                overtime_hours = ?,
+                daily_rate = ?,
+                overtime_pay = ?,
+                payment_date = ?
+            WHERE id = ?
+            """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, salary.getEmployeeId());
+            stmt.setDouble(2, salary.getGrossSalary());
+            stmt.setDouble(3, salary.getBonus());
+            stmt.setDouble(4, salary.getDeductions());
+            stmt.setDouble(5, salary.getNetSalary());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDate(11, salary.getPaymentDate());
+            stmt.setInt(12, salary.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
