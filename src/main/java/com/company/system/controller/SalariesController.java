@@ -159,6 +159,14 @@ public class SalariesController {
                 new PropertyValueFactory<>("netSalary"));
 
         loadSalaries();
+
+    }
+    private void loadSalaries() {
+
+        salaries.setAll(
+                SalaryService.getAllSalaries());
+
+        salariesTable.setItems(salaries);
     }
 
 }
