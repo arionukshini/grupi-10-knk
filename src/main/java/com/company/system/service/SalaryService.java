@@ -187,4 +187,23 @@ public class SalaryService {
 
         return false;
     }
+    public static boolean deleteSalary(int salaryId) {
+
+        String sql = "DELETE FROM salaries WHERE id = ?";
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, salaryId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
