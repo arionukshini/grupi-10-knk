@@ -95,4 +95,51 @@ public class SalaryService {
             e.printStackTrace();
         }
     }
+    public static List<Salary> getSalaryHistory(int employeeId) {
+
+        List<Salary> salaries = new ArrayList<>();
+
+        String sql = """
+            SELECT *
+            FROM salaries
+            WHERE employee_id = ?
+            ORDER BY payment_date DESC
+            LIMIT 3
+            """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, employeeId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                Salary salary = new Salary(
+                        rs.getInt("id"),
+                        rs.getInt("employee_id"),
+                        rs.getDouble("amount"),
+                        rs.getDouble("bonus"),
+                        rs.getDouble("deductions"),
+                        rs.getInt("vacation_days"),
+                        rs.getDouble("work_hours"),
+                        rs.getDouble("overtime_hours"),
+                        rs.getDouble("daily_rate"),
+                        rs.getDouble("overtime_pay"),
+                        rs.getDouble("net_salary"),
+                        rs.getDate("payment_date")
+                );
+
+                salaries.add(salary);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return salaries;
+    }
 }
