@@ -29,6 +29,12 @@ public class LoginController {
     private PasswordField passwordField;
 
     @FXML
+    private TextField visiblePasswordField;
+
+    @FXML
+    private Button togglePasswordButton;
+
+    @FXML
     private Hyperlink forgotPasswordLink;
 
     @FXML
@@ -40,34 +46,47 @@ public class LoginController {
     @FXML
     private Label messageLabel;
 
+    private boolean passwordVisible = false;
+
     @FXML
     public void initialize() {
         updateTexts();
         setupKeyboardAccess();
+        setupPasswordToggle();
+
     }
 
     private void setupKeyboardAccess() {
         usernameField.setOnAction(event -> passwordField.requestFocus());
         passwordField.setOnAction(event -> loginButton.fire());
+        visiblePasswordField.setOnAction(event -> loginButton.fire());
 
         loginButton.setAccessibleText("Login");
         registerButton.setAccessibleText("Register");
         forgotPasswordLink.setAccessibleText("Forgot password");
     }
 
+    private void setupPasswordToggle() {
+        visiblePasswordField.textProperty().bindBidirectional(passwordField.textProperty());
+    }
+
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("login.title"));
         usernameField.setPromptText(LanguageManager.get("login.username"));
         passwordField.setPromptText(LanguageManager.get("login.password"));
+        visiblePasswordField.setPromptText(LanguageManager.get("login.password"));
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
         registerButton.setText(LanguageManager.get("login.goToRegister"));
+        togglePasswordButton.setText("👁");
     }
 
     @FXML
     public void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String password = passwordVisible
+                ? visiblePasswordField.getText()
+                : passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
@@ -87,6 +106,18 @@ public class LoginController {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
 
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+
+        visiblePasswordField.setVisible(passwordVisible);
+        visiblePasswordField.setManaged(passwordVisible);
+        passwordField.setVisible(!passwordVisible);
+        passwordField.setManaged(!passwordVisible);
+
+        togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
     }
 
     @FXML

@@ -24,7 +24,16 @@ public class RegisterController {
     private PasswordField passwordField;
 
     @FXML
+    private TextField visiblePasswordField;
+
+    @FXML
     private PasswordField confirmPasswordField;
+
+    @FXML
+    private TextField visibleConfirmPasswordField;
+
+    @FXML
+    private Button togglePasswordButton;
 
     @FXML
     private Button registerButton;
@@ -35,37 +44,55 @@ public class RegisterController {
     @FXML
     private Label messageLabel;
 
+    private boolean passwordVisible = false;
+
+
     @FXML
     public void initialize() {
         updateTexts();
         setupKeyboardAccess();
+        setupPasswordToggle();
     }
 
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("register.title"));
         usernameField.setPromptText(LanguageManager.get("register.username"));
         passwordField.setPromptText(LanguageManager.get("register.password"));
+        visiblePasswordField.setPromptText(LanguageManager.get("register.password"));
         confirmPasswordField.setPromptText(LanguageManager.get("register.confirmPassword"));
+        visibleConfirmPasswordField.setPromptText(LanguageManager.get("register.confirmPassword"));
         registerButton.setText(LanguageManager.get("register.button"));
         backToLoginButton.setText(LanguageManager.get("register.backToLogin"));
+        togglePasswordButton.setText("👁");
     }
 
     private void setupKeyboardAccess() {
         usernameField.setOnAction(event -> passwordField.requestFocus());
         passwordField.setOnAction(event -> confirmPasswordField.requestFocus());
+        visiblePasswordField.setOnAction(event -> visibleConfirmPasswordField.requestFocus());
         confirmPasswordField.setOnAction(event -> registerButton.fire());
+        visibleConfirmPasswordField.setOnAction(event -> registerButton.fire());
 
         registerButton.setAccessibleText("Register");
         backToLoginButton.setAccessibleText("Back to login");
     }
 
+    private void setupPasswordToggle() {
+        visiblePasswordField.textProperty().bindBidirectional(passwordField.textProperty());
+        visibleConfirmPasswordField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
+    }
+
     @FXML
     public void handleRegister(ActionEvent event) {
         String username = usernameField.getText();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
+        String password = passwordVisible
+                ? visiblePasswordField.getText()
+                : passwordField.getText();
+        String confirmPassword = passwordVisible
+                ? visibleConfirmPasswordField.getText()
+                : confirmPasswordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
@@ -73,6 +100,12 @@ public class RegisterController {
 
         if (!password.equals(confirmPassword)) {
             messageLabel.setText(LanguageManager.get("message.passwordsDoNotMatch"));
+            messageLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        if (UserService.userExists(username)) {
+            messageLabel.setText(LanguageManager.get("message.userAlreadyExists"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
@@ -86,6 +119,24 @@ public class RegisterController {
             messageLabel.setText(LanguageManager.get("message.registrationFailed"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    @FXML
+    public void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+
+        visiblePasswordField.setVisible(passwordVisible);
+        visiblePasswordField.setManaged(passwordVisible);
+        passwordField.setVisible(!passwordVisible);
+        passwordField.setManaged(!passwordVisible);
+
+        visibleConfirmPasswordField.setVisible(passwordVisible);
+        visibleConfirmPasswordField.setManaged(passwordVisible);
+        confirmPasswordField.setVisible(!passwordVisible);
+        confirmPasswordField.setManaged(!passwordVisible);
+
+        togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
+
     }
 
     @FXML

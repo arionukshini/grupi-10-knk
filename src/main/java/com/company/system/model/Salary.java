@@ -6,37 +6,67 @@ public class Salary {
 
     private final int id;
     private final int employeeId;
-    private final double amount;
+    private final double grossSalary;
     private final double bonus;
     private final double deductions;
+    private final int vacationDays;
+    private final double workHours;
+    private final double overtimeHours;
+    private final double dailyRate;
+    private final double overtimePay;
+    private final double netSalary;
     private final Date paymentDate;
+
 
     public Salary(
             int id,
             int employeeId,
-            double amount,
+            double grossSalary,
             double bonus,
             double deductions,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double dailyRate,
+            double overtimePay,
+            double netSalary,
             Date paymentDate
-    ) {
-
+    )
+    {
         this.id = id;
         this.employeeId = employeeId;
-        this.amount = amount;
+        this.grossSalary = grossSalary;
         this.bonus = bonus;
         this.deductions = deductions;
+        this.vacationDays = vacationDays;
+        this.workHours = workHours;
+        this.overtimeHours = overtimeHours;
+        this.dailyRate = dailyRate;
+        this.overtimePay = overtimePay;
+        this.netSalary = netSalary;
         this.paymentDate = paymentDate;
     }
-
     public int getId() { return id; }
 
     public int getEmployeeId() { return employeeId; }
 
-    public double getAmount() { return amount; }
+    public double getGrossSalary() { return grossSalary; }
 
     public double getBonus() { return bonus; }
 
     public double getDeductions() { return deductions; }
+
+    public int getVacationDays() { return vacationDays; }
+
+    public double getWorkHours() { return workHours; }
+
+    public double getOvertimeHours() { return overtimeHours; }
+
+    public double getDailyRate() { return dailyRate; }
+
+    public double getOvertimePay() { return overtimePay; }
+
+    public double getNetSalary() { return netSalary; }
 
     public Date getPaymentDate() { return paymentDate; }
 }

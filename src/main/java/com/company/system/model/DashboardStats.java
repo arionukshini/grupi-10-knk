@@ -6,6 +6,8 @@ public class DashboardStats {
     private final int totalContracts;
     private final int totalSalaries;
     private final int activeContracts;
+    private final int pendingContracts;
+    private final int expiredContracts;
     private final int expiringContracts;
     private final double averageSalary;
 
@@ -14,6 +16,8 @@ public class DashboardStats {
             int totalContracts,
             int totalSalaries,
             int activeContracts,
+            int pendingContracts,
+            int expiredContracts,
             int expiringContracts,
             double averageSalary
     ) {
@@ -21,6 +25,8 @@ public class DashboardStats {
         this.totalContracts = totalContracts;
         this.totalSalaries = totalSalaries;
         this.activeContracts = activeContracts;
+        this.pendingContracts = pendingContracts;
+        this.expiredContracts = expiredContracts;
         this.expiringContracts = expiringContracts;
         this.averageSalary = averageSalary;
     }
@@ -39,6 +45,14 @@ public class DashboardStats {
 
     public int getActiveContracts() {
         return activeContracts;
+    }
+
+    public int getPendingContracts() {
+        return pendingContracts;
+    }
+
+    public int getExpiredContracts() {
+        return expiredContracts;
     }
 
     public int getExpiringContracts() {
