@@ -282,6 +282,19 @@ public class SalariesController {
             );
         }
     }
+    private void clearFields() {
+
+        employeeIdField.clear();
+        baseSalaryField.clear();
+        workedDaysField.clear();
+        vacationDaysField.clear();
+        workHoursField.clear();
+        overtimeHoursField.clear();
+        bonusField.clear();
+        deductionsField.clear();
+
+        paymentDatePicker.setValue(null);
+    }
 
 
 
