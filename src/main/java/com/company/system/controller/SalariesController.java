@@ -185,6 +185,70 @@ public class SalariesController {
 
         historyTable.setItems(salaryHistory);
     }
+    @FXML
+    private void handleCalculateSalary() {
+
+        try {
+
+            int employeeId =
+                    Integer.parseInt(employeeIdField.getText());
+
+            double baseSalary =
+                    Double.parseDouble(baseSalaryField.getText());
+
+            int workedDays =
+                    Integer.parseInt(workedDaysField.getText());
+
+            int vacationDays =
+                    Integer.parseInt(vacationDaysField.getText());
+
+            double workHours =
+                    Double.parseDouble(workHoursField.getText());
+
+            double overtimeHours =
+                    Double.parseDouble(overtimeHoursField.getText());
+
+            double bonus =
+                    Double.parseDouble(bonusField.getText());
+
+            double deductions =
+                    Double.parseDouble(deductionsField.getText());
+
+            LocalDate localDate =
+                    paymentDatePicker.getValue();
+
+            Date paymentDate =
+                    Date.valueOf(localDate);
+
+            calculatedSalary =
+                    SalaryService.calculateSalary(
+                            0,
+                            employeeId,
+                            baseSalary,
+                            workedDays,
+                            vacationDays,
+                            workHours,
+                            overtimeHours,
+                            bonus,
+                            deductions,
+                            paymentDate
+                    );
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Success",
+                    "Salary calculated successfully!"
+            );
+
+        } catch (Exception e) {
+
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Error",
+                    "Invalid input values!"
+            );
+        }
+    }
 
 
 
