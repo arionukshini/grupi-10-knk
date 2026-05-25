@@ -168,5 +168,12 @@ public class SalariesController {
 
         salariesTable.setItems(salaries);
     }
+    private void loadSalaryHistory(int employeeId) {
+
+        salaryHistory.setAll(
+                SalaryService.getSalaryHistory(employeeId));
+
+        historyTable.setItems(salaryHistory);
+    }
 
 }
