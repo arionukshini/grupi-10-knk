@@ -297,16 +297,25 @@ public class MainController {
         }
     }
 
-    @FXML
-    public void showContracts() {
-        currentView = "contracts";
-        setStatus(LanguageManager.get("status.contracts"));
+  @FXML
+public void showContracts() {
+    currentView = "contracts";
+    setStatus(LanguageManager.get("status.contracts"));
 
-        Label view = new Label(LanguageManager.get("module.contracts"));
-        setContent(view);
+    try {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/views/contracts-view.fxml")
+        );
+
+        Parent contractsView = loader.load();
+        setContent(contractsView);
         focusActiveButton(contractsButton);
-    }
 
+    } catch (Exception e) {
+        e.printStackTrace();
+        setStatus("Failed to load contracts.");
+    }
+}
     @FXML
     public void showSalaries() {
         currentView = "salaries";
