@@ -249,6 +249,39 @@ public class SalariesController {
             );
         }
     }
+    @FXML
+    private void handleDeleteSalary() {
+
+        Salary selectedSalary =
+                salariesTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedSalary == null) {
+
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Warning",
+                    "Select a salary first!"
+            );
+
+            return;
+        }
+
+        boolean deleted =
+                SalaryService.deleteSalary(
+                        selectedSalary.getId());
+
+        if (deleted) {
+
+            loadSalaries();
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Success",
+                    "Salary deleted successfully!"
+            );
+        }
+    }
 
 
 
