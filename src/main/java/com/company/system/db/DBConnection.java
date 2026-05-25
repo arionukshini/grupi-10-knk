@@ -267,7 +267,7 @@ public class DBConnection {
 
         try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
             stmt.setString(1, "admin");
-            stmt.setString(2, PasswordUtils.hashPassword("admin123"));
+            stmt.setString(2, PasswordUtils.hashPassword("1234"));
             stmt.setString(3, "ADMIN");
             stmt.executeUpdate();
         }
