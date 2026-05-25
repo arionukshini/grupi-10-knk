@@ -6,13 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.Date;
@@ -87,7 +81,7 @@ public class EmployeesController {
     private TextField salaryField;
 
     @FXML
-    private TextField statusField;
+    private ComboBox<String> statusField;
 
     @FXML
     private Button addButton;
@@ -170,7 +164,7 @@ public class EmployeesController {
         departmentIdField.setText(String.valueOf(employee.getDepartmentId()));
         hireDatePicker.setValue(employee.getHireDate().toLocalDate());
         salaryField.setText(String.valueOf(employee.getBaseSalary()));
-        statusField.setText(employee.getStatus());
+        statusField.setValue(employee.getStatus());
     }
 
     @FXML
@@ -243,7 +237,7 @@ public class EmployeesController {
         departmentIdField.clear();
         hireDatePicker.setValue(null);
         salaryField.clear();
-        statusField.setText("Active");
+        statusField.setValue("Active");
     }
 
     private Employee readForm(int id) {
@@ -256,7 +250,7 @@ public class EmployeesController {
             int departmentId = Integer.parseInt(departmentIdField.getText().trim());
             LocalDate hireDate = hireDatePicker.getValue();
             double salary = Double.parseDouble(salaryField.getText().trim());
-            String status = statusField.getText().trim();
+            String status = statusField.getValue();
 
             if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                     || position.isEmpty() || hireDate == null || status.isEmpty()) {
