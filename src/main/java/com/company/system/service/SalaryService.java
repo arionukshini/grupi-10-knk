@@ -210,6 +210,7 @@ public class SalaryService {
             int id,
             int employeeId,
             double monthlySalary,
+            int workedDays,
             int vacationDays,
             double workHours,
             double overtimeHours,

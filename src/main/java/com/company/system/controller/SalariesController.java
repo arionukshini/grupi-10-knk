@@ -160,6 +160,16 @@ public class SalariesController {
 
         loadSalaries();
 
+        salariesTable.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, selectedSalary) -> {
+
+                    if (selectedSalary != null) {
+                        loadSalaryHistory(
+                                selectedSalary.getEmployeeId());
+                    }
+                });
+
     }
     private void loadSalaries() {
 
@@ -175,5 +185,131 @@ public class SalariesController {
 
         historyTable.setItems(salaryHistory);
     }
+    @FXML
+    private void handleCalculateSalary() {
+
+        try {
+
+            int employeeId =
+                    Integer.parseInt(employeeIdField.getText());
+
+            double baseSalary =
+                    Double.parseDouble(baseSalaryField.getText());
+
+            int workedDays =
+                    Integer.parseInt(workedDaysField.getText());
+
+            int vacationDays =
+                    Integer.parseInt(vacationDaysField.getText());
+
+            double workHours =
+                    Double.parseDouble(workHoursField.getText());
+
+            double overtimeHours =
+                    Double.parseDouble(overtimeHoursField.getText());
+
+            double bonus =
+                    Double.parseDouble(bonusField.getText());
+
+            double deductions =
+                    Double.parseDouble(deductionsField.getText());
+
+            LocalDate localDate =
+                    paymentDatePicker.getValue();
+
+            Date paymentDate =
+                    Date.valueOf(localDate);
+
+            calculatedSalary =
+                    SalaryService.calculateSalary(
+                            0,
+                            employeeId,
+                            baseSalary,
+                            workedDays,
+                            vacationDays,
+                            workHours,
+                            overtimeHours,
+                            bonus,
+                            deductions,
+                            paymentDate
+                    );
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Success",
+                    "Salary calculated successfully!"
+            );
+
+        } catch (Exception e) {
+
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Error",
+                    "Invalid input values!"
+            );
+        }
+    }
+    @FXML
+    private void handleDeleteSalary() {
+
+        Salary selectedSalary =
+                salariesTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedSalary == null) {
+
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Warning",
+                    "Select a salary first!"
+            );
+
+            return;
+        }
+
+        boolean deleted =
+                SalaryService.deleteSalary(
+                        selectedSalary.getId());
+
+        if (deleted) {
+
+            loadSalaries();
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Success",
+                    "Salary deleted successfully!"
+            );
+        }
+    }
+    private void clearFields() {
+
+        employeeIdField.clear();
+        baseSalaryField.clear();
+        workedDaysField.clear();
+        vacationDaysField.clear();
+        workHoursField.clear();
+        overtimeHoursField.clear();
+        bonusField.clear();
+        deductionsField.clear();
+
+        paymentDatePicker.setValue(null);
+    }
+    private void showAlert(
+            Alert.AlertType type,
+            String title,
+            String message
+    ) {
+
+        Alert alert = new Alert(type);
+
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+    }
+
+
 
 }
