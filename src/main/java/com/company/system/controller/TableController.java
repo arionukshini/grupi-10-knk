@@ -12,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class ContractController {
+public class TableController {
 
     private final ObservableList<Contract> contracts = FXCollections.observableArrayList();
     private FilteredList<Contract> filteredContracts;
