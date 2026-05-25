@@ -160,6 +160,16 @@ public class SalariesController {
 
         loadSalaries();
 
+        salariesTable.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, selectedSalary) -> {
+
+                    if (selectedSalary != null) {
+                        loadSalaryHistory(
+                                selectedSalary.getEmployeeId());
+                    }
+                });
+
     }
     private void loadSalaries() {
 
@@ -175,5 +185,7 @@ public class SalariesController {
 
         historyTable.setItems(salaryHistory);
     }
+
+
 
 }
