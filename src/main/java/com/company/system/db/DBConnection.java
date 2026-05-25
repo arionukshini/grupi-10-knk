@@ -106,7 +106,7 @@ public class DBConnection {
                     
                         employee_id INT NOT NULL,
                     
-                        contract_type VARCHAR(50),
+                        contract_type ENUM('Full-Time', 'Part-Time', 'Temporary', 'Internship'),
                     
                         start_date DATE,
                         end_date DATE,
