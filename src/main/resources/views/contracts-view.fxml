@@ -5,7 +5,7 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.company.system.controller.ContractsController"
+            fx:controller="com.company.system.controller.ContractController"
             fitToWidth="true"
             pannable="true"
             style="-fx-background-color: #f8fafc; -fx-background: #f8fafc;">
