@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -15,8 +16,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import static com.company.system.MainApp.showWelcome;
 
@@ -44,6 +48,9 @@ public class MainController {
 
     @FXML
     private Menu accountMenu;
+
+    @FXML
+    private MenuItem logoutMenuItem;
 
     @FXML
     private MenuItem exitMenuItem;
@@ -176,6 +183,7 @@ public class MainController {
             }
         });
     }
+
     private void applyRolePermissions() {
         User user = Session.getUser();
 
@@ -192,6 +200,7 @@ public class MainController {
         contractsMenuItem.setVisible(isAdmin);
         salariesMenuItem.setVisible(isAdmin);
     }
+
     public void updateTexts() {
         fileMenu.setText("☰");
         manageMenu.setText("");
@@ -201,6 +210,7 @@ public class MainController {
         accountMenu.setText("");
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
+        logoutMenuItem.setText(LanguageManager.get("menu.logout"));
         employeesMenuItem.setText(LanguageManager.get("menu.employees"));
         contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
@@ -265,7 +275,44 @@ public class MainController {
 
     @FXML
     private void handleExit() {
-        System.exit(0);
+        Alert exit = new Alert(Alert.AlertType.CONFIRMATION);
+
+        exit.setTitle("Exit");
+        exit.setHeaderText("Are you sure you want to exit?");
+        exit.setContentText(null);
+
+        // Custom buttons
+        ButtonType mainMenuBtn = new ButtonType("Quit to Main Menu");
+        ButtonType desktopBtn = new ButtonType("Quit to Desktop");
+        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        exit.getButtonTypes().setAll(mainMenuBtn, desktopBtn, cancelBtn);
+
+        Optional<ButtonType> result = exit.showAndWait();
+
+        if (result.isPresent()) {
+
+            if (result.get() == mainMenuBtn) {
+
+                try {
+                    showWelcome();
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+            } else if (result.get() == desktopBtn) {
+
+                System.exit(0);
+
+            }
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        Session.clear();
+        showWelcome();
     }
 
     public void setContent(Node node) {
@@ -454,15 +501,15 @@ public void showContracts() {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        String roleText = "ADMIN".equalsIgnoreCase(role) ? "Administrator" : "Perdorues";
-        Label roleLabel = new Label("Roli: " + roleText);
+        String roleText = "ADMIN".equalsIgnoreCase(role) ? LanguageManager.get("account.role.admin") : LanguageManager.get("account.role.user");
+        Label roleLabel = new Label(LanguageManager.get("account.role") + roleText);
         roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
 
 
         Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
         createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
 
-        VBox headerContent = new VBox(15, usernameLabel,roleLabel, createdAtLable);
+        VBox headerContent = new VBox(15, usernameLabel, roleLabel, createdAtLable);
         HBox header = new HBox(15, icon, headerContent);
 
         header.setStyle("-fx-alignment: center-left;");
