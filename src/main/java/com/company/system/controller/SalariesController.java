@@ -282,6 +282,34 @@ public class SalariesController {
             );
         }
     }
+    @FXML
+    private void handleSaveSalary() {
+
+        if (calculatedSalary == null) {
+
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Warning",
+                    "Calculate salary first!"
+            );
+
+            return;
+        }
+
+        SalaryService.addSalary(calculatedSalary);
+
+        loadSalaries();
+
+        clearFields();
+
+        calculatedSalary = null;
+
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Success",
+                "Salary saved successfully!"
+        );
+    }
     private void clearFields() {
 
         employeeIdField.clear();
