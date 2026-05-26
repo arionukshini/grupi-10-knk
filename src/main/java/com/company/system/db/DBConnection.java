@@ -146,6 +146,27 @@ public class DBConnection {
                     """);
 
             stmt.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS salary_history (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                    
+                        salary_id INT,
+                        employee_id INT NOT NULL,
+                    
+                        gross_salary DECIMAL(10,2),
+                        bonus DECIMAL(10,2),
+                        deductions DECIMAL(10,2),
+                        net_salary DECIMAL(10,2),
+                    
+                        payment_date DATE,
+                    
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    
+                        FOREIGN KEY (salary_id) REFERENCES salaries(id),
+                        FOREIGN KEY (employee_id) REFERENCES employees(id)
+                    );
+                    """);
+
+            stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                     

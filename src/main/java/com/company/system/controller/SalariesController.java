@@ -119,11 +119,12 @@ public class SalariesController {
 
         salariesTable.getSelectionModel()
                 .selectedItemProperty()
-                .addListener((obs, oldVal, selected) -> {
+                .addListener((obs, oldValue, selectedSalary) -> {
 
-                    if (selected != null) {
-                        loadSalaryHistory(selected.getEmployeeId());
-                        fillForm(selected);
+                    if (selectedSalary != null) {
+
+                        loadSalaryHistory(selectedSalary.getEmployeeId());
+                        fillForm(selectedSalary);
                     }
                 });
     }
@@ -150,7 +151,11 @@ public class SalariesController {
     }
 
     private void loadSalaryHistory(int employeeId) {
-        salaryHistory.setAll(SalaryService.getSalaryHistory(employeeId));
+
+        salaryHistory.setAll(
+                SalaryService.getSalaryHistory(employeeId)
+        );
+
         historyTable.setItems(salaryHistory);
     }
 
@@ -208,26 +213,33 @@ public class SalariesController {
     private void handleSaveSalary() {
 
         if (calculatedSalary == null) {
+
             showAlert(Alert.AlertType.WARNING,
                     "Warning",
                     "Calculate salary first!");
+
             return;
         }
 
         boolean saved = SalaryService.addSalary(calculatedSalary);
 
         if (saved) {
+
+            // 🔥 ADD HISTORY ENTRY ALSO
+            SalaryService.addSalaryHistory(calculatedSalary);
+
             loadSalaries();
             clearFields();
             calculatedSalary = null;
 
             showAlert(Alert.AlertType.INFORMATION,
                     "Success",
-                    "Salary saved successfully!");
+                    "Salary saved + history updated!");
         } else {
+
             showAlert(Alert.AlertType.ERROR,
                     "Error",
-                    "Could not save salary!");
+                    "Salary could not be saved!");
         }
     }
 
