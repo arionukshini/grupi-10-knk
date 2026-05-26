@@ -7,14 +7,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SalaryService {
 
     public static List<Salary> getAllSalaries() {
 
         List<Salary> salaries = new ArrayList<>();
 
-        String sql = "SELECT * FROM salaries ORDER BY payment_date DESC";
+        String sql = """
+                SELECT *
+                FROM salaries
+                ORDER BY payment_date DESC
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
@@ -24,10 +27,10 @@ public class SalaryService {
 
             while (rs.next()) {
 
-                Salary salary = new Salary(
+                salaries.add(new Salary(
                         rs.getInt("id"),
                         rs.getInt("employee_id"),
-                        rs.getDouble("amount"),
+                        rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),
                         rs.getInt("vacation_days"),
@@ -37,9 +40,7 @@ public class SalaryService {
                         rs.getDouble("overtime_pay"),
                         rs.getDouble("net_salary"),
                         rs.getDate("payment_date")
-                );
-
-                salaries.add(salary);
+                ));
             }
 
         } catch (SQLException e) {
@@ -49,25 +50,25 @@ public class SalaryService {
         return salaries;
     }
 
-    public static void addSalary(Salary salary) {
+    public static boolean addSalary(Salary salary) {
 
         String sql = """
-        INSERT INTO salaries
-        (
-            employee_id,
-            amount,
-            bonus,
-            deductions,
-            net_salary,
-            vacation_days,
-            work_hours,
-            overtime_hours,
-            daily_rate,
-            overtime_pay,
-            payment_date
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+                INSERT INTO salaries
+                (
+                    employee_id,
+                    gross_salary,
+                    bonus,
+                    deductions,
+                    vacation_days,
+                    work_hours,
+                    overtime_hours,
+                    daily_rate,
+                    overtime_pay,
+                    net_salary,
+                    payment_date
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
@@ -78,34 +79,34 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setDouble(5, salary.getNetSalary());
-            stmt.setInt(6, salary.getVacationDays());
-            stmt.setDouble(7, salary.getWorkHours());
-            stmt.setDouble(8, salary.getOvertimeHours());
-            stmt.setDouble(9, salary.getDailyRate());
-            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setInt(5, salary.getVacationDays());
+            stmt.setDouble(6, salary.getWorkHours());
+            stmt.setDouble(7, salary.getOvertimeHours());
+            stmt.setDouble(8, salary.getDailyRate());
+            stmt.setDouble(9, salary.getOvertimePay());
+            stmt.setDouble(10, salary.getNetSalary());
             stmt.setDate(11, salary.getPaymentDate());
 
-            stmt.executeUpdate();
-
-
-            System.out.println("Salary added successfully!");
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
+
     public static List<Salary> getSalaryHistory(int employeeId) {
 
         List<Salary> salaries = new ArrayList<>();
 
         String sql = """
-            SELECT *
-            FROM salaries
-            WHERE employee_id = ?
-            ORDER BY payment_date DESC
-            LIMIT 3
-            """;
+                SELECT *
+                FROM salaries
+                WHERE employee_id = ?
+                ORDER BY payment_date DESC
+                LIMIT 3
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
@@ -118,10 +119,10 @@ public class SalaryService {
 
             while (rs.next()) {
 
-                Salary salary = new Salary(
+                salaries.add(new Salary(
                         rs.getInt("id"),
                         rs.getInt("employee_id"),
-                        rs.getDouble("amount"),
+                        rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),
                         rs.getInt("vacation_days"),
@@ -131,9 +132,7 @@ public class SalaryService {
                         rs.getDouble("overtime_pay"),
                         rs.getDouble("net_salary"),
                         rs.getDate("payment_date")
-                );
-
-                salaries.add(salary);
+                ));
             }
 
         } catch (SQLException e) {
@@ -142,24 +141,25 @@ public class SalaryService {
 
         return salaries;
     }
+
     public static boolean updateSalary(Salary salary) {
 
         String sql = """
-            UPDATE salaries
-            SET
-                employee_id = ?,
-                amount = ?,
-                bonus = ?,
-                deductions = ?,
-                net_salary = ?,
-                vacation_days = ?,
-                work_hours = ?,
-                overtime_hours = ?,
-                daily_rate = ?,
-                overtime_pay = ?,
-                payment_date = ?
-            WHERE id = ?
-            """;
+                UPDATE salaries
+                SET
+                    employee_id = ?,
+                    gross_salary = ?,
+                    bonus = ?,
+                    deductions = ?,
+                    vacation_days = ?,
+                    work_hours = ?,
+                    overtime_hours = ?,
+                    daily_rate = ?,
+                    overtime_pay = ?,
+                    net_salary = ?,
+                    payment_date = ?
+                WHERE id = ?
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
@@ -170,12 +170,12 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setDouble(5, salary.getNetSalary());
-            stmt.setInt(6, salary.getVacationDays());
-            stmt.setDouble(7, salary.getWorkHours());
-            stmt.setDouble(8, salary.getOvertimeHours());
-            stmt.setDouble(9, salary.getDailyRate());
-            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setInt(5, salary.getVacationDays());
+            stmt.setDouble(6, salary.getWorkHours());
+            stmt.setDouble(7, salary.getOvertimeHours());
+            stmt.setDouble(8, salary.getDailyRate());
+            stmt.setDouble(9, salary.getOvertimePay());
+            stmt.setDouble(10, salary.getNetSalary());
             stmt.setDate(11, salary.getPaymentDate());
             stmt.setInt(12, salary.getId());
 
@@ -187,6 +187,7 @@ public class SalaryService {
 
         return false;
     }
+
     public static boolean deleteSalary(int salaryId) {
 
         String sql = "DELETE FROM salaries WHERE id = ?";
@@ -206,6 +207,7 @@ public class SalaryService {
 
         return false;
     }
+
     public static Salary calculateSalary(
             int id,
             int employeeId,
@@ -221,14 +223,11 @@ public class SalaryService {
 
         double dailyRate = monthlySalary / 22;
 
-        double overtimePay =
-                overtimeHours * (dailyRate / 8) * 1.5;
+        double overtimePay = overtimeHours * (dailyRate / 8) * 1.5;
 
-        double grossSalary =
-                monthlySalary + overtimePay;
+        double grossSalary = monthlySalary + overtimePay;
 
-        double netSalary =
-                grossSalary + bonus - deductions;
+        double netSalary = grossSalary + bonus - deductions;
 
         return new Salary(
                 id,

@@ -368,9 +368,19 @@ public void showContracts() {
         currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
 
-        Label view = new Label(LanguageManager.get("module.salaries"));
-        setContent(view);
-        focusActiveButton(salariesButton);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/salaries-view.fxml")
+            );
+
+            Parent salariesView = loader.load();
+            setContent(salariesView);
+            focusActiveButton(salariesButton);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus("Failed to load salaries.");
+        }
     }
 
     @FXML

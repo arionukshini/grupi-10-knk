@@ -126,17 +126,23 @@ public class DBConnection {
                     
                         employee_id INT NOT NULL,
                     
-                        amount DECIMAL(10,2),
-                        
-                        bonus DECIMAL(10,2),
-                        
-                        deductions DECIMAL(10,2),
+                        gross_salary DECIMAL(10,2) NOT NULL,
+                        bonus DECIMAL(10,2) DEFAULT 0,
+                        deductions DECIMAL(10,2) DEFAULT 0,
                     
-                        payment_date DATE,
+                        vacation_days INT DEFAULT 0,
+                        work_hours DECIMAL(10,2) DEFAULT 0,
+                        overtime_hours DECIMAL(10,2) DEFAULT 0,
                     
-                        FOREIGN KEY (employee_id)
-                        REFERENCES employees(id)
-                    )
+                        daily_rate DECIMAL(10,2) DEFAULT 0,
+                        overtime_pay DECIMAL(10,2) DEFAULT 0,
+                    
+                        net_salary DECIMAL(10,2) NOT NULL,
+                    
+                        payment_date DATE NOT NULL,
+                    
+                        FOREIGN KEY (employee_id) REFERENCES employees(id)
+                    );
                     """);
 
             stmt.executeUpdate("""
@@ -217,21 +223,21 @@ public class DBConnection {
 
                 stmt.executeUpdate("""
                         INSERT INTO salaries
-                         (employee_id, amount, bonus, deductions, payment_date)
-                         VALUES
-                         (1, 1200.00, 100.00, 50.00, '2026-05-01'),
-                         
-                         (2, 1100.00, 50.00, 20.00, '2026-05-01'),
-                         
-                         (3, 1000.00, 0.00, 30.00, '2026-05-01'),
-                         
-                         (4, 950.00, 25.00, 15.00, '2026-05-01'),
-                         
-                         (5, 900.00, 0.00, 10.00, '2026-05-01'),
-                         
-                         (6, 1300.00, 150.00, 60.00, '2026-05-01'),
-                         
-                         (7, 850.00, 0.00, 0.00, '2026-05-01');
+                        (employee_id,gross_salary,bonus,deductions,vacation_days,work_hours,overtime_hours,net_salary,payment_date)
+                        VALUES
+                        (1, 1200.00, 100.00, 50.00, 2, 160, 10, 1250.00, '2026-05-01'),
+                        
+                        (2, 1100.00, 50.00, 20.00, 1, 155, 5, 1130.00, '2026-05-01'),
+                        
+                        (3, 1000.00, 0.00, 30.00, 0, 150, 0, 970.00, '2026-05-01'),
+                        
+                        (4, 950.00, 25.00, 15.00, 3, 145, 2, 960.00, '2026-05-01'),
+                        
+                        (5, 900.00, 0.00, 10.00, 0, 140, 0, 890.00, '2026-05-01'),
+                        
+                        (6, 1300.00, 150.00, 60.00, 1, 170, 12, 1390.00, '2026-05-01'),
+                        
+                        (7, 850.00, 0.00, 0.00, 0, 135, 0, 850.00, '2026-05-01');
                         """);
 
                 System.out.println("Demo data inserted!");
