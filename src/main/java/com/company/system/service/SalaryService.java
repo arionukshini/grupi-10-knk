@@ -168,7 +168,7 @@ public class SalaryService {
                 stmt1.setInt(1, salaryId);
                 stmt1.executeUpdate();
             }
-            
+
             try (PreparedStatement stmt2 = conn.prepareStatement(deleteSalarySql)) {
                 stmt2.setInt(1, salaryId);
                 return stmt2.executeUpdate() > 0;

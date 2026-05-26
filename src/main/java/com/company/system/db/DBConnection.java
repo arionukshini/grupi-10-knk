@@ -1,7 +1,8 @@
 package com.company.system.db;
 
-import java.sql.*;
 import com.company.system.utils.PasswordUtils;
+
+import java.sql.*;
 
 public class DBConnection {
 
@@ -179,7 +180,6 @@ public class DBConnection {
                     """);
 
 
-
             ResultSet rs =
                     stmt.executeQuery(
                             "SELECT COUNT(*) FROM departments"
@@ -228,17 +228,17 @@ public class DBConnection {
                          (employee_id, contract_type, start_date, end_date, salary, status)
                          VALUES
                          (1, 'Full-Time', '2024-01-15', '2026-01-15', 1200.00, 'Active'),
-                         
+                        
                          (2, 'Full-Time', '2023-06-10', '2025-06-10', 1100.00, 'Active'),
-                         
+                        
                          (3, 'Full-Time', '2022-09-01', '2025-09-01', 1000.00, 'Active'),
-                         
+                        
                          (4, 'Part-Time', '2024-03-20', '2025-03-20', 950.00, 'Active'),
-                         
+                        
                          (5, 'Internship', '2023-11-05', '2024-11-05', 900.00, 'Expired'),
-                         
+                        
                          (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'Active'),
-                         
+                        
                          (7, 'Temporary', '2024-04-01', '2024-10-01', 850.00, 'Pending');
                         """);
 
@@ -259,6 +259,25 @@ public class DBConnection {
                         (6, 1300.00, 150.00, 60.00, 1, 170, 12, 1390.00, '2026-05-01'),
                         
                         (7, 850.00, 0.00, 0.00, 0, 135, 0, 850.00, '2026-05-01');
+                        """);
+
+                stmt.executeUpdate("""
+                            INSERT INTO salary_history
+                            (salary_id,employee_id,gross_salary,bonus,deductions,net_salary,payment_date)
+                            VALUES
+                            (1, 1, 1200.00, 100.00, 50.00, 1250.00, '2026-05-01'),
+                        
+                            (2, 2, 1100.00, 50.00, 20.00, 1130.00, '2026-05-01'),
+                        
+                            (3, 3, 1000.00, 0.00, 30.00, 970.00, '2026-05-01'),
+                        
+                            (4, 4, 950.00, 25.00, 15.00, 960.00, '2026-05-01'),
+                        
+                            (5, 5, 900.00, 0.00, 10.00, 890.00, '2026-05-01'),
+                        
+                            (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-01'),
+                        
+                            (7, 7, 850.00, 0.00, 0.00, 850.00, '2026-05-01');
                         """);
 
                 System.out.println("Demo data inserted!");
