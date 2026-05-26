@@ -140,6 +140,8 @@ public class SalariesController {
         bonusField.setText(String.valueOf(salary.getBonus()));
         deductionsField.setText(String.valueOf(salary.getDeductions()));
 
+
+
         if (salary.getPaymentDate() != null) {
             paymentDatePicker.setValue(salary.getPaymentDate().toLocalDate());
         }
@@ -214,35 +216,29 @@ public class SalariesController {
 
         if (calculatedSalary == null) {
 
-            showAlert(Alert.AlertType.WARNING,
+            showAlert(
+                    Alert.AlertType.WARNING,
                     "Warning",
-                    "Calculate salary first!");
+                    "Calculate salary first!"
+            );
 
             return;
         }
 
-        boolean saved = SalaryService.addSalary(calculatedSalary);
+        SalaryService.addSalary(calculatedSalary);
 
-        if (saved) {
+        loadSalaries();
 
-            // 🔥 ADD HISTORY ENTRY ALSO
-            SalaryService.addSalaryHistory(calculatedSalary);
+        clearFields();
 
-            loadSalaries();
-            clearFields();
-            calculatedSalary = null;
+        calculatedSalary = null;
 
-            showAlert(Alert.AlertType.INFORMATION,
-                    "Success",
-                    "Salary saved + history updated!");
-        } else {
-
-            showAlert(Alert.AlertType.ERROR,
-                    "Error",
-                    "Salary could not be saved!");
-        }
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Success",
+                "Salary saved successfully!"
+        );
     }
-
     @FXML
     private void handleDeleteSalary() {
 
