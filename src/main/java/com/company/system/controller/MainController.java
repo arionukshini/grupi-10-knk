@@ -197,7 +197,7 @@ public class MainController {
         profileButton.setUserData(new NavItem("S", LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
-        languageButton.setText("L");
+        languageButton.setText("Aa");
         updateSidebarLabels();
         updateLoggedInUser();
 
@@ -309,6 +309,21 @@ public class MainController {
         }
 
         activeButton.requestFocus();
+    }
+
+    private void clearActiveButton() {
+        List<Button> buttons = List.of(
+                dashboardButton,
+                employeesButton,
+                contractsButton,
+                salariesButton,
+                departmentsButton,
+                profileButton
+        );
+
+        for (Button button : buttons) {
+            button.getStyleClass().remove("active");
+        }
     }
 
     @FXML
@@ -510,6 +525,7 @@ public class MainController {
     public void showHelp() {
         currentView = "help";
         setStatus(LanguageManager.get("status.help"));
+        clearActiveButton();
 
         boolean sq = isAlbanian();
         Label title = new Label(LanguageManager.get("help.title"));
@@ -644,7 +660,7 @@ public class MainController {
             showProfile();
         });
 
-        HBox languageRow = new HBox(12, languageBox, languageMessage);
+        VBox languageRow = new VBox(6, languageBox, languageMessage);
         languageMessage.setText(profileLanguageChanged ? LanguageManager.get("account.language.success") : "");
         profileLanguageChanged = false;
 

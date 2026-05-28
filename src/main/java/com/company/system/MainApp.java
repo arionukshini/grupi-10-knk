@@ -38,8 +38,8 @@ public class MainApp extends Application {
             );
 
             Scene scene = new Scene(loader.load(),
-                    boundedWidth(primaryStage.getWidth() > 0 ? primaryStage.getWidth() : 900),
-                    boundedHeight(primaryStage.getHeight() > 0 ? primaryStage.getHeight() : 650)
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -59,8 +59,8 @@ public class MainApp extends Application {
             );
 
             Scene scene = new Scene(loader.load(),
-                    boundedWidth(primaryStage.getWidth() > 0 ? primaryStage.getWidth() : 900),
-                    boundedHeight(primaryStage.getHeight() > 0 ? primaryStage.getHeight() : 650)
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -82,8 +82,8 @@ public class MainApp extends Application {
 
             Scene scene = new Scene(
                     loader.load(),
-                    boundedWidth(primaryStage.getWidth()),
-                    boundedHeight(primaryStage.getHeight())
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -108,5 +108,15 @@ public class MainApp extends Application {
     private static double boundedHeight(double requestedHeight) {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         return Math.min(Math.max(requestedHeight, primaryStage.getMinHeight()), bounds.getHeight());
+    }
+
+    private static double currentSceneWidth() {
+        Scene scene = primaryStage.getScene();
+        return boundedWidth(scene == null || scene.getWidth() <= 0 ? 900 : scene.getWidth());
+    }
+
+    private static double currentSceneHeight() {
+        Scene scene = primaryStage.getScene();
+        return boundedHeight(scene == null || scene.getHeight() <= 0 ? 650 : scene.getHeight());
     }
 }
