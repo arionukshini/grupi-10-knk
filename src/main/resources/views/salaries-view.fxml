@@ -23,6 +23,8 @@
                 <TableColumn fx:id="vacationColumn" text="Pushime"/>
                 <TableColumn fx:id="workHoursColumn" text="Orë pune"/>
                 <TableColumn fx:id="overtimeColumn" text="Orë shtesë"/>
+                <TableColumn fx:id="netColumn" text="Neto"/>
+                <TableColumn fx:id="dateColumn" text="Data"/>
             </TableView>
         </VBox>
     </content>
