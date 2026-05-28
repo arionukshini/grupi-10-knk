@@ -6,6 +6,7 @@ public class Salary {
 
     private final int id;
     private final int employeeId;
+    private final String employeeName;
 
     private final double grossSalary;
     private final double bonus;
@@ -25,6 +26,7 @@ public class Salary {
     public Salary(
             int id,
             int employeeId,
+            String employeeName,
             double grossSalary,
             double bonus,
             double deductions,
@@ -38,6 +40,7 @@ public class Salary {
     ) {
         this.id = id;
         this.employeeId = employeeId;
+        this.employeeName = employeeName;
         this.grossSalary = grossSalary;
         this.bonus = bonus;
         this.deductions = deductions;
@@ -50,12 +53,47 @@ public class Salary {
         this.paymentDate = paymentDate;
     }
 
+    public Salary(
+            int id,
+            int employeeId,
+            double grossSalary,
+            double bonus,
+            double deductions,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double dailyRate,
+            double overtimePay,
+            double netSalary,
+            Date paymentDate
+    ) {
+        this(
+                id,
+                employeeId,
+                "",
+                grossSalary,
+                bonus,
+                deductions,
+                vacationDays,
+                workHours,
+                overtimeHours,
+                dailyRate,
+                overtimePay,
+                netSalary,
+                paymentDate
+        );
+    }
+
     public int getId() {
         return id;
     }
 
     public int getEmployeeId() {
         return employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
     }
 
     public double getGrossSalary() {

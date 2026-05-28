@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
+<?import java.lang.String?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -46,11 +48,28 @@
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <TextField fx:id="contractTypeField" promptText="Lloji i kontrates" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="contractTypeField" value="Full-Time" promptText="Lloji i kontrates" prefWidth="180" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Full-Time"/>
+                                <String fx:value="Part-Time"/>
+                                <String fx:value="Temporary"/>
+                                <String fx:value="Internship"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
                     <TextField fx:id="salaryField" promptText="Paga" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
                     <DatePicker fx:id="startDatePicker" promptText="Data e fillimit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <TextField fx:id="statusField" promptText="Statusi" text="Active" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="statusField" value="Active" promptText="Statusi" prefWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="2">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Active"/>
+                                <String fx:value="Expired"/>
+                                <String fx:value="Pending"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
                 </GridPane>
 
                 <HBox spacing="10">
