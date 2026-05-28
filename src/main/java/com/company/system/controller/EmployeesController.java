@@ -28,6 +28,12 @@ public class EmployeesController {
     private Label titleLabel;
 
     @FXML
+    private Label subtitleLabel;
+
+    @FXML
+    private Label formTitleLabel;
+
+    @FXML
     private TextField searchField;
 
     @FXML
@@ -113,7 +119,9 @@ public class EmployeesController {
 
     private void loadTexts() {
         titleLabel.setText(LanguageManager.get("menu.employees"));
+        subtitleLabel.setText(LanguageManager.get("employees.subtitle"));
         searchField.setPromptText(LanguageManager.get("employees.search"));
+        formTitleLabel.setText(LanguageManager.get("employees.form"));
 
         idColumn.setText(LanguageManager.get("table.id"));
         firstNameColumn.setText(LanguageManager.get("employees.firstName"));
@@ -219,9 +227,9 @@ public class EmployeesController {
         if (EmployeeService.addEmployee(employee)) {
             loadEmployees();
             clearForm();
-            showInfo("Punetori u shtua me sukses.");
+            showInfo(LanguageManager.get("employees.add.success"));
         } else {
-            showError("Punetori nuk u shtua. Kontrolloni te dhenat ose databazen.");
+            showError(LanguageManager.get("employees.add.error"));
         }
     }
 
@@ -230,7 +238,7 @@ public class EmployeesController {
         Employee selectedEmployee = employeesTable.getSelectionModel().getSelectedItem();
 
         if (selectedEmployee == null) {
-            showError("Zgjidhni nje punetor per perditesim.");
+            showError(LanguageManager.get("employees.select.update"));
             return;
         }
 
@@ -243,9 +251,9 @@ public class EmployeesController {
         if (EmployeeService.updateEmployee(employee)) {
             loadEmployees();
             clearForm();
-            showInfo("Punetori u perditesua me sukses.");
+            showInfo(LanguageManager.get("employees.update.success"));
         } else {
-            showError("Punetori nuk u perditesua.");
+            showError(LanguageManager.get("employees.update.error"));
         }
     }
 
@@ -254,7 +262,7 @@ public class EmployeesController {
         Employee selectedEmployee = employeesTable.getSelectionModel().getSelectedItem();
 
         if (selectedEmployee == null) {
-            showError("Zgjidhni nje punetor per fshirje.");
+            showError(LanguageManager.get("employees.select.delete"));
             return;
         }
 
@@ -265,9 +273,9 @@ public class EmployeesController {
         if (EmployeeService.deleteEmployee(selectedEmployee.getId())) {
             loadEmployees();
             clearForm();
-            showInfo("Punetori u fshi me sukses.");
+            showInfo(LanguageManager.get("employees.delete.success"));
         } else {
-            showError("Punetori nuk u fshi. Kontrolloni nese ka kontrata ose paga te lidhura.");
+            showError(LanguageManager.get("employees.delete.error"));
         }
     }
 
@@ -410,7 +418,7 @@ public class EmployeesController {
 
             if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                     || position.isEmpty() || hireDate == null || status.isEmpty()) {
-                showError("Plotesoni fushat kryesore.");
+                showError(LanguageManager.get("message.fillRequiredFields"));
                 return null;
             }
 
@@ -428,7 +436,7 @@ public class EmployeesController {
             );
 
         } catch (NumberFormatException e) {
-            showError("Department ID dhe paga duhet te jene numra valid.");
+            showError(LanguageManager.get("employees.number.error"));
             return null;
         }
     }
@@ -436,7 +444,7 @@ public class EmployeesController {
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         DialogUtils.style(alert);
-        alert.setTitle("Sukses");
+        alert.setTitle(LanguageManager.get("message.success.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
@@ -445,7 +453,7 @@ public class EmployeesController {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogUtils.style(alert);
-        alert.setTitle("Gabim");
+        alert.setTitle(LanguageManager.get("message.error.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

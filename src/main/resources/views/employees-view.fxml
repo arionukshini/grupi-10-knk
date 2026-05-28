@@ -21,7 +21,7 @@
 
             <VBox spacing="4">
                 <Label fx:id="titleLabel" text="Punetoret" styleClass="page-title"/>
-                <Label text="Menaxhoni punetoret dhe te dhenat e tyre nga databaza." styleClass="page-subtitle"/>
+                <Label fx:id="subtitleLabel" text="Menaxhoni punetoret dhe te dhenat e tyre nga databaza." styleClass="page-subtitle"/>
             </VBox>
 
             <HBox spacing="12" styleClass="content-card">
@@ -46,7 +46,7 @@
             </TableView>
 
             <VBox spacing="14" styleClass="content-card">
-                <Label text="Forma e punetorit" styleClass="section-title"/>
+                <Label fx:id="formTitleLabel" text="Forma e punetorit" styleClass="section-title"/>
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="firstNameField" promptText="Emri" GridPane.rowIndex="0" GridPane.columnIndex="0"/>

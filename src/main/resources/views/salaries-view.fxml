@@ -18,8 +18,8 @@
             </padding>
 
             <VBox spacing="4">
-                <Label text="Pagat" styleClass="page-title"/>
-                <Label text="Menaxhoni pagat dhe historikun e pagesave te punetoreve." styleClass="page-subtitle"/>
+                <Label fx:id="titleLabel" text="Pagat" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="Menaxhoni pagat dhe historikun e pagesave te punetoreve." styleClass="page-subtitle"/>
             </VBox>
 
             <TableView fx:id="salariesTable" prefHeight="280">
@@ -38,7 +38,7 @@
             </TableView>
 
             <VBox spacing="14" styleClass="content-card">
-                <Label text="Forma e pageses" styleClass="section-title"/>
+                <Label fx:id="formTitleLabel" text="Forma e pageses" styleClass="section-title"/>
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -55,14 +55,14 @@
                 <HBox spacing="10">
                     <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary" styleClass="primary-button"/>
                     <Button fx:id="saveButton" text="Ruaj" onAction="#handleSaveSalary" styleClass="success-button"/>
-                    <Button text="Perditeso" onAction="#handleUpdateSalary" styleClass="primary-button"/>
+                    <Button fx:id="updateButton" text="Perditeso" onAction="#handleUpdateSalary" styleClass="primary-button"/>
                     <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary" styleClass="danger-button"/>
-                    <Button text="Pastro" onAction="#clearFields" styleClass="secondary-button"/>
+                    <Button fx:id="clearButton" text="Pastro" onAction="#clearFields" styleClass="secondary-button"/>
                 </HBox>
             </VBox>
 
             <VBox spacing="12" styleClass="content-card">
-                <Label text="Historiku i pagave" styleClass="section-title"/>
+                <Label fx:id="historyTitleLabel" text="Historiku i pagave" styleClass="section-title"/>
 
                 <TableView fx:id="historyTable" prefHeight="220">
                     <columns>
