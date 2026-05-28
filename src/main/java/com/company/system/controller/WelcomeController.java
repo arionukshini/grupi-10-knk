@@ -99,31 +99,17 @@ public class WelcomeController {
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
         accessButton.setText(LanguageManager.get("login.button"));
 
-        if ("sq".equals(LanguageManager.getCurrentLocale().getLanguage())) {
-            headerSubtitleLabel.setText("Menaxhimi i punetoreve, kontratave dhe pagave");
-            subtitleLabel.setText("Menaxhoni punetoret, kontratat dhe pagat ne nje sistem te vetem.");
+        headerSubtitleLabel.setText(LanguageManager.get("welcome.headerSubtitle"));
+        subtitleLabel.setText(LanguageManager.get("welcome.subtitle"));
 
-            employeesCardTitle.setText(LanguageManager.get("menu.employees"));
-            employeesCardText.setText("Organizoni te dhenat e punetoreve");
+        employeesCardTitle.setText(LanguageManager.get("menu.employees"));
+        employeesCardText.setText(LanguageManager.get("welcome.employeesCard"));
 
-            contractsCardTitle.setText(LanguageManager.get("menu.contracts"));
-            contractsCardText.setText("Menaxhoni kontratat dhe marreveshjet");
+        contractsCardTitle.setText(LanguageManager.get("menu.contracts"));
+        contractsCardText.setText(LanguageManager.get("welcome.contractsCard"));
 
-            salariesCardTitle.setText(LanguageManager.get("menu.salaries"));
-            salariesCardText.setText("Kontrolloni te dhenat e pagave");
-        } else {
-            headerSubtitleLabel.setText("Employee, contract and payroll management");
-            subtitleLabel.setText("Manage employees, contracts and salaries in one system.");
-
-            employeesCardTitle.setText(LanguageManager.get("menu.employees"));
-            employeesCardText.setText("Organize employee records");
-
-            contractsCardTitle.setText(LanguageManager.get("menu.contracts"));
-            contractsCardText.setText("Manage contracts and agreements");
-
-            salariesCardTitle.setText(LanguageManager.get("menu.salaries"));
-            salariesCardText.setText("Review payroll information");
-        }
+        salariesCardTitle.setText(LanguageManager.get("menu.salaries"));
+        salariesCardText.setText(LanguageManager.get("welcome.salariesCard"));
 
         albanianButton.setText("SQ");
         englishButton.setText("EN");

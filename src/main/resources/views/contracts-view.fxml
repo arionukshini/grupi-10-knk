@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import java.lang.String?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.ContractController"
+            fitToWidth="true"
+            pannable="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="18" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="4">
+                <Label fx:id="titleLabel" text="Kontratat" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="Menaxhoni kontratat dhe lidhjen e tyre me punetoret." styleClass="page-subtitle"/>
+            </VBox>
+
+            <HBox spacing="12" styleClass="content-card">
+                <TextField fx:id="searchField"
+                           promptText="Kerko sipas punetorit, llojit te kontrates ose statusit"
+                           prefWidth="430"/>
+            </HBox>
+
+            <TableView fx:id="contractsTable" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
+                    <TableColumn fx:id="employeeIdColumn" text="Employee ID" prefWidth="95"/>
+                    <TableColumn fx:id="employeeNameColumn" text="Punetori" prefWidth="170"/>
+                    <TableColumn fx:id="contractTypeColumn" text="Lloji" prefWidth="130"/>
+                    <TableColumn fx:id="startDateColumn" text="Fillimi" prefWidth="105"/>
+                    <TableColumn fx:id="endDateColumn" text="Mbarimi" prefWidth="105"/>
+                    <TableColumn fx:id="salaryColumn" text="Paga" prefWidth="90"/>
+                    <TableColumn fx:id="statusColumn" text="Statusi" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <VBox spacing="14" styleClass="content-card">
+                <Label fx:id="formTitleLabel" text="Forma e kontrates" styleClass="section-title"/>
+
+                <GridPane hgap="12" vgap="12">
+                    <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="contractTypeField" value="Full-Time" promptText="Lloji i kontrates" prefWidth="180" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Full-Time"/>
+                                <String fx:value="Part-Time"/>
+                                <String fx:value="Temporary"/>
+                                <String fx:value="Internship"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                    <TextField fx:id="salaryField" promptText="Paga" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                    <DatePicker fx:id="startDatePicker" promptText="Data e fillimit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="statusField" value="Active" promptText="Statusi" prefWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="2">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Active"/>
+                                <String fx:value="Expired"/>
+                                <String fx:value="Pending"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </GridPane>
+
+                <HBox spacing="10">
+                    <Button fx:id="addButton" text="Shto" onAction="#addContract" styleClass="success-button"/>
+                    <Button fx:id="updateButton" text="Perditeso" onAction="#updateContract" styleClass="primary-button"/>
+                    <Button fx:id="deleteButton" text="Fshi" onAction="#deleteContract" styleClass="danger-button"/>
+                    <Button fx:id="clearButton" text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

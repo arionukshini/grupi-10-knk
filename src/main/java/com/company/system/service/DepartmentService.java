@@ -3,30 +3,34 @@ package com.company.system.service;
 import com.company.system.db.DBConnection;
 import com.company.system.model.Department;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DepartmentService {
 
     public static List<Department> getAllDepartments() {
-
         List<Department> departments = new ArrayList<>();
 
-        String sql = "SELECT * FROM departments";
+        String sql = """
+                SELECT id, name, description
+                FROM departments
+                ORDER BY id
+                """;
 
         try (
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()
         ) {
-
             while (rs.next()) {
-
                 Department department = new Department(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("location")
+                        rs.getString("description")
                 );
 
                 departments.add(department);
@@ -39,14 +43,9 @@ public class DepartmentService {
         return departments;
     }
 
-    public static void addDepartment(Department department) {
-
+    public static boolean addDepartment(Department department) {
         String sql = """
-                INSERT INTO departments
-                (
-                    name,
-                    location
-                )
+                INSERT INTO departments (name, description)
                 VALUES (?, ?)
                 """;
 
@@ -54,16 +53,56 @@ public class DepartmentService {
                 Connection conn = DBConnection.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-
             stmt.setString(1, department.getName());
-            stmt.setString(2, department.getLocation());
+            stmt.setString(2, department.getDescription());
 
-            stmt.executeUpdate();
-
-            System.out.println("Department added successfully!");
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Database error: " + e.getMessage());
         }
+
+        return false;
+    }
+
+    public static boolean updateDepartment(Department department) {
+        String sql = """
+                UPDATE departments
+                SET name = ?, description = ?
+                WHERE id = ?
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setString(1, department.getName());
+            stmt.setString(2, department.getDescription());
+            stmt.setInt(3, department.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    public static boolean deleteDepartment(int departmentId) {
+        String sql = "DELETE FROM departments WHERE id = ?";
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, departmentId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        }
+
+        return false;
     }
 }
