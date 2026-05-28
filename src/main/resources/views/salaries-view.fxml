@@ -13,6 +13,9 @@
                 <Label text="Pagat"/>
                 <Label text="Llogaritja mujore përfshin..."/>
             </VBox>
+            <TableView fx:id="salariesTable"
+                       prefHeight="280">
+            </TableView>
         </VBox>
     </content>
 </ScrollPane>
