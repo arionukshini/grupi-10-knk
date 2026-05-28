@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.service.ContractService;
 import com.company.system.utils.DialogUtils;
@@ -40,10 +41,31 @@ public class ContractController {
 
     @FXML
     public void initialize() {
+        loadTexts();
         setupTable();
         setupSearch();
         setupSelection();
         loadContracts();
+    }
+
+    private void loadTexts() {
+        searchField.setPromptText(LanguageManager.get("contracts.search"));
+
+        idColumn.setText(LanguageManager.get("table.id"));
+        employeeIdColumn.setText(LanguageManager.get("contracts.employeeId"));
+        employeeNameColumn.setText(LanguageManager.get("contracts.employee"));
+        contractTypeColumn.setText(LanguageManager.get("contracts.type"));
+        startDateColumn.setText(LanguageManager.get("contracts.startDate"));
+        endDateColumn.setText(LanguageManager.get("contracts.endDate"));
+        salaryColumn.setText(LanguageManager.get("contracts.salary"));
+        statusColumn.setText(LanguageManager.get("contracts.status"));
+
+        employeeIdField.setPromptText(LanguageManager.get("contracts.employeeId"));
+        contractTypeField.setPromptText(LanguageManager.get("contracts.type"));
+        startDatePicker.setPromptText(LanguageManager.get("contracts.startDate"));
+        endDatePicker.setPromptText(LanguageManager.get("contracts.endDate"));
+        salaryField.setPromptText(LanguageManager.get("contracts.salary"));
+        statusField.setPromptText(LanguageManager.get("contracts.status"));
     }
 
     private void setupTable() {

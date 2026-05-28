@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Salary;
 import com.company.system.service.SalaryService;
 import com.company.system.utils.DialogUtils;
@@ -103,6 +104,7 @@ public class SalariesController {
 
     @FXML
     public void initialize() {
+        loadTexts();
         setupSortedTables();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -133,6 +135,34 @@ public class SalariesController {
                         fillForm(selectedSalary);
                     }
                 });
+    }
+
+    private void loadTexts() {
+        idColumn.setText(LanguageManager.get("table.id"));
+        employeeColumn.setText(LanguageManager.get("salaries.employee"));
+        grossColumn.setText(LanguageManager.get("salaries.gross"));
+        bonusColumn.setText(LanguageManager.get("salaries.bonus"));
+        deductionsColumn.setText(LanguageManager.get("salaries.deductions"));
+        vacationColumn.setText(LanguageManager.get("salaries.vacation"));
+        workHoursColumn.setText(LanguageManager.get("salaries.workHours"));
+        overtimeColumn.setText(LanguageManager.get("salaries.overtime"));
+        netColumn.setText(LanguageManager.get("salaries.net"));
+        dateColumn.setText(LanguageManager.get("salaries.paymentDate"));
+
+        historyDateColumn.setText(LanguageManager.get("salaries.paymentDate"));
+        historyGrossColumn.setText(LanguageManager.get("salaries.gross"));
+        historyBonusColumn.setText(LanguageManager.get("salaries.bonus"));
+        historyNetColumn.setText(LanguageManager.get("salaries.net"));
+
+        employeeIdField.setPromptText(LanguageManager.get("salaries.employeeId"));
+        baseSalaryField.setPromptText(LanguageManager.get("salaries.baseSalary"));
+        workedDaysField.setPromptText(LanguageManager.get("salaries.workedDays"));
+        vacationDaysField.setPromptText(LanguageManager.get("salaries.vacationDays"));
+        workHoursField.setPromptText(LanguageManager.get("salaries.workHours"));
+        overtimeHoursField.setPromptText(LanguageManager.get("salaries.overtimeHours"));
+        bonusField.setPromptText(LanguageManager.get("salaries.bonus"));
+        deductionsField.setPromptText(LanguageManager.get("salaries.deductions"));
+        paymentDatePicker.setPromptText(LanguageManager.get("salaries.paymentDate"));
     }
 
     private void setupSortedTables() {

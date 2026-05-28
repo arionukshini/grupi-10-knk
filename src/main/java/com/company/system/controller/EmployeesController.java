@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Employee;
 import com.company.system.service.EmployeeService;
 import com.company.system.utils.DialogUtils;
@@ -103,10 +104,41 @@ public class EmployeesController {
 
     @FXML
     public void initialize() {
+        loadTexts();
         setupTable();
         setupSearch();
         setupSelection();
         loadEmployees();
+    }
+
+    private void loadTexts() {
+        titleLabel.setText(LanguageManager.get("menu.employees"));
+        searchField.setPromptText(LanguageManager.get("employees.search"));
+
+        idColumn.setText(LanguageManager.get("table.id"));
+        firstNameColumn.setText(LanguageManager.get("employees.firstName"));
+        lastNameColumn.setText(LanguageManager.get("employees.lastName"));
+        emailColumn.setText(LanguageManager.get("employees.email"));
+        phoneColumn.setText(LanguageManager.get("employees.phone"));
+        positionColumn.setText(LanguageManager.get("employees.position"));
+        departmentColumn.setText(LanguageManager.get("employees.departmentId"));
+        hireDateColumn.setText(LanguageManager.get("employees.hireDate"));
+        salaryColumn.setText(LanguageManager.get("employees.salary"));
+        statusColumn.setText(LanguageManager.get("employees.status"));
+
+        firstNameField.setPromptText(LanguageManager.get("employees.firstName"));
+        lastNameField.setPromptText(LanguageManager.get("employees.lastName"));
+        emailField.setPromptText(LanguageManager.get("employees.email"));
+        phoneField.setPromptText(LanguageManager.get("employees.phone"));
+        positionField.setPromptText(LanguageManager.get("employees.position"));
+        departmentIdField.setPromptText(LanguageManager.get("employees.departmentId"));
+        hireDatePicker.setPromptText(LanguageManager.get("employees.hireDate"));
+        salaryField.setPromptText(LanguageManager.get("employees.baseSalary"));
+
+        addButton.setText(LanguageManager.get("employees.add"));
+        updateButton.setText(LanguageManager.get("employees.update"));
+        deleteButton.setText(LanguageManager.get("employees.delete"));
+        clearButton.setText(LanguageManager.get("employees.clear"));
     }
 
     private void setupTable() {
@@ -246,10 +278,10 @@ public class EmployeesController {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
 
-        ButtonType yesType = new ButtonType("Po, fshije", ButtonBar.ButtonData.YES);
-        ButtonType noType = new ButtonType("Jo", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType yesType = new ButtonType(LanguageManager.get("employees.delete.confirm.yes"), ButtonBar.ButtonData.YES);
+        ButtonType noType = new ButtonType(LanguageManager.get("employees.delete.confirm.no"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(yesType, noType);
-        alert.setTitle("Fshi punetorin");
+        alert.setTitle(LanguageManager.get("employees.delete.confirm.title"));
         alert.setHeaderText(null);
 
         Label icon = new Label("!");
@@ -278,7 +310,7 @@ public class EmployeesController {
                 -fx-text-alignment: center;
                 """);
 
-        Label subtitle = new Label("This will also delete their contracts, salaries, and salary history.");
+        Label subtitle = new Label(LanguageManager.get("employees.delete.confirm.subtitle"));
         subtitle.setWrapText(true);
         subtitle.setMinWidth(0);
         subtitle.setPrefWidth(contentWidth);
