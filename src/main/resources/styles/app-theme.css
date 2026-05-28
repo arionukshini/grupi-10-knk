@@ -431,6 +431,20 @@
     -fx-text-fill: -text-main;
 }
 
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend .label,
+.chart-pie-label {
+    -fx-text-fill: -text-main;
+}
+
+.main-shell.dark .chart-legend .label,
+.main-shell.dark .chart-pie-label {
+    -fx-text-fill: white;
+}
+
 .dialog-pane.app-dialog {
     -fx-background-color: #f6fbff;
     -fx-background-radius: 12;
