@@ -83,12 +83,12 @@
                         onAction="#toggleTheme"/>
             </HBox>
 
-            <Button fx:id="settingsButton"
+            <Button fx:id="themeButton2"
                     text="⚙"
                     styleClass="footer-icon-button"
                     visible="false"
                     managed="false"
-                    onAction="#showProfile"/>
+                    onAction="#toggleTheme"/>
         </VBox>
     </left>
 

@@ -110,7 +110,7 @@ public class MainController {
     private Button helpFooterButton;
 
     @FXML
-    private Button settingsButton;
+    private Button themeButton2;
 
     @FXML
     private StackPane contentArea;
@@ -215,7 +215,7 @@ public class MainController {
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
         setIconOnlyButton(languageButton, ICON_LANGUAGE);
         setIconOnlyButton(helpFooterButton, ICON_HELP);
-        setIconOnlyButton(settingsButton, ICON_SETTINGS);
+        setIconOnlyButton(themeButton2, ICON_SETTINGS);
         updateSidebarLabels();
         updateLoggedInUser();
 
@@ -232,6 +232,7 @@ public class MainController {
 
     private void updateThemeButton() {
         setIconOnlyButton(themeButton, darkMode ? ICON_SUN : ICON_MOON);
+        setIconOnlyButton(themeButton2, darkMode ? ICON_SUN : ICON_MOON);
     }
 
     private void updateSidebarState() {
@@ -248,8 +249,8 @@ public class MainController {
         if (sidebarExpanded) {
             expandedFooter.setVisible(true);
             expandedFooter.setManaged(true);
-            settingsButton.setVisible(false);
-            settingsButton.setManaged(false);
+            themeButton2.setVisible(false);
+            themeButton2.setManaged(false);
         } else {
             sidebar.getStyleClass().add("collapsed");
             expandedFooter.setOpacity(1);
@@ -282,8 +283,8 @@ public class MainController {
             expandedFooter.setVisible(sidebarExpanded);
             expandedFooter.setManaged(sidebarExpanded);
             expandedFooter.setOpacity(sidebarExpanded ? 1 : 0);
-            settingsButton.setVisible(!sidebarExpanded);
-            settingsButton.setManaged(!sidebarExpanded);
+            themeButton2.setVisible(!sidebarExpanded);
+            themeButton2.setManaged(!sidebarExpanded);
             menuToggleButton.setDisable(false);
             updateSidebarLabels();
         });
