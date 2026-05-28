@@ -156,6 +156,41 @@
                     </HBox>
              </VBox>
             </HBox>
+
+            <!-- History Table -->
+            <TableView fx:id="historyTable"
+                       prefHeight="220"
+                       columnResizePolicy="CONSTRAINED_RESIZE_POLICY"
+                       style="-fx-background-color: white;
+                  -fx-border-color: #d9e2ec;
+                  -fx-border-radius: 8;
+                  -fx-background-radius: 8;">
+
+                <placeholder>
+                    <Label text="Nuk ka histori të pagave"/>
+                </placeholder>
+
+                <columns>
+
+                    <TableColumn fx:id="historyDateColumn"
+                                 text="Data"
+                                 prefWidth="150"/>
+
+                    <TableColumn fx:id="historyGrossColumn"
+                                 text="Bruto"
+                                 prefWidth="150"/>
+
+                    <TableColumn fx:id="historyBonusColumn"
+                                 text="Bonusi"
+                                 prefWidth="150"/>
+
+                    <TableColumn fx:id="historyNetColumn"
+                                 text="Neto"
+                                 prefWidth="150"/>
+
+                </columns>
+
+            </TableView>
         </VBox>
     </content>
 </ScrollPane>
