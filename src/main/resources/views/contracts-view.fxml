@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.ContractController"
+            fitToWidth="true"
+            pannable="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="18" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="4">
+                <Label text="Kontratat" styleClass="page-title"/>
+                <Label text="Menaxhoni kontratat dhe lidhjen e tyre me punetoret." styleClass="page-subtitle"/>
+            </VBox>
+
+            <HBox spacing="12" styleClass="content-card">
+                <TextField fx:id="searchField"
+                           promptText="Kerko sipas punetorit, llojit te kontrates ose statusit"
+                           prefWidth="430"/>
+            </HBox>
+
+            <TableView fx:id="contractsTable" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
+                    <TableColumn fx:id="employeeIdColumn" text="Employee ID" prefWidth="95"/>
+                    <TableColumn fx:id="employeeNameColumn" text="Punetori" prefWidth="170"/>
+                    <TableColumn fx:id="contractTypeColumn" text="Lloji" prefWidth="130"/>
+                    <TableColumn fx:id="startDateColumn" text="Fillimi" prefWidth="105"/>
+                    <TableColumn fx:id="endDateColumn" text="Mbarimi" prefWidth="105"/>
+                    <TableColumn fx:id="salaryColumn" text="Paga" prefWidth="90"/>
+                    <TableColumn fx:id="statusColumn" text="Statusi" prefWidth="100"/>
+                </columns>
+            </TableView>
+
+            <VBox spacing="14" styleClass="content-card">
+                <Label text="Forma e kontrates" styleClass="section-title"/>
+
+                <GridPane hgap="12" vgap="12">
+                    <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <TextField fx:id="contractTypeField" promptText="Lloji i kontrates" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <TextField fx:id="salaryField" promptText="Paga" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                    <DatePicker fx:id="startDatePicker" promptText="Data e fillimit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <TextField fx:id="statusField" promptText="Statusi" text="Active" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                </GridPane>
+
+                <HBox spacing="10">
+                    <Button text="Shto" onAction="#addContract" styleClass="success-button"/>
+                    <Button text="Perditeso" onAction="#updateContract" styleClass="primary-button"/>
+                    <Button text="Fshi" onAction="#deleteContract" styleClass="danger-button"/>
+                    <Button text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

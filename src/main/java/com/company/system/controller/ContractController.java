@@ -6,6 +6,7 @@ import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -13,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class TableController {
+public class ContractController {
 
     private final ObservableList<Contract> contracts = FXCollections.observableArrayList();
     private FilteredList<Contract> filteredContracts;
@@ -46,6 +47,7 @@ public class TableController {
     }
 
     private void setupTable() {
+        contractsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
         employeeNameColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
@@ -58,15 +60,15 @@ public class TableController {
 
     private void setupSearch() {
         filteredContracts = new FilteredList<>(contracts, contract -> true);
-        contractsTable.setItems(filteredContracts);
+        SortedList<Contract> sortedContracts = new SortedList<>(filteredContracts);
+        sortedContracts.comparatorProperty().bind(contractsTable.comparatorProperty());
+        contractsTable.setItems(sortedContracts);
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+        searchField.textProperty().addListener((obs, oldValue, newValue) -> {
             String keyword = newValue == null ? "" : newValue.toLowerCase().trim();
 
             filteredContracts.setPredicate(contract -> {
-                if (keyword.isEmpty()) {
-                    return true;
-                }
+                if (keyword.isEmpty()) return true;
 
                 return contains(contract.getEmployeeName(), keyword)
                         || contains(contract.getContractType(), keyword)
@@ -81,7 +83,7 @@ public class TableController {
 
     private void setupSelection() {
         contractsTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldContract, selectedContract) -> {
+                (obs, oldContract, selectedContract) -> {
                     if (selectedContract != null) {
                         fillForm(selectedContract);
                     }
@@ -112,16 +114,14 @@ public class TableController {
     private void addContract() {
         Contract contract = readForm(0);
 
-        if (contract == null) {
-            return;
-        }
+        if (contract == null) return;
 
         if (ContractService.addContract(contract)) {
             loadContracts();
             clearForm();
             showInfo("Kontrata u shtua me sukses.");
         } else {
-            showError("Kontrata nuk u shtua. Kontrolloni Employee ID ose databazen.");
+            showError("Kontrata nuk u shtua.");
         }
     }
 
@@ -136,9 +136,7 @@ public class TableController {
 
         Contract contract = readForm(selectedContract.getId());
 
-        if (contract == null) {
-            return;
-        }
+        if (contract == null) return;
 
         if (ContractService.updateContract(contract)) {
             loadContracts();

@@ -1,130 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
+<BorderPane fx:id="mainShell"
+            styleClass="main-shell"
+            xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.MainController">
 
+    <stylesheets>
+        <URL value="@../styles/app-theme.css"/>
+    </stylesheets>
+
     <top>
-        <VBox spacing="5">
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="14">
             <padding>
-                <Insets top="5" right="5" bottom="5" left="5"/>
+                <Insets top="0" right="18" bottom="0" left="12"/>
             </padding>
-
-            <ToolBar>
-
-                <MenuBar fx:id="menuBar" focusTraversable="true">
-                    <menus>
-                        <Menu fx:id="fileMenu" text="☰">
-
-                            <items>
-                                <MenuItem fx:id="employeesMenuItem"
-                                          text="Punetoret"
-                                          onAction="#showEmployees"/>
-
-                                <MenuItem fx:id="contractsMenuItem"
-                                          text="Kontratat"
-                                          onAction="#showContracts"/>
-
-                                <MenuItem fx:id="salariesMenuItem"
-                                          text="Pagat"
-                                          onAction="#showSalaries"/>
-
-                                <MenuItem fx:id="dashboardMenuItem"
-                                          text="Paneli"
-                                          onAction="#showDashboard"/>
-
-                                <SeparatorMenuItem/>
-
-                                <MenuItem fx:id="albanianMenuItem"
-                                          text="Shqip"
-                                          onAction="#switchToAlbanian"/>
-
-                                <MenuItem fx:id="englishMenuItem"
-                                          text="Anglisht"
-                                          onAction="#switchToEnglish"/>
-
-                                <SeparatorMenuItem/>
-
-                                <MenuItem fx:id="helpMenuItem"
-                                          text="Ndihma"
-                                          onAction="#showHelp"/>
-
-                                <MenuItem fx:id="accountMenuItem"
-                                          text="Llogaria"
-                                          onAction="#showAccount"/>
-
-                                <SeparatorMenuItem/>
-
-                                <MenuItem fx:id="logoutMenuItem"
-                                          text="Shkycu"
-                                          onAction="#handleLogout"/>
-
-                                <MenuItem fx:id="exitMenuItem"
-                                          text="Dalje"
-                                          onAction="#handleExit"/>
-                            </items>
-                        </Menu>
-
-                        <Menu fx:id="manageMenu" text="" visible="false"/>
-                        <Menu fx:id="viewMenu" text="" visible="false"/>
-                        <Menu fx:id="languageMenu" text="" visible="false"/>
-                        <Menu fx:id="helpMenu" text="" visible="false"/>
-                        <Menu fx:id="accountMenu" text="" visible="false"/>
-                    </menus>
-                </MenuBar>
-
-                <Button fx:id="employeesButton"
-                        text="Employees"
-                        focusTraversable="true"
-                        onAction="#showEmployees"/>
-
-                <Button fx:id="contractsButton"
-                        text="Contracts"
-                        focusTraversable="true"
-                        onAction="#showContracts"/>
-
-                <Button fx:id="salariesButton"
-                        text="Salaries"
-                        focusTraversable="true"
-                        onAction="#showSalaries"/>
-
-                <Button fx:id="dashboardButton"
-                        text="Dashboard"
-                        focusTraversable="true"
-                        onAction="#showDashboard"/>
-
-            </ToolBar>
-        </VBox>
+            <Button fx:id="menuToggleButton"
+                    text="☰"
+                    styleClass="icon-button"
+                    onAction="#toggleSidebar"/>
+            <Label text="Contract Manager"
+                   styleClass="app-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="loggedInLabel"
+                   styleClass="logged-in-label"
+                   text="Logged in as: -"/>
+        </HBox>
     </top>
 
-    <center>
-        <StackPane fx:id="contentArea">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
+    <left>
+        <VBox fx:id="sidebar"
+              styleClass="sidebar"
+              alignment="CENTER"
+              spacing="10"
+              prefWidth="220"
+              minWidth="220">
+            <VBox styleClass="nav-list" alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+                <Button fx:id="dashboardButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showDashboard"/>
+                <Button fx:id="employeesButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showEmployees"/>
+                <Button fx:id="contractsButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showContracts"/>
+                <Button fx:id="salariesButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showSalaries"/>
+                <Button fx:id="departmentsButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showDepartments"/>
+                <Button fx:id="profileButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showProfile"/>
+            </VBox>
 
-            <children>
-                <Label fx:id="welcomeLabel"
-                       text="Welcome to Contract &amp; Payroll System"/>
-            </children>
+            <HBox fx:id="expandedFooter"
+                  styleClass="sidebar-footer"
+                  alignment="CENTER"
+                  spacing="8">
+                <Button fx:id="languageButton"
+                        styleClass="footer-icon-button"
+                        onAction="#toggleLanguage"/>
+                <Button fx:id="helpFooterButton"
+                        text="?"
+                        styleClass="footer-icon-button"
+                        onAction="#showHelp"/>
+                <Button fx:id="themeButton"
+                        styleClass="footer-icon-button"
+                        onAction="#toggleTheme"/>
+            </HBox>
+
+            <Button fx:id="themeButton2"
+                    text="⚙"
+                    styleClass="footer-icon-button"
+                    visible="false"
+                    managed="false"
+                    onAction="#toggleTheme"/>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+            <Label fx:id="welcomeLabel"
+                   text="Welcome to Contract Manager"
+                   styleClass="welcome-label"/>
         </StackPane>
     </center>
 
     <bottom>
-        <HBox spacing="10">
+        <HBox styleClass="status-bar" alignment="CENTER_LEFT">
             <padding>
-                <Insets top="5" right="5" bottom="5" left="5"/>
+                <Insets top="6" right="14" bottom="6" left="14"/>
             </padding>
-
-            <children>
-                <Label fx:id="statusLabel"
-                       text="Ready"/>
-            </children>
+            <Label fx:id="statusLabel" text="Ready"/>
         </HBox>
     </bottom>
-
 </BorderPane>

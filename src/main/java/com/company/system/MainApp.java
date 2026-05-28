@@ -3,7 +3,9 @@ package com.company.system;
 import com.company.system.db.DBConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -15,13 +17,16 @@ public class MainApp extends Application {
 
         primaryStage = stage;
 
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(900);
+        primaryStage.setMinHeight(650);
+
+        configureStageBounds();
 
         primaryStage.setTitle("Contract & Payroll System");
 
         DBConnection.initializeDatabase();
         showWelcome();
+        primaryStage.setMaximized(true);
     }
 
     // WELCOME
@@ -33,8 +38,8 @@ public class MainApp extends Application {
             );
 
             Scene scene = new Scene(loader.load(),
-                    primaryStage.getWidth() > 0 ? primaryStage.getWidth() : 800,
-                    primaryStage.getHeight() > 0 ? primaryStage.getHeight() : 500
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -54,8 +59,8 @@ public class MainApp extends Application {
             );
 
             Scene scene = new Scene(loader.load(),
-                    primaryStage.getWidth() > 0 ? primaryStage.getWidth() : 800,
-                    primaryStage.getHeight() > 0 ? primaryStage.getHeight() : 500
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -77,8 +82,8 @@ public class MainApp extends Application {
 
             Scene scene = new Scene(
                     loader.load(),
-                    primaryStage.getWidth(),
-                    primaryStage.getHeight()
+                    currentSceneWidth(),
+                    currentSceneHeight()
             );
 
             primaryStage.setScene(scene);
@@ -87,5 +92,31 @@ public class MainApp extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void configureStageBounds() {
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setMaxWidth(bounds.getWidth());
+        primaryStage.setMaxHeight(bounds.getHeight());
+    }
+
+    private static double boundedWidth(double requestedWidth) {
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+        return Math.min(Math.max(requestedWidth, primaryStage.getMinWidth()), bounds.getWidth());
+    }
+
+    private static double boundedHeight(double requestedHeight) {
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+        return Math.min(Math.max(requestedHeight, primaryStage.getMinHeight()), bounds.getHeight());
+    }
+
+    private static double currentSceneWidth() {
+        Scene scene = primaryStage.getScene();
+        return boundedWidth(scene == null || scene.getWidth() <= 0 ? 900 : scene.getWidth());
+    }
+
+    private static double currentSceneHeight() {
+        Scene scene = primaryStage.getScene();
+        return boundedHeight(scene == null || scene.getHeight() <= 0 ? 650 : scene.getHeight());
     }
 }

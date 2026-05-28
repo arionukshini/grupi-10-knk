@@ -147,6 +147,28 @@ public class UserService {
 
         return false;
     }
+
+    public static boolean deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect()) {
+
+            if (conn == null) {
+                return false;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, userId);
+                return stmt.executeUpdate() > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
         private static boolean userExists(String username, Connection conn) throws SQLException {
             String sql = "SELECT 1 FROM users WHERE username = ?";
 
