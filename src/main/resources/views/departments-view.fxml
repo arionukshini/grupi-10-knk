@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.company.system.controller.DepartmentsController"
+      spacing="18"
+      styleClass="departments-page">
+    <padding>
+        <Insets top="28" right="28" bottom="28" left="28"/>
+    </padding>
+
+    <VBox spacing="4">
+        <Label fx:id="titleLabel"
+               text="Departments"
+               styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="List of company departments and locations"
+               styleClass="page-subtitle"/>
+    </VBox>
+
+    <TableView fx:id="departmentsTable"
+               prefHeight="460"
+               columnResizePolicy="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="90"/>
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="360"/>
+            <TableColumn fx:id="locationColumn" text="Location" prefWidth="360"/>
+        </columns>
+    </TableView>
+</VBox>
