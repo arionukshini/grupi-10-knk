@@ -6,6 +6,7 @@ import com.company.system.service.DepartmentService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -99,7 +100,9 @@ public class DepartmentsController {
 
     private void setupSearch() {
         filteredDepartments = new FilteredList<>(departments, department -> true);
-        departmentsTable.setItems(filteredDepartments);
+        SortedList<Department> sortedDepartments = new SortedList<>(filteredDepartments);
+        sortedDepartments.comparatorProperty().bind(departmentsTable.comparatorProperty());
+        departmentsTable.setItems(sortedDepartments);
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             String keyword = newValue == null ? "" : newValue.toLowerCase().trim();

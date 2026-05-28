@@ -146,7 +146,9 @@
 }
 
 .dashboard-scroll,
+.module-scroll,
 .dashboard-page,
+.module-page,
 .departments-page,
 .profile-page {
     -fx-background-color: -surface-soft;
@@ -198,6 +200,28 @@
     -fx-text-fill: -text-main;
 }
 
+.text-field,
+.text-area,
+.combo-box,
+.date-picker {
+    -fx-background-color: -surface;
+    -fx-background-radius: 7;
+    -fx-border-color: -border;
+    -fx-border-radius: 7;
+    -fx-text-fill: -text-main;
+    -fx-prompt-text-fill: -text-muted;
+    -fx-min-height: 34;
+}
+
+.text-area .content {
+    -fx-background-color: -surface;
+}
+
+.combo-box .list-cell,
+.date-picker .text-field {
+    -fx-text-fill: -text-main;
+}
+
 .success-button,
 .primary-button,
 .danger-button {
@@ -205,6 +229,8 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-min-width: 88;
     -fx-padding: 7 14 7 14;
     -fx-cursor: hand;
 }
@@ -219,6 +245,20 @@
 
 .danger-button {
     -fx-background-color: #dc2626;
+}
+
+.secondary-button {
+    -fx-background-color: -surface-soft;
+    -fx-background-radius: 7;
+    -fx-border-color: -border;
+    -fx-border-radius: 7;
+    -fx-text-fill: -text-main;
+    -fx-font-weight: bold;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-min-width: 88;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
 }
 
 .table-view {
@@ -240,10 +280,28 @@
 .table-row-cell {
     -fx-background-color: -surface;
     -fx-text-background-color: -text-main;
+    -fx-cell-size: 34;
 }
 
 .table-row-cell:odd {
     -fx-background-color: -surface-soft;
+}
+
+.table-row-cell:selected,
+.table-row-cell:focused:selected {
+    -fx-background-color: -side-active;
+    -fx-table-cell-border-color: -side-active;
+    -fx-text-background-color: #031b34;
+}
+
+.table-row-cell:selected .table-cell,
+.table-row-cell:focused:selected .table-cell {
+    -fx-text-fill: #031b34;
+    -fx-font-weight: bold;
+}
+
+.table-view:focused .table-row-cell:selected {
+    -fx-background-insets: 0;
 }
 
 .chart,

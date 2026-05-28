@@ -5,6 +5,7 @@ import com.company.system.service.ContractService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -57,7 +58,9 @@ public class ContractController {
 
     private void setupSearch() {
         filteredContracts = new FilteredList<>(contracts, contract -> true);
-        contractsTable.setItems(filteredContracts);
+        SortedList<Contract> sortedContracts = new SortedList<>(filteredContracts);
+        sortedContracts.comparatorProperty().bind(contractsTable.comparatorProperty());
+        contractsTable.setItems(sortedContracts);
 
         searchField.textProperty().addListener((obs, oldValue, newValue) -> {
             String keyword = newValue == null ? "" : newValue.toLowerCase().trim();

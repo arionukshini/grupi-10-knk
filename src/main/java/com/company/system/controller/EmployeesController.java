@@ -5,6 +5,7 @@ import com.company.system.service.EmployeeService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -118,7 +119,9 @@ public class EmployeesController {
 
     private void setupSearch() {
         filteredEmployees = new FilteredList<>(employees, employee -> true);
-        employeesTable.setItems(filteredEmployees);
+        SortedList<Employee> sortedEmployees = new SortedList<>(filteredEmployees);
+        sortedEmployees.comparatorProperty().bind(employeesTable.comparatorProperty());
+        employeesTable.setItems(sortedEmployees);
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             String keyword = newValue == null ? "" : newValue.toLowerCase().trim();

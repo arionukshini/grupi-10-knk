@@ -4,6 +4,7 @@ import com.company.system.model.Salary;
 import com.company.system.service.SalaryService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -18,6 +19,9 @@ public class SalariesController {
 
     private final ObservableList<Salary> salaryHistory =
             FXCollections.observableArrayList();
+
+    private SortedList<Salary> sortedSalaries;
+    private SortedList<Salary> sortedSalaryHistory;
 
     private Salary calculatedSalary;
 
@@ -98,6 +102,7 @@ public class SalariesController {
 
     @FXML
     public void initialize() {
+        setupSortedTables();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
@@ -129,6 +134,16 @@ public class SalariesController {
                 });
     }
 
+    private void setupSortedTables() {
+        sortedSalaries = new SortedList<>(salaries);
+        sortedSalaries.comparatorProperty().bind(salariesTable.comparatorProperty());
+        salariesTable.setItems(sortedSalaries);
+
+        sortedSalaryHistory = new SortedList<>(salaryHistory);
+        sortedSalaryHistory.comparatorProperty().bind(historyTable.comparatorProperty());
+        historyTable.setItems(sortedSalaryHistory);
+    }
+
     private void fillForm(Salary salary) {
 
         employeeIdField.setText(String.valueOf(salary.getEmployeeId()));
@@ -147,7 +162,6 @@ public class SalariesController {
 
     private void loadSalaries() {
         salaries.setAll(SalaryService.getAllSalaries());
-        salariesTable.setItems(salaries);
     }
 
     private void loadSalaryHistory(int employeeId) {
@@ -156,7 +170,6 @@ public class SalariesController {
                 SalaryService.getSalaryHistory(employeeId)
         );
 
-        historyTable.setItems(salaryHistory);
     }
 
     @FXML
