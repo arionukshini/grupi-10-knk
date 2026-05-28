@@ -4,10 +4,15 @@
 <?import javafx.scene.layout.*?>
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.company.system.controller.SalariesController">
-
+            fx:controller="com.company.system.controller.SalariesController"
+            fitToWidth="true"
+            pannable="true">
     <content>
-        <VBox>
+        <VBox spacing="18">
+            <VBox spacing="4">
+                <Label text="Pagat"/>
+                <Label text="Llogaritja mujore përfshin..."/>
+            </VBox>
         </VBox>
     </content>
 </ScrollPane>
