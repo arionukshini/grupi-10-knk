@@ -15,8 +15,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -290,25 +292,115 @@ public class MainController {
 
     @FXML
     private void handleExit() {
-        Alert exit = new Alert(Alert.AlertType.CONFIRMATION);
-        DialogUtils.style(exit);
 
-        exit.setTitle(isAlbanian() ? "Dalje" : "Exit");
-        exit.setHeaderText(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
-        exit.setContentText(null);
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        DialogUtils.style(alert);
 
-        ButtonType mainMenuBtn = new ButtonType(isAlbanian() ? "Dil ne menune kryesore" : "Quit to Main Menu");
-        ButtonType desktopBtn = new ButtonType(isAlbanian() ? "Dil nga programi" : "Quit to Desktop");
-        ButtonType cancelBtn = new ButtonType(isAlbanian() ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.setTitle(isAlbanian() ? "Dalje" : "Exit");
+        alert.setHeaderText(null);
 
-        exit.getButtonTypes().setAll(mainMenuBtn, desktopBtn, cancelBtn);
+        ButtonType mainMenuType = new ButtonType(
+                isAlbanian() ? "Menyja kryesore" : "Main Menu",
+                ButtonBar.ButtonData.OTHER
+        );
 
-        Optional<ButtonType> result = exit.showAndWait();
+        ButtonType desktopType = new ButtonType(
+                isAlbanian() ? "Dil nga programi" : "Quit to Desktop",
+                ButtonBar.ButtonData.OTHER
+        );
+
+        ButtonType cancelType = new ButtonType(
+                isAlbanian() ? "Anulo" : "Cancel",
+                ButtonBar.ButtonData.CANCEL_CLOSE
+        );
+
+        alert.getButtonTypes().setAll(mainMenuType, desktopType, cancelType);
+
+        Label icon = new Label("🚪");
+        icon.setStyle("""
+            -fx-font-size: 64px;
+            -fx-padding: 10;
+            """);
+
+        Label title = new Label(
+                isAlbanian()
+                        ? "A jeni i sigurt qe doni te dilni?"
+                        : "Are you sure you want to exit?"
+        );
+
+        title.setWrapText(true);
+        title.setStyle("""
+            -fx-font-size: 18px;
+            -fx-font-weight: bold;
+            """);
+
+        Label subtitle = new Label(
+                isAlbanian()
+                        ? "Zgjidhni nje opsion per dalje."
+                        : "Choose an exit option."
+        );
+
+        subtitle.setStyle("""
+            -fx-font-size: 13px;
+            -fx-opacity: 0.8;
+            """);
+
+        VBox content = new VBox(12, icon, title, subtitle);
+        content.setAlignment(Pos.CENTER);
+
+        alert.getDialogPane().setPrefWidth(460);
+        alert.getDialogPane().setPrefHeight(365);
+
+        alert.getDialogPane().setContent(content);
+
+        Platform.runLater(() -> {
+
+            Button mainMenuBtn = (Button) alert.getDialogPane().lookupButton(mainMenuType);
+            Button desktopBtn = (Button) alert.getDialogPane().lookupButton(desktopType);
+            Button cancelBtn = (Button) alert.getDialogPane().lookupButton(cancelType);
+
+            mainMenuBtn.setMaxWidth(Double.MAX_VALUE);
+            desktopBtn.setMaxWidth(Double.MAX_VALUE);
+            cancelBtn.setMaxWidth(Double.MAX_VALUE);
+
+            mainMenuBtn.setPrefHeight(42);
+            desktopBtn.setPrefHeight(42);
+            cancelBtn.setPrefHeight(42);
+
+            mainMenuBtn.setStyle("""
+                -fx-background-color: #3b82f6;
+                -fx-text-fill: white;
+                -fx-font-weight: bold;
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                """);
+
+            desktopBtn.setStyle("""
+                -fx-background-color: #dc2626;
+                -fx-text-fill: white;
+                -fx-font-weight: bold;
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                """);
+
+            cancelBtn.setStyle("""
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                """);
+
+            VBox buttonBox = new VBox(10, mainMenuBtn, desktopBtn, cancelBtn);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.setFillWidth(true);
+
+            alert.getDialogPane().setContent(new VBox(18, content, buttonBox));
+        });
+
+        Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent()) {
-            if (result.get() == mainMenuBtn) {
+            if (result.get() == mainMenuType) {
                 showWelcome();
-            } else if (result.get() == desktopBtn) {
+            } else if (result.get() == desktopType) {
                 System.exit(0);
             }
         }
@@ -530,24 +622,120 @@ public class MainController {
     }
 
     private void confirmDeleteAccount(User user) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete account");
-        alert.setHeaderText(isAlbanian()
-                ? "A jeni i sigurt qe doni ta fshini llogarine?"
-                : "Are you sure you want to delete your account?");
-        alert.setContentText(null);
 
-        ButtonType yesButton = new ButtonType(isAlbanian() ? "Po" : "Yes");
-        ButtonType noButton = new ButtonType(isAlbanian() ? "Jo" : "No", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(yesButton, noButton);
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        DialogUtils.style(alert);
+
+        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete Account");
+        alert.setHeaderText(null);
+
+        ButtonType yesType = new ButtonType(
+                isAlbanian() ? "Po, fshije" : "Yes, Delete",
+                ButtonBar.ButtonData.YES
+        );
+
+        ButtonType noType = new ButtonType(
+                isAlbanian() ? "Jo" : "No",
+                ButtonBar.ButtonData.CANCEL_CLOSE
+        );
+
+        alert.getButtonTypes().setAll(yesType, noType);
+
+        Label icon = new Label("🗑");
+        icon.setStyle("""
+            -fx-font-size: 64px;
+            -fx-padding: 10;
+            """);
+
+        Label title = new Label(
+                isAlbanian()
+                        ? "A jeni i sigurt qe doni ta fshini llogarine?"
+                        : "Are you sure you want to delete your account?"
+        );
+
+        title.setWrapText(true);
+
+        title.setStyle("""
+            -fx-font-size: 18px;
+            -fx-font-weight: bold;
+            -fx-text-alignment: center;
+            """);
+
+        Label subtitle = new Label(
+                isAlbanian()
+                        ? "Ky veprim nuk mund te kthehet."
+                        : "This action cannot be undone."
+        );
+
+        subtitle.setStyle("""
+            -fx-font-size: 13px;
+            -fx-opacity: 0.8;
+            """);
+
+        VBox content = new VBox(15, icon, title, subtitle);
+        content.setAlignment(Pos.CENTER);
+
+        alert.getDialogPane().setContent(content);
+        alert.getDialogPane().setPrefWidth(460);
+        alert.getDialogPane().setPrefHeight(320);
+
+        Platform.runLater(() -> {
+
+            Button yesButton = (Button) alert.getDialogPane().lookupButton(yesType);
+            Button noButton = (Button) alert.getDialogPane().lookupButton(noType);
+
+            yesButton.setMaxWidth(Double.MAX_VALUE);
+            noButton.setMaxWidth(Double.MAX_VALUE);
+
+            yesButton.setPrefHeight(42);
+            noButton.setPrefHeight(42);
+
+            yesButton.setStyle("""
+                -fx-background-color: #dc2626;
+                -fx-text-fill: white;
+                -fx-font-weight: bold;
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                """);
+
+            noButton.setStyle("""
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                """);
+
+            VBox buttonBox = new VBox(10, yesButton, noButton);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.setFillWidth(true);
+
+            alert.getDialogPane().setContent(
+                    new VBox(20, content, buttonBox)
+            );
+        });
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == yesButton && UserService.deleteUser(user.getId())) {
-            Session.clear();
-            showWelcome();
+        if (result.isPresent() && result.get() == yesType) {
+
+            boolean deleted = UserService.deleteUser(user.getId());
+
+            if (deleted) {
+                Session.clear();
+                showWelcome();
+            }
         }
+    }
+
+    private Label createDialogIcon(String iconText, String fallbackText) {
+        Label icon = new Label(iconText);
+        icon.getStyleClass().add("dialog-icon");
+        icon.setMinSize(58, 58);
+        icon.setPrefSize(58, 58);
+
+        if (icon.getText() == null || icon.getText().isBlank()) {
+            icon.setText(fallbackText);
+        }
+
+        return icon;
     }
 
     private void loadView(String fxmlPath, Button activeButton, String errorMessage) {

@@ -15,13 +15,14 @@ public class MainApp extends Application {
 
         primaryStage = stage;
 
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(900);
+        primaryStage.setMinHeight(650);
 
         primaryStage.setTitle("Contract & Payroll System");
 
         DBConnection.initializeDatabase();
         showWelcome();
+        primaryStage.setMaximized(true);
     }
 
     // WELCOME
