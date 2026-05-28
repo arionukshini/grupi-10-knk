@@ -42,7 +42,7 @@
             </HBox>
 
             <TableView fx:id="departmentsTable"
-                       prefHeight="350"
+                       prefHeight="320"
                        minHeight="280">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
