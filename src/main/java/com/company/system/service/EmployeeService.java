@@ -162,15 +162,59 @@ public class EmployeeService {
 
     public static boolean deleteEmployee(int employeeId) {
 
-        String sql = "DELETE FROM employees WHERE id = ?";
+        String deleteSalaryHistorySql = """
+                DELETE FROM salary_history
+                WHERE employee_id = ?
+                   OR salary_id IN (
+                       SELECT id
+                       FROM salaries
+                       WHERE employee_id = ?
+                   )
+                """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+        String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
+        String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
+        String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
 
-            stmt.setInt(1, employeeId);
-            return stmt.executeUpdate() > 0;
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return false;
+            }
+
+            conn.setAutoCommit(false);
+
+            try (
+                    PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
+                    PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
+                    PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
+                    PreparedStatement employeeStmt = conn.prepareStatement(deleteEmployeeSql)
+            ) {
+                historyStmt.setInt(1, employeeId);
+                historyStmt.setInt(2, employeeId);
+                historyStmt.executeUpdate();
+
+                salariesStmt.setInt(1, employeeId);
+                salariesStmt.executeUpdate();
+
+                contractsStmt.setInt(1, employeeId);
+                contractsStmt.executeUpdate();
+
+                employeeStmt.setInt(1, employeeId);
+                boolean deleted = employeeStmt.executeUpdate() > 0;
+
+                if (deleted) {
+                    conn.commit();
+                } else {
+                    conn.rollback();
+                }
+
+                return deleted;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            } finally {
+                conn.setAutoCommit(true);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

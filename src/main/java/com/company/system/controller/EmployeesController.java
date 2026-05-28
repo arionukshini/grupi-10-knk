@@ -3,13 +3,17 @@ package com.company.system.controller;
 import com.company.system.model.Employee;
 import com.company.system.service.EmployeeService;
 import com.company.system.utils.DialogUtils;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -222,6 +226,10 @@ public class EmployeesController {
             return;
         }
 
+        if (!confirmDeleteEmployee(selectedEmployee)) {
+            return;
+        }
+
         if (EmployeeService.deleteEmployee(selectedEmployee.getId())) {
             loadEmployees();
             clearForm();
@@ -229,6 +237,103 @@ public class EmployeesController {
         } else {
             showError("Punetori nuk u fshi. Kontrolloni nese ka kontrata ose paga te lidhura.");
         }
+    }
+
+    private boolean confirmDeleteEmployee(Employee employee) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        DialogUtils.style(alert);
+
+        ButtonType yesType = new ButtonType("Po, fshije", ButtonBar.ButtonData.YES);
+        ButtonType noType = new ButtonType("Jo", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(yesType, noType);
+        alert.setTitle("Fshi punetorin");
+        alert.setHeaderText(null);
+
+        Label icon = new Label("!");
+        icon.setStyle("""
+                -fx-background-color: #fef2f2;
+                -fx-background-radius: 999;
+                -fx-border-color: #dc2626;
+                -fx-border-radius: 999;
+                -fx-text-fill: #dc2626;
+                -fx-font-size: 42px;
+                -fx-font-weight: bold;
+                -fx-alignment: center;
+                -fx-min-width: 76;
+                -fx-min-height: 76;
+                """);
+
+        Label title = new Label("Fshirja e ketij punetori do te fshije edhe kontratat, pagat dhe historikun e pagave.");
+        title.setWrapText(true);
+        title.setMinWidth(0);
+        title.setMaxWidth(300);
+        title.setAlignment(Pos.CENTER);
+        title.setStyle("""
+                -fx-font-size: 18px;
+                -fx-font-weight: bold;
+                -fx-text-alignment: center;
+                """);
+
+        Label subtitle = new Label(employee.getFirstName() + " " + employee.getLastName());
+        subtitle.setStyle("""
+                -fx-font-size: 13px;
+                -fx-opacity: 0.8;
+                """);
+
+        VBox content = new VBox(15, icon, title, subtitle);
+        content.setAlignment(Pos.CENTER);
+        content.setFillWidth(true);
+        content.setMinWidth(0);
+        content.setMaxWidth(320);
+        title.prefWidthProperty().bind(content.widthProperty());
+
+        alert.getDialogPane().setContent(content);
+        alert.getDialogPane().setPrefWidth(460);
+        alert.getDialogPane().setMinWidth(460);
+        alert.getDialogPane().setPrefHeight(320);
+
+        Platform.runLater(() -> {
+            Button yesButton = (Button) alert.getDialogPane().lookupButton(yesType);
+            Button noButton = (Button) alert.getDialogPane().lookupButton(noType);
+
+            yesButton.setMaxWidth(Double.MAX_VALUE);
+            noButton.setMaxWidth(Double.MAX_VALUE);
+
+            yesButton.setPrefHeight(42);
+            noButton.setPrefHeight(42);
+
+            yesButton.setStyle("""
+                    -fx-background-color: #dc2626;
+                    -fx-text-fill: white;
+                    -fx-font-weight: bold;
+                    -fx-background-radius: 10;
+                    -fx-cursor: hand;
+                    """);
+
+            noButton.setStyle("""
+                    -fx-background-radius: 10;
+                    -fx-cursor: hand;
+                    """);
+
+            VBox buttonBox = new VBox(10, yesButton, noButton);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.setFillWidth(true);
+            buttonBox.setMinWidth(0);
+            buttonBox.setMaxWidth(Double.MAX_VALUE);
+
+            VBox popupContent = new VBox(20, content, buttonBox);
+            popupContent.setAlignment(Pos.CENTER);
+            popupContent.setFillWidth(true);
+            popupContent.setMinWidth(0);
+            popupContent.setMaxWidth(Double.MAX_VALUE);
+            VBox.setVgrow(content, Priority.NEVER);
+
+            alert.getDialogPane().setContent(popupContent);
+        });
+
+        return alert.showAndWait()
+                .filter(buttonType -> buttonType == yesType)
+                .isPresent();
     }
 
     @FXML
