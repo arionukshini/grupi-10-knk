@@ -34,6 +34,9 @@ public class DashboardController {
     private Label salariesTitleLabel;
 
     @FXML
+    private Label departmentsTitleLabel;
+
+    @FXML
     private Label activeContractsTitleLabel;
 
     @FXML
@@ -56,6 +59,9 @@ public class DashboardController {
 
     @FXML
     private Label totalSalariesLabel;
+
+    @FXML
+    private Label totalDepartmentsLabel;
 
     @FXML
     private Label activeContractsLabel;
@@ -123,6 +129,7 @@ public class DashboardController {
         employeesTitleLabel.setText(LanguageManager.get("dashboard.employees"));
         contractsTitleLabel.setText(LanguageManager.get("dashboard.contracts"));
         salariesTitleLabel.setText(LanguageManager.get("dashboard.salaries"));
+        departmentsTitleLabel.setText(LanguageManager.get("dashboard.departments"));
         activeContractsTitleLabel.setText(LanguageManager.get("dashboard.activeContracts"));
         pendingContractsTitleLabel.setText(LanguageManager.get("dashboard.pendingContracts"));
         expiredContractsTitleLabel.setText(LanguageManager.get("dashboard.expiredContracts"));
@@ -147,6 +154,7 @@ public class DashboardController {
         totalEmployeesLabel.setText(String.valueOf(stats.getTotalEmployees()));
         totalContractsLabel.setText(String.valueOf(stats.getTotalContracts()));
         totalSalariesLabel.setText(String.valueOf(stats.getTotalSalaries()));
+        totalDepartmentsLabel.setText(String.valueOf(stats.getTotalDepartments()));
         activeContractsLabel.setText(String.valueOf(stats.getActiveContracts()));
         pendingContractsLabel.setText(String.valueOf(stats.getPendingContracts()));
         expiredContractsLabel.setText(String.valueOf(stats.getExpiredContracts()));

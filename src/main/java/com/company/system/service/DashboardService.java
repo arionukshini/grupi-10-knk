@@ -19,6 +19,7 @@ public class DashboardService {
         int totalEmployees = getCount("SELECT COUNT(*) FROM employees");
         int totalContracts = getCount("SELECT COUNT(*) FROM contracts");
         int totalSalaries = getCount("SELECT COUNT(*) FROM salaries");
+        int totalDepartments = getCount("SELECT COUNT(*) FROM departments");
 
         int activeContracts = getCount("""
                 SELECT COUNT(*)
@@ -53,6 +54,7 @@ public class DashboardService {
                 totalEmployees,
                 totalContracts,
                 totalSalaries,
+                totalDepartments,
                 activeContracts,
                 pendingContracts,
                 expiredContracts,

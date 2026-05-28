@@ -51,6 +51,10 @@
                     <Label fx:id="totalSalariesLabel" text="0" styleClass="metric-value"/>
                 </VBox>
                 <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                    <Label fx:id="departmentsTitleLabel" text="Departments" styleClass="card-title"/>
+                    <Label fx:id="totalDepartmentsLabel" text="0" styleClass="metric-value"/>
+                </VBox>
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="averageSalaryTitleLabel" text="Average salary" styleClass="card-title"/>
                     <Label fx:id="averageSalaryLabel" text="0.00 EUR" styleClass="metric-value"/>
                 </VBox>
