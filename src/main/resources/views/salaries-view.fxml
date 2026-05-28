@@ -38,6 +38,9 @@
                     <TextField fx:id="vacationDaysField" promptText="Ditët e pushimit"/>
                     <TextField fx:id="workHoursField" promptText="Orët e punës"/>
 
+                    <TextField fx:id="overtimeHoursField" promptText="Orët shtesë"/>
+                    <TextField fx:id="bonusField" promptText="Bonusi"/>
+                    <TextField fx:id="deductionsField" promptText="Zbritjet"/>
                 </VBox>
             </HBox>
         </VBox>
