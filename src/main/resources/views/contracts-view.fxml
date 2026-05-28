@@ -48,7 +48,7 @@
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <ComboBox fx:id="contractTypeField" promptText="Lloji i kontrates" prefWidth="150" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <ComboBox fx:id="contractTypeField" value="Full-Time" promptText="Lloji i kontrates" prefWidth="180" GridPane.rowIndex="0" GridPane.columnIndex="1">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Full-Time"/>
@@ -60,7 +60,7 @@
                     </ComboBox>
                     <TextField fx:id="salaryField" promptText="Paga" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
                     <DatePicker fx:id="startDatePicker" promptText="Data e fillimit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                     <ComboBox fx:id="statusField" value="Active" promptText="Statusi" prefWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="2">
                         <items>
                             <FXCollections fx:factory="observableArrayList">

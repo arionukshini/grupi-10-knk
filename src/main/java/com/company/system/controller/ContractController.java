@@ -208,7 +208,7 @@ public class ContractController {
     private void clearForm() {
         contractsTable.getSelectionModel().clearSelection();
         employeeIdField.clear();
-        contractTypeField.setValue(null);
+        contractTypeField.setValue("Full-Time");
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
         salaryField.clear();
