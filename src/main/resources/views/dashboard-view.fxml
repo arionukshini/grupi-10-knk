@@ -4,9 +4,11 @@
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
@@ -49,6 +51,10 @@
                     <Label fx:id="totalSalariesLabel" text="0" styleClass="metric-value"/>
                 </VBox>
                 <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                    <Label fx:id="departmentsTitleLabel" text="Departments" styleClass="card-title"/>
+                    <Label fx:id="totalDepartmentsLabel" text="0" styleClass="metric-value"/>
+                </VBox>
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="averageSalaryTitleLabel" text="Average salary" styleClass="card-title"/>
                     <Label fx:id="averageSalaryLabel" text="0.00 EUR" styleClass="metric-value"/>
                 </VBox>
@@ -86,15 +92,53 @@
                         </yAxis>
                     </BarChart>
                 </VBox>
-                <VBox spacing="12" maxWidth="Infinity" minHeight="180" styleClass="content-card">
-                    <Label fx:id="insightTitleLabel"
-                           text="Insight"
-                           styleClass="section-title"/>
-                    <Label fx:id="aiInsightLabel"
-                           text="No insight"
-                           wrapText="true"
-                           styleClass="body-text"/>
-                </VBox>
+
+                <HBox spacing="18">
+                    <VBox spacing="10" prefWidth="430" maxWidth="Infinity" styleClass="content-card">
+                        <PieChart fx:id="contractStatusChart"
+                                  prefHeight="300"
+                                  legendVisible="true"
+                                  animated="false"/>
+                    </VBox>
+
+                    <VBox spacing="10" prefWidth="430" maxWidth="Infinity" styleClass="content-card">
+                        <BarChart fx:id="salaryChart"
+                                  minWidth="0"
+                                  prefHeight="300"
+                                  maxWidth="Infinity"
+                                  legendVisible="false"
+                                  animated="false">
+                            <xAxis>
+                                <CategoryAxis fx:id="salaryDepartmentAxis"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="salaryAxis"/>
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="18">
+                    <VBox spacing="12" prefWidth="430" maxWidth="Infinity" minHeight="170" styleClass="content-card">
+                        <Label fx:id="biTitleLabel"
+                               text="BI Summary"
+                               styleClass="section-title"/>
+                        <Label fx:id="biSummaryLabel"
+                               text="No summary"
+                               wrapText="true"
+                               styleClass="body-text"/>
+                    </VBox>
+
+                    <VBox spacing="12" prefWidth="430" maxWidth="Infinity" minHeight="170" styleClass="content-card">
+                        <Label fx:id="insightTitleLabel"
+                               text="AI Insight"
+                               styleClass="section-title"/>
+                        <Label fx:id="aiInsightLabel"
+                               text="No insight"
+                               wrapText="true"
+                               styleClass="body-text"/>
+                    </VBox>
+                </HBox>
             </VBox>
         </VBox>
     </content>
