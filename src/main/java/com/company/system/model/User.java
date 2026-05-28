@@ -1,14 +1,21 @@
 package com.company.system.model;
 
+import java.sql.Timestamp;
+
 public class User {
+
     private final int id;
     private final String username;
-    private final String password;
+    private final String passwordHash;
+    private final String role;
+    private final Timestamp createdAt;
 
-    public User(int id, String username, String password) {
+    public User(int id, String username,String passwordHash, String role, Timestamp createdAt) {
         this.id = id;
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.role=role;
+        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -19,7 +26,9 @@ public class User {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPasswordHash() {return passwordHash;}
+
+    public String getRole() {return role;}
+
+    public Timestamp getCreatedAt() {return createdAt;}
 }

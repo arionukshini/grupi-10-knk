@@ -3,19 +3,31 @@ package com.company.system.model;
 public class DashboardStats {
 
     private final int totalEmployees;
-    private final int totalDepartments;
+    private final int totalContracts;
+    private final int totalSalaries;
     private final int activeContracts;
+    private final int pendingContracts;
+    private final int expiredContracts;
+    private final int expiringContracts;
     private final double averageSalary;
 
     public DashboardStats(
             int totalEmployees,
-            int totalDepartments,
+            int totalContracts,
+            int totalSalaries,
             int activeContracts,
+            int pendingContracts,
+            int expiredContracts,
+            int expiringContracts,
             double averageSalary
     ) {
         this.totalEmployees = totalEmployees;
-        this.totalDepartments = totalDepartments;
+        this.totalContracts = totalContracts;
+        this.totalSalaries = totalSalaries;
         this.activeContracts = activeContracts;
+        this.pendingContracts = pendingContracts;
+        this.expiredContracts = expiredContracts;
+        this.expiringContracts = expiringContracts;
         this.averageSalary = averageSalary;
     }
 
@@ -23,12 +35,28 @@ public class DashboardStats {
         return totalEmployees;
     }
 
-    public int getTotalDepartments() {
-        return totalDepartments;
+    public int getTotalContracts() {
+        return totalContracts;
+    }
+
+    public int getTotalSalaries() {
+        return totalSalaries;
     }
 
     public int getActiveContracts() {
         return activeContracts;
+    }
+
+    public int getPendingContracts() {
+        return pendingContracts;
+    }
+
+    public int getExpiredContracts() {
+        return expiredContracts;
+    }
+
+    public int getExpiringContracts() {
+        return expiringContracts;
     }
 
     public double getAverageSalary() {

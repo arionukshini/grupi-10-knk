@@ -3,21 +3,33 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.utils.Session;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import static com.company.system.MainApp.showLogin;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Optional;
+
+import static com.company.system.MainApp.showWelcome;
 
 public class MainController {
 
     private String currentView = "welcome";
+
+    @FXML
+    private MenuBar menuBar;
 
     @FXML
     private Menu fileMenu;
@@ -36,6 +48,9 @@ public class MainController {
 
     @FXML
     private Menu accountMenu;
+
+    @FXML
+    private MenuItem logoutMenuItem;
 
     @FXML
     private MenuItem exitMenuItem;
@@ -86,9 +101,59 @@ public class MainController {
     private Label statusLabel;
 
     @FXML
+    private Label langMsg;
+
+    @FXML
     public void initialize() {
+
         updateTexts();
+        setStatus(LanguageManager.get("status.ready"));
+
+        initializeContextMenu();
         setupKeyboardShortcuts();
+        setupMenuKeyboardAccess();
+        applyRolePermissions();
+
+        employeesButton.requestFocus();
+    }
+
+    private void focusActiveButton(Button activeButton) {
+        activeButton.requestFocus();
+    }
+
+    private void initializeContextMenu() {
+
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem refreshItem = new MenuItem("Refresh");
+        MenuItem helpItem = new MenuItem("Help");
+        MenuItem exitItem = new MenuItem("Exit");
+
+        refreshItem.setOnAction(e ->
+                setStatus("Content refreshed")
+        );
+
+        helpItem.setOnAction(e ->
+                showHelp()
+        );
+
+        exitItem.setOnAction(e ->
+                System.exit(0)
+        );
+
+        contextMenu.getItems().addAll(
+                refreshItem,
+                helpItem,
+                exitItem
+        );
+
+        contentArea.setOnContextMenuRequested(event ->
+                contextMenu.show(
+                        contentArea,
+                        event.getScreenX(),
+                        event.getScreenY()
+                )
+        );
     }
 
     private void setupKeyboardShortcuts() {
@@ -96,7 +161,44 @@ public class MainController {
         contractsMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+K"));
         salariesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+S"));
         dashboardMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
-        helpMenuItem.setAccelerator(KeyCombination.keyCombination("F1"));
+        helpMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+H"));
+        Platform.runLater(() -> contentArea.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.F1 || (event.isShortcutDown() && event.getCode() == KeyCode.H)) {
+                showHelp();
+                event.consume();
+            }
+        }));
+    }
+
+    private void setupMenuKeyboardAccess() {
+
+        menuBar.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+
+            if (menuBar.isFocused()
+                    && (event.getCode() == KeyCode.ENTER
+                    || event.getCode() == KeyCode.SPACE)) {
+
+                fileMenu.show();
+                event.consume();
+            }
+        });
+    }
+
+    private void applyRolePermissions() {
+        User user = Session.getUser();
+
+        if (user == null) {
+            return;
+        }
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+
+        contractsButton.setVisible(isAdmin);
+        contractsButton.setManaged(isAdmin);
+        salariesButton.setVisible(isAdmin);
+        salariesButton.setManaged(isAdmin);
+
+        contractsMenuItem.setVisible(isAdmin);
+        salariesMenuItem.setVisible(isAdmin);
     }
 
     public void updateTexts() {
@@ -108,6 +210,7 @@ public class MainController {
         accountMenu.setText("");
 
         exitMenuItem.setText(LanguageManager.get("menu.exit"));
+        logoutMenuItem.setText(LanguageManager.get("menu.logout"));
         employeesMenuItem.setText(LanguageManager.get("menu.employees"));
         contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
         salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
@@ -172,7 +275,44 @@ public class MainController {
 
     @FXML
     private void handleExit() {
-        System.exit(0);
+        Alert exit = new Alert(Alert.AlertType.CONFIRMATION);
+
+        exit.setTitle("Exit");
+        exit.setHeaderText("Are you sure you want to exit?");
+        exit.setContentText(null);
+
+        // Custom buttons
+        ButtonType mainMenuBtn = new ButtonType("Quit to Main Menu");
+        ButtonType desktopBtn = new ButtonType("Quit to Desktop");
+        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        exit.getButtonTypes().setAll(mainMenuBtn, desktopBtn, cancelBtn);
+
+        Optional<ButtonType> result = exit.showAndWait();
+
+        if (result.isPresent()) {
+
+            if (result.get() == mainMenuBtn) {
+
+                try {
+                    showWelcome();
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+            } else if (result.get() == desktopBtn) {
+
+                System.exit(0);
+
+            }
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        Session.clear();
+        showWelcome();
     }
 
     public void setContent(Node node) {
@@ -189,26 +329,58 @@ public class MainController {
         currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
 
-        Label view = new Label(LanguageManager.get("module.employees"));
-        setContent(view);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/employees-view.fxml")
+            );
+
+            Parent employeesView = loader.load();
+            setContent(employeesView);
+            focusActiveButton(employeesButton);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus("Failed to load employees.");
+        }
     }
 
-    @FXML
-    public void showContracts() {
-        currentView = "contracts";
-        setStatus(LanguageManager.get("status.contracts"));
+  @FXML
+public void showContracts() {
+    currentView = "contracts";
+    setStatus(LanguageManager.get("status.contracts"));
 
-        Label view = new Label(LanguageManager.get("module.contracts"));
-        setContent(view);
+    try {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/views/contracts-view.fxml")
+        );
+
+        Parent contractsView = loader.load();
+        setContent(contractsView);
+        focusActiveButton(contractsButton);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        setStatus("Failed to load contracts.");
     }
-
+}
     @FXML
     public void showSalaries() {
         currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
 
-        Label view = new Label(LanguageManager.get("module.salaries"));
-        setContent(view);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/salaries-view.fxml")
+            );
+
+            Parent salariesView = loader.load();
+            setContent(salariesView);
+            focusActiveButton(salariesButton);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus("Failed to load salaries.");
+        }
     }
 
     @FXML
@@ -224,6 +396,7 @@ public class MainController {
 
             Parent dashboardView = loader.load();
             setContent(dashboardView);
+            focusActiveButton(dashboardButton);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -326,7 +499,11 @@ public class MainController {
         }
 
         String username = user.getUsername();
-        String password = user.getPassword();
+        String role = user.getRole();
+        Timestamp createdAt = user.getCreatedAt();
+
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = createdAt.toLocalDateTime().format(formatter);
 
         Label icon = new Label("👤");
         icon.setStyle("-fx-font-size: 60px;");
@@ -334,22 +511,28 @@ public class MainController {
         Label usernameLabel = new Label(username);
         usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        HBox header = new HBox(15, icon, usernameLabel);
+        String roleText = "ADMIN".equalsIgnoreCase(role) ? LanguageManager.get("account.role.admin") : LanguageManager.get("account.role.user");
+        Label roleLabel = new Label(LanguageManager.get("account.role") + roleText);
+        roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
+
+
+        Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
+        createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
+
+        VBox headerContent = new VBox(15, usernameLabel, roleLabel, createdAtLable);
+        HBox header = new HBox(15, icon, headerContent);
+
         header.setStyle("-fx-alignment: center-left;");
 
         Label passwordTitle = new Label(LanguageManager.get("login.password"));
         passwordTitle.setStyle("-fx-font-weight: bold;");
 
-        Label passwordLabel = new Label("******");
+        Label passwordLabel = new Label("Stored securely and cannot be displayed.");
 
         Button togglePassword = new Button(LanguageManager.get("account.showpassword"));
 
-        final boolean[] visible = {false};
+        togglePassword.setDisable(true);
 
-        togglePassword.setOnAction(e -> {
-            visible[0] = !visible[0];
-            passwordLabel.setText(visible[0] ? password : "******");
-        });
 
         VBox passwordBox = new VBox(5,
                 passwordTitle,
@@ -361,21 +544,24 @@ public class MainController {
         langTitle.setStyle("-fx-font-weight: bold;");
 
         ComboBox<String> languageBox = new ComboBox<>();
-        languageBox.getItems().addAll("English", "Shqip");
+        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
 
         String currentLang = LanguageManager.getCurrentLocale().getLanguage();
-        languageBox.setValue(currentLang.equals("sq") ? "Shqip" : "English");
+        languageBox.setValue(currentLang.equals("sq") ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
 
-        Label langMsg = new Label();
+        langMsg = new Label();
+        Button logout = new Button(LanguageManager.get("account.logout"));
 
         languageBox.setOnAction(e -> {
-            if ("Shqip".equals(languageBox.getValue())) {
-                LanguageManager.setLanguage("sq");
+
+            String selected = languageBox.getValue();
+
+            if (LanguageManager.get("language.albanian").equals(selected)) {
+                switchToAlbanian();
             } else {
-                LanguageManager.setLanguage("en");
+                switchToEnglish();
             }
 
-            updateTexts();
             langMsg.setText("✔ " + LanguageManager.get("account.language.success"));
         });
 
@@ -389,11 +575,10 @@ public class MainController {
                 languageMiniContainer
         );
 
-        Button logout = new Button(LanguageManager.get("account.logout"));
 
         logout.setOnAction(e -> {
             Session.clear();
-            showLogin();
+            showWelcome();
         });
 
         VBox rightSide = new VBox(20,

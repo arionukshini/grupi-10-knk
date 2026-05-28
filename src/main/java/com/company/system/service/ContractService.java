@@ -10,30 +10,29 @@ import java.util.List;
 public class ContractService {
 
     public static List<Contract> getAllContracts() {
-
         List<Contract> contracts = new ArrayList<>();
 
-        String sql = "SELECT * FROM contracts";
+        String sql = """
+                SELECT c.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+                FROM contracts c
+                JOIN employees e ON c.employee_id = e.id
+                """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()
-        ) {
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-
-                Contract contract = new Contract(
+                contracts.add(new Contract(
                         rs.getInt("id"),
                         rs.getInt("employee_id"),
+                        rs.getString("employee_name"),
                         rs.getString("contract_type"),
                         rs.getDate("start_date"),
                         rs.getDate("end_date"),
                         rs.getDouble("salary"),
                         rs.getString("status")
-                );
-
-                contracts.add(contract);
+                ));
             }
 
         } catch (SQLException e) {
@@ -43,25 +42,15 @@ public class ContractService {
         return contracts;
     }
 
-    public static void addContract(Contract contract) {
-
+    public static boolean addContract(Contract contract) {
         String sql = """
                 INSERT INTO contracts
-                (
-                    employee_id,
-                    contract_type,
-                    start_date,
-                    end_date,
-                    salary,
-                    status
-                )
+                (employee_id, contract_type, start_date, end_date, salary, status)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, contract.getEmployeeId());
             stmt.setString(2, contract.getContractType());
@@ -70,12 +59,55 @@ public class ContractService {
             stmt.setDouble(5, contract.getSalary());
             stmt.setString(6, contract.getStatus());
 
-            stmt.executeUpdate();
-
-            System.out.println("Contract added successfully!");
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
+    }
+
+    public static boolean updateContract(Contract contract) {
+        String sql = """
+                UPDATE contracts
+                SET employee_id = ?, contract_type = ?, start_date = ?, end_date = ?, salary = ?, status = ?
+                WHERE id = ?
+                """;
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, contract.getEmployeeId());
+            stmt.setString(2, contract.getContractType());
+            stmt.setDate(3, contract.getStartDate());
+            stmt.setDate(4, contract.getEndDate());
+            stmt.setDouble(5, contract.getSalary());
+            stmt.setString(6, contract.getStatus());
+            stmt.setInt(7, contract.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean deleteContract(int id) {
+        String sql = "DELETE FROM contracts WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
