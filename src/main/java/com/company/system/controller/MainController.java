@@ -4,6 +4,7 @@ import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
+import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -19,8 +20,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
@@ -88,6 +89,9 @@ public class MainController {
 
     @FXML
     private Button themeButton;
+
+    @FXML
+    private Button helpFooterButton;
 
     @FXML
     private Button settingsButton;
@@ -190,10 +194,10 @@ public class MainController {
         contractsButton.setUserData(new NavItem("K", LanguageManager.get("menu.contracts")));
         salariesButton.setUserData(new NavItem("$", LanguageManager.get("menu.salaries")));
         departmentsButton.setUserData(new NavItem("A", LanguageManager.get("menu.departments")));
-        profileButton.setUserData(new NavItem("U", LanguageManager.get("menu.profile")));
+        profileButton.setUserData(new NavItem("S", LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
-        languageButton.setText(isAlbanian() ? "English" : "Shqip");
+        languageButton.setText("L");
         updateSidebarLabels();
         updateLoggedInUser();
 
@@ -592,7 +596,7 @@ public class MainController {
                 ? LanguageManager.get("account.role.admin")
                 : LanguageManager.get("account.role.user");
 
-        Label title = new Label(LanguageManager.get("menu.profile"));
+        Label title = new Label(isAlbanian() ? "Cilesimet" : "Settings");
         title.getStyleClass().add("page-title");
 
         Label userIcon = new Label("U");
@@ -612,7 +616,7 @@ public class MainController {
 
         VBox userCard = new VBox(userHeader);
         userCard.getStyleClass().add("profile-card");
-        userCard.setMaxWidth(520);
+        userCard.setMaxWidth(900);
 
         Label languageTitle = new Label(LanguageManager.get("account.language") + ":");
         languageTitle.getStyleClass().add("section-title");
@@ -648,24 +652,98 @@ public class MainController {
         logout.getStyleClass().add("secondary-button");
         logout.setOnAction(e -> handleLogout());
 
-        VBox languageCard = new VBox(12, languageTitle, languageRow, logout);
+        VBox languageCard = new VBox(12, languageTitle, languageRow);
         languageCard.getStyleClass().add("profile-card");
-        languageCard.setMaxWidth(520);
+        languageCard.setPrefWidth(430);
+        languageCard.setMaxWidth(Double.MAX_VALUE);
+
+        Label passwordTitle = new Label(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        passwordTitle.getStyleClass().add("section-title");
+
+        PasswordField currentPasswordField = new PasswordField();
+        currentPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi aktual" : "Current password");
+        currentPasswordField.setMaxWidth(Double.MAX_VALUE);
+
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi i ri" : "New password");
+        newPasswordField.setMaxWidth(Double.MAX_VALUE);
+
+        Button changePasswordButton = new Button(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        changePasswordButton.getStyleClass().add("primary-button");
+        changePasswordButton.setOnAction(e -> changePassword(user, currentPasswordField, newPasswordField));
+
+        VBox passwordCard = new VBox(12, passwordTitle, currentPasswordField, newPasswordField, changePasswordButton);
+        passwordCard.getStyleClass().add("profile-card");
+        passwordCard.setPrefWidth(430);
+        passwordCard.setMaxWidth(Double.MAX_VALUE);
+
+        HBox accountOptions = new HBox(18, languageCard, passwordCard);
+        accountOptions.setMaxWidth(900);
+        HBox.setHgrow(languageCard, Priority.ALWAYS);
+        HBox.setHgrow(passwordCard, Priority.ALWAYS);
 
         Button deleteAccount = new Button(isAlbanian() ? "Fshi llogarine" : "Delete account");
         deleteAccount.getStyleClass().add("danger-text-button");
         deleteAccount.setOnAction(e -> confirmDeleteAccount(user));
 
-        VBox dangerCard = new VBox(deleteAccount);
-        dangerCard.getStyleClass().add("profile-card");
-        dangerCard.setMaxWidth(520);
+        VBox actionsCard = new VBox(14, logout, deleteAccount);
+        actionsCard.getStyleClass().add("profile-card");
+        actionsCard.setMaxWidth(900);
 
-        VBox profileView = new VBox(18, title, userCard, languageCard, dangerCard);
+        VBox profileView = new VBox(18, title, userCard, accountOptions, actionsCard);
         profileView.getStyleClass().add("profile-page");
         profileView.setStyle("-fx-padding: 28;");
         VBox.setVgrow(profileView, Priority.NEVER);
 
         setContent(profileView);
+    }
+
+    private void changePassword(User user, PasswordField currentPasswordField, PasswordField newPasswordField) {
+        String currentPassword = currentPasswordField.getText();
+        String newPassword = newPasswordField.getText();
+        String storedHash = UserService.getPasswordHashByUsername(user.getUsername());
+
+        if (currentPassword == null || currentPassword.isBlank() || newPassword == null || newPassword.isBlank()) {
+            showStyledAlert(Alert.AlertType.ERROR,
+                    isAlbanian() ? "Gabim" : "Error",
+                    isAlbanian() ? "Plotesoni te dy fushat e fjalekalimit." : "Fill both password fields.");
+            return;
+        }
+
+        if (!PasswordUtils.verifyPassword(currentPassword, storedHash)) {
+            showStyledAlert(Alert.AlertType.ERROR,
+                    isAlbanian() ? "Gabim" : "Error",
+                    isAlbanian() ? "Fjalekalimi aktual nuk eshte i sakte." : "Current password is not correct.");
+            return;
+        }
+
+        if (PasswordUtils.verifyPassword(newPassword, storedHash)) {
+            showStyledAlert(Alert.AlertType.ERROR,
+                    isAlbanian() ? "Gabim" : "Error",
+                    isAlbanian() ? "Fjalekalimi i ri nuk mund te jete i njejte me te vjetrin." : "New password cannot be the same as the old one.");
+            return;
+        }
+
+        if (UserService.resetPassword(user.getUsername(), newPassword)) {
+            currentPasswordField.clear();
+            newPasswordField.clear();
+            showStyledAlert(Alert.AlertType.INFORMATION,
+                    isAlbanian() ? "Sukses" : "Success",
+                    isAlbanian() ? "Fjalekalimi u ndryshua me sukses." : "Password changed successfully.");
+        } else {
+            showStyledAlert(Alert.AlertType.ERROR,
+                    isAlbanian() ? "Gabim" : "Error",
+                    isAlbanian() ? "Fjalekalimi nuk u ndryshua." : "Password was not changed.");
+        }
+    }
+
+    private void showStyledAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        DialogUtils.style(alert);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void confirmDeleteAccount(User user) {
