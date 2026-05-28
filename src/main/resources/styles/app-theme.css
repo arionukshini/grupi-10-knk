@@ -383,3 +383,56 @@
 .axis {
     -fx-text-fill: -text-main;
 }
+
+.dialog-pane.app-dialog {
+    -fx-background-color: #f6fbff;
+    -fx-background-radius: 12;
+    -fx-border-color: #b9d7ef;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.dialog-pane.app-dialog > .header-panel {
+    -fx-background-color: linear-gradient(to right, #082a56, #14589e);
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 18 20 16 20;
+}
+
+.dialog-pane.app-dialog > .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane.app-dialog > .content.label {
+    -fx-text-fill: #0d1b2a;
+    -fx-font-size: 14px;
+    -fx-padding: 18 20 8 20;
+}
+
+.dialog-pane.app-dialog .button-bar {
+    -fx-padding: 12 18 16 18;
+}
+
+.dialog-pane.app-dialog .button {
+    -fx-background-color: #0b3d78;
+    -fx-background-radius: 7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 96;
+    -fx-min-height: 34;
+    -fx-cursor: hand;
+}
+
+.dialog-pane.app-dialog .button:hover {
+    -fx-background-color: #14589e;
+}
+
+.dialog-pane.app-dialog .button:cancel {
+    -fx-background-color: #e9f2fb;
+    -fx-text-fill: #0d1b2a;
+    -fx-border-color: #b9d7ef;
+    -fx-border-radius: 7;
+}
