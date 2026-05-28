@@ -2,6 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
+import com.company.system.service.UserService;
 import com.company.system.utils.Session;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,12 +13,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -148,6 +152,9 @@ public class MainController {
                 event.consume();
             } else if (KeyCombination.keyCombination("Shortcut+L").match(event)) {
                 toggleLanguage();
+                event.consume();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                handleExit();
                 event.consume();
             }
         }));
@@ -372,14 +379,27 @@ public class MainController {
         sections.getChildren().addAll(
                 createHelpSection(
                         sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni menune anesore per te hapur modulet kryesore." : "Use the sidebar to open the main modules.",
-                        sq ? "Butoni i menus e zgjeron ose minimizon panelin anesor." : "The menu button expands or collapses the sidebar.",
+                        sq ? "Perdorni butonat ne toolbar per te hapur modulet kryesore." : "Use the toolbar buttons to open the main modules.",
+                        sq ? "Menuja ☰ permban daljen, modulet, gjuhen, ndihmen dhe llogarine." : "The ☰ menu contains exit, modules, language, help and account options.",
                         sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."
                 ),
                 createHelpSection(
-                        sq ? "Gjuha dhe tema" : "Language and theme",
-                        sq ? "Butoni i gjuhes kalon mes Shqip dhe English." : "The language button toggles between Albanian and English.",
-                        sq ? "Ikona diell/hene kalon mes pamjes se erret dhe te ndritur." : "The sun/moon icon toggles between dark and light mode."
+                        sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
+                        "Ctrl+E - " + LanguageManager.get("menu.employees"),
+                        "Ctrl+K - " + LanguageManager.get("menu.contracts"),
+                        "Ctrl+S - " + LanguageManager.get("menu.salaries"),
+                        "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
+                        "F1 - " + LanguageManager.get("menu.help")
+                ),
+                createHelpSection(
+                        sq ? "Gjuha" : "Language",
+                        sq ? "Gjuha mund te ndryshohet nga menuja ☰ ose nga faqja e llogarise." : "The language can be changed from the ☰ menu or from the account page.",
+                        sq ? "Pas ndryshimit te gjuhes, tekstet kryesore perditesohen automatikisht." : "After changing the language, the main texts are updated automatically."
+                ),
+                createHelpSection(
+                        sq ? "Llogaria" : "Account",
+                        sq ? "Nga llogaria mund te shihni perdoruesin aktual dhe te ndryshoni gjuhen." : "From the account page you can view the current user and change the language.",
+                        sq ? "Butoni per dalje e mbyll sesionin dhe ju kthen te faqja e kyçjes." : "The logout button clears the session and returns you to the login page."
                 )
         );
 
@@ -387,7 +407,13 @@ public class MainController {
         helpView.getStyleClass().add("profile-page");
         helpView.setStyle("-fx-padding: 26;");
 
-        setContent(helpView);
+        ScrollPane scrollPane = new ScrollPane(helpView);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.getStyleClass().add("module-scroll");
+
+        setContent(scrollPane);
     }
 
     private VBox createHelpSection(String sectionTitle, String... lines) {
@@ -397,7 +423,7 @@ public class MainController {
         VBox content = new VBox(6, title);
 
         for (String line : lines) {
-            Label item = new Label("- " + line);
+            Label item = new Label("• " + line);
             item.setWrapText(true);
             item.getStyleClass().add("body-text");
             content.getChildren().add(item);
@@ -427,6 +453,9 @@ public class MainController {
         Label title = new Label(LanguageManager.get("menu.profile"));
         title.getStyleClass().add("page-title");
 
+        Label userIcon = new Label("U");
+        userIcon.getStyleClass().add("profile-icon");
+
         Label usernameLabel = new Label(user.getUsername());
         usernameLabel.getStyleClass().add("section-title");
 
@@ -436,19 +465,81 @@ public class MainController {
         Label createdAtLabel = new Label(LanguageManager.get("account.createdat") + formatCreatedAt(user.getCreatedAt()));
         createdAtLabel.getStyleClass().add("profile-detail");
 
+        VBox userDetails = new VBox(5, usernameLabel, roleLabel, createdAtLabel);
+        HBox userHeader = new HBox(14, userIcon, userDetails);
+
+        VBox userCard = new VBox(userHeader);
+        userCard.getStyleClass().add("profile-card");
+        userCard.setMaxWidth(520);
+
+        Label languageTitle = new Label(LanguageManager.get("account.language") + ":");
+        languageTitle.getStyleClass().add("section-title");
+
+        ComboBox<String> languageBox = new ComboBox<>();
+        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
+        languageBox.setValue(isAlbanian() ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
+        languageBox.setPrefWidth(210);
+
+        Label languageMessage = new Label();
+        languageMessage.getStyleClass().add("success-text");
+
+        languageBox.setOnAction(event -> {
+            String selected = languageBox.getValue();
+
+            if (LanguageManager.get("language.albanian").equals(selected)) {
+                LanguageManager.setLanguage("sq");
+            } else {
+                LanguageManager.setLanguage("en");
+            }
+
+            updateTexts();
+            languageMessage.setText(LanguageManager.get("account.language.success"));
+        });
+
+        HBox languageRow = new HBox(12, languageBox, languageMessage);
+
         Button logout = new Button(LanguageManager.get("account.logout"));
-        logout.getStyleClass().add("footer-button");
+        logout.getStyleClass().add("secondary-button");
         logout.setOnAction(e -> handleLogout());
 
-        VBox card = new VBox(12, usernameLabel, roleLabel, createdAtLabel, logout);
-        card.getStyleClass().add("profile-card");
-        card.setMaxWidth(460);
+        VBox languageCard = new VBox(12, languageTitle, languageRow, logout);
+        languageCard.getStyleClass().add("profile-card");
+        languageCard.setMaxWidth(520);
 
-        VBox profileView = new VBox(18, title, card);
+        Button deleteAccount = new Button(isAlbanian() ? "Fshi llogarine" : "Delete account");
+        deleteAccount.getStyleClass().add("danger-text-button");
+        deleteAccount.setOnAction(e -> confirmDeleteAccount(user));
+
+        VBox dangerCard = new VBox(deleteAccount);
+        dangerCard.getStyleClass().add("profile-card");
+        dangerCard.setMaxWidth(520);
+
+        VBox profileView = new VBox(18, title, userCard, languageCard, dangerCard);
         profileView.getStyleClass().add("profile-page");
         profileView.setStyle("-fx-padding: 28;");
+        VBox.setVgrow(profileView, Priority.NEVER);
 
         setContent(profileView);
+    }
+
+    private void confirmDeleteAccount(User user) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete account");
+        alert.setHeaderText(isAlbanian()
+                ? "A jeni i sigurt qe doni ta fshini llogarine?"
+                : "Are you sure you want to delete your account?");
+        alert.setContentText(null);
+
+        ButtonType yesButton = new ButtonType(isAlbanian() ? "Po" : "Yes");
+        ButtonType noButton = new ButtonType(isAlbanian() ? "Jo" : "No", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(yesButton, noButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == yesButton && UserService.deleteUser(user.getId())) {
+            Session.clear();
+            showWelcome();
+        }
     }
 
     private void loadView(String fxmlPath, Button activeButton, String errorMessage) {

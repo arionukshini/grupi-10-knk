@@ -200,6 +200,22 @@
     -fx-text-fill: -text-main;
 }
 
+.profile-icon {
+    -fx-alignment: center;
+    -fx-background-color: -side-active;
+    -fx-background-radius: 8;
+    -fx-text-fill: #031b34;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-min-width: 58;
+    -fx-min-height: 58;
+}
+
+.success-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #16a34a;
+}
+
 .text-field,
 .text-area,
 .combo-box,
@@ -259,6 +275,59 @@
     -fx-min-width: 88;
     -fx-padding: 7 14 7 14;
     -fx-cursor: hand;
+}
+
+.danger-text-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.danger-text-button:hover {
+    -fx-underline: true;
+}
+
+.scroll-pane,
+.scroll-pane .viewport,
+.scroll-pane .corner,
+.table-view .corner {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
+    -fx-padding: 2;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(100, 181, 255, 0.45);
+    -fx-background-radius: 8;
+}
+
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: rgba(100, 181, 255, 0.78);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
 }
 
 .table-view {
