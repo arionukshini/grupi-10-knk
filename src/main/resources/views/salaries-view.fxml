@@ -29,6 +29,15 @@
             <HBox spacing="18">
                 <VBox spacing="14">
                     <Label text="Llogaritja e pagës mujore"/>
+
+                    <TextField fx:id="employeeIdField" promptText="Punëtori ID"/>
+                    <TextField fx:id="baseSalaryField" promptText="Paga bazë mujore"/>
+                    <DatePicker fx:id="paymentDatePicker"/>
+
+                    <TextField fx:id="workedDaysField" promptText="Ditët e punës"/>
+                    <TextField fx:id="vacationDaysField" promptText="Ditët e pushimit"/>
+                    <TextField fx:id="workHoursField" promptText="Orët e punës"/>
+
                 </VBox>
             </HBox>
         </VBox>
