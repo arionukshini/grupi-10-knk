@@ -4,19 +4,31 @@ import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Department;
 import com.company.system.service.DepartmentService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class DepartmentsController {
+
+    private final ObservableList<Department> departments = FXCollections.observableArrayList();
+    private FilteredList<Department> filteredDepartments;
 
     @FXML
     private Label titleLabel;
 
     @FXML
     private Label subtitleLabel;
+
+    @FXML
+    private TextField searchField;
 
     @FXML
     private TableView<Department> departmentsTable;
@@ -28,30 +40,194 @@ public class DepartmentsController {
     private TableColumn<Department, String> nameColumn;
 
     @FXML
-    private TableColumn<Department, String> locationColumn;
+    private TableColumn<Department, String> descriptionColumn;
+
+    @FXML
+    private Label formTitleLabel;
+
+    @FXML
+    private TextField nameField;
+
+    @FXML
+    private TextArea descriptionField;
+
+    @FXML
+    private Button addButton;
+
+    @FXML
+    private Button updateButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private Button clearButton;
 
     @FXML
     public void initialize() {
         loadTexts();
         setupTable();
+        setupSearch();
+        setupSelection();
         loadDepartments();
     }
 
     private void loadTexts() {
         titleLabel.setText(LanguageManager.get("menu.departments"));
         subtitleLabel.setText(LanguageManager.get("departments.subtitle"));
+        searchField.setPromptText(LanguageManager.get("departments.search"));
+        formTitleLabel.setText(LanguageManager.get("departments.form"));
+        nameField.setPromptText(LanguageManager.get("departments.name"));
+        descriptionField.setPromptText(LanguageManager.get("departments.description"));
+
         idColumn.setText(LanguageManager.get("departments.id"));
         nameColumn.setText(LanguageManager.get("departments.name"));
-        locationColumn.setText(LanguageManager.get("departments.location"));
+        descriptionColumn.setText(LanguageManager.get("departments.description"));
+
+        addButton.setText(LanguageManager.get("departments.add"));
+        updateButton.setText(LanguageManager.get("departments.update"));
+        deleteButton.setText(LanguageManager.get("departments.delete"));
+        clearButton.setText(LanguageManager.get("departments.clear"));
     }
 
     private void setupTable() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+    }
+
+    private void setupSearch() {
+        filteredDepartments = new FilteredList<>(departments, department -> true);
+        departmentsTable.setItems(filteredDepartments);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String keyword = newValue == null ? "" : newValue.toLowerCase().trim();
+
+            filteredDepartments.setPredicate(department -> {
+                if (keyword.isEmpty()) {
+                    return true;
+                }
+
+                return contains(department.getName(), keyword)
+                        || contains(department.getDescription(), keyword);
+            });
+        });
+    }
+
+    private boolean contains(String value, String keyword) {
+        return value != null && value.toLowerCase().contains(keyword);
+    }
+
+    private void setupSelection() {
+        departmentsTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldDepartment, selectedDepartment) -> {
+                    if (selectedDepartment != null) {
+                        fillForm(selectedDepartment);
+                    }
+                }
+        );
     }
 
     private void loadDepartments() {
-        departmentsTable.setItems(FXCollections.observableArrayList(DepartmentService.getAllDepartments()));
+        departments.setAll(DepartmentService.getAllDepartments());
+    }
+
+    private void fillForm(Department department) {
+        nameField.setText(department.getName());
+        descriptionField.setText(department.getDescription());
+    }
+
+    @FXML
+    private void addDepartment() {
+        Department department = readForm(0);
+
+        if (department == null) {
+            return;
+        }
+
+        if (DepartmentService.addDepartment(department)) {
+            loadDepartments();
+            clearForm();
+            showInfo(LanguageManager.get("departments.add.success"));
+        } else {
+            showError(LanguageManager.get("departments.add.error"));
+        }
+    }
+
+    @FXML
+    private void updateDepartment() {
+        Department selectedDepartment = departmentsTable.getSelectionModel().getSelectedItem();
+
+        if (selectedDepartment == null) {
+            showError(LanguageManager.get("departments.select.update"));
+            return;
+        }
+
+        Department department = readForm(selectedDepartment.getId());
+
+        if (department == null) {
+            return;
+        }
+
+        if (DepartmentService.updateDepartment(department)) {
+            loadDepartments();
+            clearForm();
+            showInfo(LanguageManager.get("departments.update.success"));
+        } else {
+            showError(LanguageManager.get("departments.update.error"));
+        }
+    }
+
+    @FXML
+    private void deleteDepartment() {
+        Department selectedDepartment = departmentsTable.getSelectionModel().getSelectedItem();
+
+        if (selectedDepartment == null) {
+            showError(LanguageManager.get("departments.select.delete"));
+            return;
+        }
+
+        if (DepartmentService.deleteDepartment(selectedDepartment.getId())) {
+            loadDepartments();
+            clearForm();
+            showInfo(LanguageManager.get("departments.delete.success"));
+        } else {
+            showError(LanguageManager.get("departments.delete.error"));
+        }
+    }
+
+    @FXML
+    private void clearForm() {
+        departmentsTable.getSelectionModel().clearSelection();
+        nameField.clear();
+        descriptionField.clear();
+    }
+
+    private Department readForm(int id) {
+        String name = nameField.getText() == null ? "" : nameField.getText().trim();
+        String description = descriptionField.getText() == null ? "" : descriptionField.getText().trim();
+
+        if (name.isEmpty()) {
+            showError(LanguageManager.get("departments.name.required"));
+            return null;
+        }
+
+        return new Department(id, name, description);
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(LanguageManager.get("departments.success.title"));
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(LanguageManager.get("departments.error.title"));
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

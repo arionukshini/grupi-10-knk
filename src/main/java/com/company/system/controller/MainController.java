@@ -168,12 +168,12 @@ public class MainController {
     }
 
     private void updateTexts() {
-        dashboardButton.setUserData(new NavItem("▦", LanguageManager.get("menu.dashboard")));
-        employeesButton.setUserData(new NavItem("◉", LanguageManager.get("menu.employees")));
-        contractsButton.setUserData(new NavItem("□", LanguageManager.get("menu.contracts")));
+        dashboardButton.setUserData(new NavItem("D", LanguageManager.get("menu.dashboard")));
+        employeesButton.setUserData(new NavItem("P", LanguageManager.get("menu.employees")));
+        contractsButton.setUserData(new NavItem("K", LanguageManager.get("menu.contracts")));
         salariesButton.setUserData(new NavItem("$", LanguageManager.get("menu.salaries")));
-        departmentsButton.setUserData(new NavItem("◇", LanguageManager.get("menu.departments")));
-        profileButton.setUserData(new NavItem("◎", LanguageManager.get("menu.profile")));
+        departmentsButton.setUserData(new NavItem("A", LanguageManager.get("menu.departments")));
+        profileButton.setUserData(new NavItem("U", LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
         languageButton.setText(isAlbanian() ? "English" : "Shqip");
