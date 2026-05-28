@@ -37,11 +37,11 @@ public class ContractController {
     @FXML private TableColumn<Contract, String> statusColumn;
 
     @FXML private TextField employeeIdField;
-    @FXML private TextField contractTypeField;
+    @FXML private ComboBox<String> contractTypeField;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private TextField salaryField;
-    @FXML private TextField statusField;
+    @FXML private ComboBox<String> statusField;
 
     @FXML private Button addButton;
     @FXML private Button updateButton;
@@ -136,7 +136,7 @@ public class ContractController {
 
     private void fillForm(Contract contract) {
         employeeIdField.setText(String.valueOf(contract.getEmployeeId()));
-        contractTypeField.setText(contract.getContractType());
+        contractTypeField.setValue(contract.getContractType());
         startDatePicker.setValue(contract.getStartDate().toLocalDate());
 
         if (contract.getEndDate() != null) {
@@ -146,7 +146,7 @@ public class ContractController {
         }
 
         salaryField.setText(String.valueOf(contract.getSalary()));
-        statusField.setText(contract.getStatus());
+        statusField.setValue(contract.getStatus());
     }
 
     @FXML
@@ -208,23 +208,23 @@ public class ContractController {
     private void clearForm() {
         contractsTable.getSelectionModel().clearSelection();
         employeeIdField.clear();
-        contractTypeField.clear();
+        contractTypeField.setValue(null);
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
         salaryField.clear();
-        statusField.setText("Active");
+        statusField.setValue("Active");
     }
 
     private Contract readForm(int id) {
         try {
             int employeeId = Integer.parseInt(employeeIdField.getText().trim());
-            String contractType = contractTypeField.getText().trim();
+            String contractType = contractTypeField.getValue();
             LocalDate startDate = startDatePicker.getValue();
             LocalDate endDate = endDatePicker.getValue();
             double salary = Double.parseDouble(salaryField.getText().trim());
-            String status = statusField.getText().trim();
+            String status = statusField.getValue();
 
-            if (contractType.isEmpty() || startDate == null || status.isEmpty()) {
+            if (contractType == null || contractType.isEmpty() || startDate == null || status == null || status.isEmpty()) {
                 showError(LanguageManager.get("message.fillRequiredFields"));
                 return null;
             }
