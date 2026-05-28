@@ -232,11 +232,16 @@
     -fx-alignment: center;
     -fx-background-color: -side-active;
     -fx-background-radius: 8;
-    -fx-text-fill: #031b34;
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
     -fx-min-width: 58;
+    -fx-pref-width: 58;
+    -fx-max-width: 58;
     -fx-min-height: 58;
+    -fx-pref-height: 58;
+    -fx-max-height: 58;
+}
+
+.profile-icon .sidebar-svg-icon {
+    -fx-stroke: #031b34;
 }
 
 .success-text {
