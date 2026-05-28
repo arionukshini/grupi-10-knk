@@ -88,8 +88,18 @@
     -fx-font-weight: bold;
     -fx-min-height: 42;
     -fx-pref-height: 42;
-    -fx-padding: 0 14 0 14;
+    -fx-padding: 0 12 0 12;
     -fx-cursor: hand;
+}
+
+.sidebar-icon-box {
+    -fx-alignment: center;
+    -fx-min-width: 28;
+    -fx-pref-width: 28;
+    -fx-max-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-height: 28;
+    -fx-max-height: 28;
 }
 
 .sidebar-svg-icon {
@@ -120,6 +130,12 @@
     -fx-pref-width: 44;
     -fx-max-width: 44;
     -fx-padding: 0;
+}
+
+.sidebar.collapsed .sidebar-icon-box {
+    -fx-min-width: 32;
+    -fx-pref-width: 32;
+    -fx-max-width: 32;
 }
 
 .sidebar-footer {

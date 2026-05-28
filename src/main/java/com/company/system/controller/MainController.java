@@ -53,7 +53,7 @@ public class MainController {
     private static final String ICON_DASHBOARD = "M3 3 H10 V10 H3 Z M14 3 H21 V7 H14 Z M14 11 H21 V21 H14 Z M3 14 H10 V21 H3 Z";
     private static final String ICON_EMPLOYEES = "M16 11 C18.21 11 20 9.21 20 7 C20 4.79 18.21 3 16 3 C13.79 3 12 4.79 12 7 C12 9.21 13.79 11 16 11 Z M8 11 C10.21 11 12 9.21 12 7 C12 4.79 10.21 3 8 3 C5.79 3 4 4.79 4 7 C4 9.21 5.79 11 8 11 Z M8 13 C5.33 13 0 14.34 0 17 V20 H16 V17 C16 14.34 10.67 13 8 13 Z M16 13 C15.69 13 15.34 13.02 14.97 13.05 C16.29 14 17 15.27 17 17 V20 H24 V17 C24 14.34 18.67 13 16 13 Z";
     private static final String ICON_CONTRACTS = "M6 2 H15 L20 7 V22 H6 Z M14 3.5 V8 H18.5 M8 12 H18 M8 16 H18 M8 20 H14";
-    private static final String ICON_SALARIES = "M12 2 C6.48 2 2 5.13 2 9 C2 12.87 6.48 16 12 16 C17.52 16 22 12.87 22 9 C22 5.13 17.52 2 12 2 Z M12 5 V13 M9 8 H15 M5 18 H19 V22 H5 Z";
+    private static final String ICON_SALARIES = "M9 3 H15 L14 7 H10 Z M10 7 H14 C18 9 20 12.5 20 17 C20 20.31 16.42 22 12 22 C7.58 22 4 20.31 4 17 C4 12.5 6 9 10 7 Z M12 11 V18 M9.5 13 H13.2 C14.2 13 15 13.67 15 14.55 C15 15.42 14.2 16 13.2 16 H10.8 C9.8 16 9 16.58 9 17.45 C9 18.33 9.8 19 10.8 19 H14.5";
     private static final String ICON_DEPARTMENTS = "M3 21 V9 H9 V21 Z M10 21 V3 H16 V21 Z M17 21 V12 H21 V21 Z M5 12 H7 M12 6 H14 M12 10 H14 M12 14 H14 M19 15 H19";
     private static final String ICON_SETTINGS = "M19.43 12.98 C19.47 12.66 19.5 12.34 19.5 12 C19.5 11.66 19.47 11.34 19.43 11.02 L21.54 9.37 L19.54 5.91 L17.05 6.91 C16.54 6.52 15.99 6.2 15.38 5.95 L15 3.29 H11 L10.62 5.95 C10.01 6.2 9.46 6.52 8.95 6.91 L6.46 5.91 L4.46 9.37 L6.57 11.02 C6.53 11.34 6.5 11.66 6.5 12 C6.5 12.34 6.53 12.66 6.57 12.98 L4.46 14.63 L6.46 18.09 L8.95 17.09 C9.46 17.48 10.01 17.8 10.62 18.05 L11 20.71 H15 L15.38 18.05 C15.99 17.8 16.54 17.48 17.05 17.09 L19.54 18.09 L21.54 14.63 Z M13 15.5 C11.07 15.5 9.5 13.93 9.5 12 C9.5 10.07 11.07 8.5 13 8.5 C14.93 8.5 16.5 10.07 16.5 12 C16.5 13.93 14.93 15.5 13 15.5 Z";
     private static final String ICON_LANGUAGE = "M4 4 H13 V7 H11 C10.7 8.4 10.12 9.69 9.25 10.83 C10 11.45 10.9 12.04 12 12.56 L11 14.3 C9.9 13.76 8.93 13.13 8.08 12.43 C7.08 13.25 5.83 14.08 4.3 14.9 L3.35 13.22 C4.73 12.52 5.85 11.82 6.74 11.12 C6.14 10.45 5.62 9.72 5.17 8.92 L6.88 8.05 C7.2 8.6 7.57 9.1 8 9.57 C8.55 8.82 8.94 7.97 9.18 7 H4 Z M15 10 H17 L21 20 H18.9 L18.1 18 H13.9 L13.1 20 H11 Z M14.58 16.2 H17.42 L16 12.55 Z";
@@ -304,18 +304,24 @@ public class MainController {
             return;
         }
 
-        button.setGraphic(createSidebarIcon(item.iconPath(), NAV_ICON_SCALE));
+        button.setGraphic(createSidebarIconBox(item.iconPath(), NAV_ICON_SCALE));
         button.setText(sidebarExpanded ? item.label() : "");
         button.setContentDisplay(sidebarExpanded ? ContentDisplay.LEFT : ContentDisplay.GRAPHIC_ONLY);
-        button.setGraphicTextGap(12);
+        button.setGraphicTextGap(14);
         button.setAlignment(sidebarExpanded ? Pos.CENTER_LEFT : Pos.CENTER);
     }
 
     private void setIconOnlyButton(Button button, String iconPath) {
         button.setText("");
-        button.setGraphic(createSidebarIcon(iconPath, FOOTER_ICON_SCALE));
+        button.setGraphic(createSidebarIconBox(iconPath, FOOTER_ICON_SCALE));
         button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         button.setAlignment(Pos.CENTER);
+    }
+
+    private StackPane createSidebarIconBox(String iconPath, double scale) {
+        StackPane iconBox = new StackPane(createSidebarIcon(iconPath, scale));
+        iconBox.getStyleClass().add("sidebar-icon-box");
+        return iconBox;
     }
 
     private SVGPath createSidebarIcon(String iconPath, double scale) {
