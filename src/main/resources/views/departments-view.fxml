@@ -36,8 +36,7 @@
     </HBox>
 
     <TableView fx:id="departmentsTable"
-               prefHeight="310"
-               columnResizePolicy="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN">
+               prefHeight="310">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
             <TableColumn fx:id="nameColumn" text="Name" prefWidth="260"/>

@@ -91,6 +91,7 @@ public class DepartmentsController {
     }
 
     private void setupTable() {
+        departmentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
