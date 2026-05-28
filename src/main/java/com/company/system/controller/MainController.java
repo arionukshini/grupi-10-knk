@@ -5,6 +5,10 @@ import com.company.system.model.User;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
 import com.company.system.utils.Session;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +31,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
@@ -46,6 +51,7 @@ public class MainController {
     private boolean sidebarExpanded = true;
     private boolean darkMode = false;
     private boolean profileLanguageChanged = false;
+    private Timeline sidebarAnimation;
 
     @FXML
     private BorderPane mainShell;
@@ -207,19 +213,60 @@ public class MainController {
     }
 
     private void updateSidebarState() {
-        sidebar.setPrefWidth(sidebarExpanded ? EXPANDED_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH);
-        sidebar.setMinWidth(sidebarExpanded ? EXPANDED_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH);
-        sidebar.getStyleClass().remove("collapsed");
-
-        if (!sidebarExpanded) {
-            sidebar.getStyleClass().add("collapsed");
+        if (sidebarAnimation != null) {
+            sidebarAnimation.stop();
         }
 
-        expandedFooter.setVisible(sidebarExpanded);
-        expandedFooter.setManaged(sidebarExpanded);
-        settingsButton.setVisible(!sidebarExpanded);
-        settingsButton.setManaged(!sidebarExpanded);
+        double startWidth = sidebar.getWidth() > 0 ? sidebar.getWidth() : sidebar.getPrefWidth();
+        double targetWidth = sidebarExpanded ? EXPANDED_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH;
+
+        sidebar.getStyleClass().remove("collapsed");
+        menuToggleButton.setDisable(true);
+
+        if (sidebarExpanded) {
+            expandedFooter.setVisible(true);
+            expandedFooter.setManaged(true);
+            settingsButton.setVisible(false);
+            settingsButton.setManaged(false);
+        } else {
+            sidebar.getStyleClass().add("collapsed");
+            expandedFooter.setOpacity(1);
+        }
+
         updateSidebarLabels();
+
+        sidebarAnimation = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(sidebar.prefWidthProperty(), startWidth),
+                        new KeyValue(sidebar.minWidthProperty(), startWidth),
+                        new KeyValue(sidebar.maxWidthProperty(), startWidth),
+                        new KeyValue(expandedFooter.opacityProperty(), sidebarExpanded ? 0 : 1)
+                ),
+                new KeyFrame(
+                        Duration.millis(280),
+                        new KeyValue(sidebar.prefWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.minWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
+                        new KeyValue(sidebar.maxWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
+                        new KeyValue(expandedFooter.opacityProperty(), sidebarExpanded ? 1 : 0, Interpolator.EASE_BOTH)
+                )
+        );
+
+        sidebarAnimation.setOnFinished(event -> {
+            sidebar.setPrefWidth(targetWidth);
+            sidebar.setMinWidth(targetWidth);
+            sidebar.setMaxWidth(targetWidth);
+
+            expandedFooter.setVisible(sidebarExpanded);
+            expandedFooter.setManaged(sidebarExpanded);
+            expandedFooter.setOpacity(sidebarExpanded ? 1 : 0);
+            settingsButton.setVisible(!sidebarExpanded);
+            settingsButton.setManaged(!sidebarExpanded);
+            menuToggleButton.setDisable(false);
+            updateSidebarLabels();
+        });
+
+        sidebarAnimation.play();
     }
 
     private void updateSidebarLabels() {
