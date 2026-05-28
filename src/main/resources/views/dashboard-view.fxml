@@ -6,8 +6,7 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
@@ -15,10 +14,11 @@
             fx:controller="com.company.system.controller.DashboardController"
             fitToWidth="true"
             pannable="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
             styleClass="dashboard-scroll">
     <content>
         <VBox spacing="20"
-              minWidth="920"
               styleClass="dashboard-page">
             <padding>
                 <Insets top="28" right="28" bottom="28" left="28"/>
@@ -30,52 +30,52 @@
                        styleClass="page-title"/>
                 <Label fx:id="dashboardSubtitleLabel"
                        text="Overview of employees, contracts and salaries"
+                       wrapText="true"
                        styleClass="page-subtitle"/>
             </VBox>
 
-            <GridPane hgap="18" vgap="18">
-                <padding>
-                    <Insets top="8" right="0" bottom="4" left="0"/>
-                </padding>
-                <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+            <FlowPane hgap="18" vgap="18"
+                      prefWrapLength="900">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="employeesTitleLabel" text="Employees" styleClass="card-title"/>
                     <Label fx:id="totalEmployeesLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="0" GridPane.columnIndex="1" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="contractsTitleLabel" text="Contracts" styleClass="card-title"/>
                     <Label fx:id="totalContractsLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="0" GridPane.columnIndex="2" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="salariesTitleLabel" text="Salaries" styleClass="card-title"/>
                     <Label fx:id="totalSalariesLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="0" GridPane.columnIndex="3" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="averageSalaryTitleLabel" text="Average salary" styleClass="card-title"/>
                     <Label fx:id="averageSalaryLabel" text="0.00 EUR" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="1" GridPane.columnIndex="0" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="activeContractsTitleLabel" text="Active contracts" styleClass="card-title"/>
                     <Label fx:id="activeContractsLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="pendingContractsTitleLabel" text="Pending contracts" styleClass="card-title"/>
                     <Label fx:id="pendingContractsLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="1" GridPane.columnIndex="2" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="expiredContractsTitleLabel" text="Expired contracts" styleClass="card-title"/>
                     <Label fx:id="expiredContractsLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-                <VBox GridPane.rowIndex="1" GridPane.columnIndex="3" spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
+                <VBox spacing="10" prefWidth="205" minHeight="118" styleClass="metric-card">
                     <Label fx:id="expiringContractsTitleLabel" text="Expiring soon" styleClass="card-title"/>
                     <Label fx:id="expiringContractsLabel" text="0" styleClass="metric-value"/>
                 </VBox>
-            </GridPane>
+            </FlowPane>
 
-            <HBox spacing="20">
-                <VBox spacing="10" styleClass="content-card">
+            <VBox spacing="18">
+                <VBox spacing="10" maxWidth="Infinity" styleClass="content-card">
                     <BarChart fx:id="employeesChart"
-                              prefHeight="280"
-                              prefWidth="610"
+                              minWidth="0"
+                              prefHeight="300"
+                              maxWidth="Infinity"
                               legendVisible="false"
                               animated="false">
                         <xAxis>
@@ -86,7 +86,7 @@
                         </yAxis>
                     </BarChart>
                 </VBox>
-                <VBox spacing="12" prefWidth="280" minHeight="280" styleClass="content-card">
+                <VBox spacing="12" maxWidth="Infinity" minHeight="180" styleClass="content-card">
                     <Label fx:id="insightTitleLabel"
                            text="Insight"
                            styleClass="section-title"/>
@@ -95,7 +95,7 @@
                            wrapText="true"
                            styleClass="body-text"/>
                 </VBox>
-            </HBox>
+            </VBox>
         </VBox>
     </content>
 </ScrollPane>

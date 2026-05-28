@@ -70,23 +70,25 @@
             <HBox fx:id="expandedFooter"
                   styleClass="sidebar-footer"
                   alignment="CENTER"
-                  spacing="12">
+                  spacing="8">
                 <Button fx:id="languageButton"
-                        styleClass="footer-button"
-                        maxWidth="Infinity"
-                        HBox.hgrow="ALWAYS"
+                        styleClass="footer-icon-button"
                         onAction="#toggleLanguage"/>
+                <Button fx:id="helpFooterButton"
+                        text="?"
+                        styleClass="footer-icon-button"
+                        onAction="#showHelp"/>
                 <Button fx:id="themeButton"
                         styleClass="footer-icon-button"
                         onAction="#toggleTheme"/>
             </HBox>
 
-            <Button fx:id="settingsButton"
+            <Button fx:id="themeButton2"
                     text="⚙"
                     styleClass="footer-icon-button"
                     visible="false"
                     managed="false"
-                    onAction="#showProfile"/>
+                    onAction="#toggleTheme"/>
         </VBox>
     </left>
 

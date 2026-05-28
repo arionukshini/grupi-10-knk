@@ -88,8 +88,26 @@
     -fx-font-weight: bold;
     -fx-min-height: 42;
     -fx-pref-height: 42;
-    -fx-padding: 0 14 0 14;
+    -fx-padding: 0 12 0 12;
     -fx-cursor: hand;
+}
+
+.sidebar-icon-box {
+    -fx-alignment: center;
+    -fx-min-width: 28;
+    -fx-pref-width: 28;
+    -fx-max-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-height: 28;
+    -fx-max-height: 28;
+}
+
+.sidebar-svg-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #e7f3ff;
+    -fx-stroke-width: 2.15;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
 }
 
 .nav-button:hover {
@@ -101,6 +119,10 @@
     -fx-text-fill: #031b34;
 }
 
+.nav-button.active .sidebar-svg-icon {
+    -fx-stroke: #031b34;
+}
+
 .sidebar.collapsed .nav-button {
     -fx-alignment: center;
     -fx-font-size: 15px;
@@ -108,6 +130,12 @@
     -fx-pref-width: 44;
     -fx-max-width: 44;
     -fx-padding: 0;
+}
+
+.sidebar.collapsed .sidebar-icon-box {
+    -fx-min-width: 32;
+    -fx-pref-width: 32;
+    -fx-max-width: 32;
 }
 
 .sidebar-footer {
@@ -204,11 +232,16 @@
     -fx-alignment: center;
     -fx-background-color: -side-active;
     -fx-background-radius: 8;
-    -fx-text-fill: #031b34;
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
     -fx-min-width: 58;
+    -fx-pref-width: 58;
+    -fx-max-width: 58;
     -fx-min-height: 58;
+    -fx-pref-height: 58;
+    -fx-max-height: 58;
+}
+
+.profile-icon .sidebar-svg-icon {
+    -fx-stroke: #031b34;
 }
 
 .success-text {
@@ -332,13 +365,27 @@
 
 .table-view {
     -fx-background-color: -surface;
+    -fx-background-radius: 12;
     -fx-border-color: -border;
-    -fx-border-radius: 8;
+    -fx-border-radius: 12;
+    -fx-padding: 1;
 }
 
 .table-view .column-header-background,
 .table-view .column-header {
     -fx-background-color: -accent-dark;
+}
+
+.table-view .column-header-background {
+    -fx-background-radius: 11 11 0 0;
+}
+
+.table-view .column-header:first-visible {
+    -fx-background-radius: 11 0 0 0;
+}
+
+.table-view .column-header:last-visible {
+    -fx-background-radius: 0 11 0 0;
 }
 
 .table-view .column-header .label {
