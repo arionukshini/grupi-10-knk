@@ -46,6 +46,7 @@ public class ContractController {
     }
 
     private void setupTable() {
+        contractsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
         employeeNameColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));

@@ -135,6 +135,9 @@ public class SalariesController {
     }
 
     private void setupSortedTables() {
+        salariesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        historyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+
         sortedSalaries = new SortedList<>(salaries);
         sortedSalaries.comparatorProperty().bind(salariesTable.comparatorProperty());
         salariesTable.setItems(sortedSalaries);

@@ -7,7 +7,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -49,21 +48,19 @@
                text="Department form"
                styleClass="section-title"/>
 
-        <GridPane hgap="12" vgap="12">
+        <VBox spacing="10">
             <TextField fx:id="nameField"
                        promptText="Name"
-                       prefWidth="280"
-                       GridPane.rowIndex="0"
-                       GridPane.columnIndex="0"/>
+                       prefWidth="560"
+                       maxWidth="560"/>
 
             <TextArea fx:id="descriptionField"
                       promptText="Description"
                       prefWidth="560"
-                      prefHeight="88"
-                      wrapText="true"
-                      GridPane.rowIndex="0"
-                      GridPane.columnIndex="1"/>
-        </GridPane>
+                      maxWidth="560"
+                      prefHeight="120"
+                      wrapText="true"/>
+        </VBox>
 
         <HBox spacing="10">
             <Button fx:id="addButton"
@@ -80,6 +77,7 @@
                     onAction="#deleteDepartment"/>
             <Button fx:id="clearButton"
                     text="Clear"
+                    styleClass="secondary-button"
                     onAction="#clearForm"/>
         </HBox>
     </VBox>
