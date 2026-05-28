@@ -28,6 +28,7 @@
             </TableView>
             <HBox spacing="18">
                 <VBox spacing="14">
+                    <Label text="Llogaritja e pagës mujore"/>
                 </VBox>
             </HBox>
         </VBox>
