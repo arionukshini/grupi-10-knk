@@ -171,12 +171,21 @@ public class DBConnection {
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                     
-                        username VARCHAR(50) UNIQUE NOT NULL,
-                        password_hash VARCHAR(255) NOT NULL,
-                        role VARCHAR(20) NOT NULL DEFAULT 'USER',
+                        employee_id INT UNIQUE,
                     
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
+                        username VARCHAR(50) UNIQUE NOT NULL,
+                    
+                        password_hash VARCHAR(255) NOT NULL,
+                    
+                        role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
+                    
+                        must_change_password BOOLEAN DEFAULT TRUE,
+                    
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    
+                        FOREIGN KEY (employee_id)
+                        REFERENCES employees(id)
+                    );
                     """);
 
 
@@ -299,7 +308,7 @@ public class DBConnection {
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (NULL, ?, ?, ?, FALSE)";
 
         try (Statement countStmt = conn.createStatement();
              ResultSet rs = countStmt.executeQuery(countSql)) {
