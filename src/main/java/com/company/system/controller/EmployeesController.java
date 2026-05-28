@@ -240,6 +240,9 @@ public class EmployeesController {
     }
 
     private boolean confirmDeleteEmployee(Employee employee) {
+        final double dialogWidth = 600;
+        final double contentWidth = 500;
+
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
 
@@ -263,10 +266,11 @@ public class EmployeesController {
                 -fx-min-height: 76;
                 """);
 
-        Label title = new Label("Fshirja e ketij punetori do te fshije edhe kontratat, pagat dhe historikun e pagave.");
+        Label title = new Label(employee.getFirstName() + " " + employee.getLastName());
         title.setWrapText(true);
         title.setMinWidth(0);
-        title.setMaxWidth(300);
+        title.setPrefWidth(contentWidth);
+        title.setMaxWidth(contentWidth);
         title.setAlignment(Pos.CENTER);
         title.setStyle("""
                 -fx-font-size: 18px;
@@ -274,28 +278,36 @@ public class EmployeesController {
                 -fx-text-alignment: center;
                 """);
 
-        Label subtitle = new Label(employee.getFirstName() + " " + employee.getLastName());
+        Label subtitle = new Label("This will also delete their contracts, salaries, and salary history.");
+        subtitle.setWrapText(true);
+        subtitle.setMinWidth(0);
+        subtitle.setPrefWidth(contentWidth);
+        subtitle.setMaxWidth(contentWidth);
+        subtitle.setAlignment(Pos.CENTER);
         subtitle.setStyle("""
-                -fx-font-size: 13px;
+                -fx-font-size: 14px;
                 -fx-opacity: 0.8;
+                -fx-text-alignment: center;
                 """);
 
         VBox content = new VBox(15, icon, title, subtitle);
         content.setAlignment(Pos.CENTER);
         content.setFillWidth(true);
         content.setMinWidth(0);
-        content.setMaxWidth(320);
-        title.prefWidthProperty().bind(content.widthProperty());
+        content.setPrefWidth(contentWidth);
+        content.setMaxWidth(contentWidth);
 
         alert.getDialogPane().setContent(content);
-        alert.getDialogPane().setPrefWidth(460);
-        alert.getDialogPane().setMinWidth(460);
+        alert.getDialogPane().setPrefWidth(dialogWidth);
+        alert.getDialogPane().setMinWidth(dialogWidth);
         alert.getDialogPane().setPrefHeight(320);
 
         Platform.runLater(() -> {
             Button yesButton = (Button) alert.getDialogPane().lookupButton(yesType);
             Button noButton = (Button) alert.getDialogPane().lookupButton(noType);
 
+            yesButton.setPrefWidth(contentWidth);
+            noButton.setPrefWidth(contentWidth);
             yesButton.setMaxWidth(Double.MAX_VALUE);
             noButton.setMaxWidth(Double.MAX_VALUE);
 
@@ -319,13 +331,15 @@ public class EmployeesController {
             buttonBox.setAlignment(Pos.CENTER);
             buttonBox.setFillWidth(true);
             buttonBox.setMinWidth(0);
-            buttonBox.setMaxWidth(Double.MAX_VALUE);
+            buttonBox.setPrefWidth(contentWidth);
+            buttonBox.setMaxWidth(contentWidth);
 
             VBox popupContent = new VBox(20, content, buttonBox);
             popupContent.setAlignment(Pos.CENTER);
             popupContent.setFillWidth(true);
             popupContent.setMinWidth(0);
-            popupContent.setMaxWidth(Double.MAX_VALUE);
+            popupContent.setPrefWidth(contentWidth);
+            popupContent.setMaxWidth(contentWidth);
             VBox.setVgrow(content, Priority.NEVER);
 
             alert.getDialogPane().setContent(popupContent);
