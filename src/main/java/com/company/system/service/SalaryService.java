@@ -14,9 +14,10 @@ public class SalaryService {
         List<Salary> salaries = new ArrayList<>();
 
         String sql = """
-                SELECT *
-                FROM salaries
-                ORDER BY payment_date DESC
+                SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+                FROM salaries s
+                JOIN employees e ON s.employee_id = e.id
+                ORDER BY s.payment_date DESC
                 """;
 
         try (
@@ -30,6 +31,7 @@ public class SalaryService {
                 salaries.add(new Salary(
                         rs.getInt("id"),
                         rs.getInt("employee_id"),
+                        rs.getString("employee_name"),
                         rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),

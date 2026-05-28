@@ -49,6 +49,9 @@ public class SalariesController {
     private TableColumn<Salary, Integer> employeeColumn;
 
     @FXML
+    private TableColumn<Salary, String> employeeNameColumn;
+
+    @FXML
     private TableColumn<Salary, Double> grossColumn;
 
     @FXML
@@ -136,6 +139,7 @@ public class SalariesController {
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
+        employeeNameColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
         grossColumn.setCellValueFactory(new PropertyValueFactory<>("grossSalary"));
         bonusColumn.setCellValueFactory(new PropertyValueFactory<>("bonus"));
         deductionsColumn.setCellValueFactory(new PropertyValueFactory<>("deductions"));
@@ -171,7 +175,8 @@ public class SalariesController {
         historyTitleLabel.setText(LanguageManager.get("salaries.history"));
 
         idColumn.setText(LanguageManager.get("table.id"));
-        employeeColumn.setText(LanguageManager.get("salaries.employee"));
+        employeeColumn.setText(LanguageManager.get("salaries.employeeId"));
+        employeeNameColumn.setText(LanguageManager.get("salaries.employee"));
         grossColumn.setText(LanguageManager.get("salaries.gross"));
         bonusColumn.setText(LanguageManager.get("salaries.bonus"));
         deductionsColumn.setText(LanguageManager.get("salaries.deductions"));
