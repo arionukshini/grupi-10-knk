@@ -42,7 +42,7 @@ public class DashboardService {
                 """);
 
         double averageSalary = getAverage("""
-                SELECT AVG(amount + bonus - deductions)
+                SELECT AVG(net_salary)
                 FROM salaries
                 """);
 

@@ -2,9 +2,11 @@ package com.company.system.controller;
 
 import com.company.system.model.Contract;
 import com.company.system.service.ContractService;
+import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -45,6 +47,7 @@ public class ContractController {
     }
 
     private void setupTable() {
+        contractsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeIdColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
         employeeNameColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
@@ -57,7 +60,9 @@ public class ContractController {
 
     private void setupSearch() {
         filteredContracts = new FilteredList<>(contracts, contract -> true);
-        contractsTable.setItems(filteredContracts);
+        SortedList<Contract> sortedContracts = new SortedList<>(filteredContracts);
+        sortedContracts.comparatorProperty().bind(contractsTable.comparatorProperty());
+        contractsTable.setItems(sortedContracts);
 
         searchField.textProperty().addListener((obs, oldValue, newValue) -> {
             String keyword = newValue == null ? "" : newValue.toLowerCase().trim();
@@ -204,6 +209,7 @@ public class ContractController {
 
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.style(alert);
         alert.setTitle("Sukses");
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -212,6 +218,7 @@ public class ContractController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogUtils.style(alert);
         alert.setTitle("Gabim");
         alert.setHeaderText(null);
         alert.setContentText(message);
