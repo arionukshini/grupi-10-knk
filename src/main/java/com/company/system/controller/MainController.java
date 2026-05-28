@@ -8,76 +8,51 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 import static com.company.system.MainApp.showWelcome;
 
 public class MainController {
 
+    private static final double EXPANDED_SIDEBAR_WIDTH = 220;
+    private static final double COLLAPSED_SIDEBAR_WIDTH = 72;
+
+    private final List<String> themeClasses = List.of("light", "dark");
+
     private String currentView = "welcome";
+    private boolean sidebarExpanded = true;
+    private boolean darkMode = false;
 
     @FXML
-    private MenuBar menuBar;
+    private BorderPane mainShell;
 
     @FXML
-    private Menu fileMenu;
+    private VBox sidebar;
 
     @FXML
-    private Menu manageMenu;
+    private HBox expandedFooter;
 
     @FXML
-    private Menu viewMenu;
+    private Button menuToggleButton;
 
     @FXML
-    private Menu languageMenu;
-
-    @FXML
-    private Menu helpMenu;
-
-    @FXML
-    private Menu accountMenu;
-
-    @FXML
-    private MenuItem logoutMenuItem;
-
-    @FXML
-    private MenuItem exitMenuItem;
-
-    @FXML
-    private MenuItem employeesMenuItem;
-
-    @FXML
-    private MenuItem contractsMenuItem;
-
-    @FXML
-    private MenuItem salariesMenuItem;
-
-    @FXML
-    private MenuItem dashboardMenuItem;
-
-    @FXML
-    private MenuItem albanianMenuItem;
-
-    @FXML
-    private MenuItem englishMenuItem;
-
-    @FXML
-    private MenuItem helpMenuItem;
-
-    @FXML
-    private MenuItem accountMenuItem;
+    private Button dashboardButton;
 
     @FXML
     private Button employeesButton;
@@ -89,7 +64,19 @@ public class MainController {
     private Button salariesButton;
 
     @FXML
-    private Button dashboardButton;
+    private Button departmentsButton;
+
+    @FXML
+    private Button profileButton;
+
+    @FXML
+    private Button languageButton;
+
+    @FXML
+    private Button themeButton;
+
+    @FXML
+    private Button settingsButton;
 
     @FXML
     private StackPane contentArea;
@@ -101,87 +88,69 @@ public class MainController {
     private Label statusLabel;
 
     @FXML
-    private Label langMsg;
+    private Label loggedInLabel;
 
     @FXML
     public void initialize() {
-
+        mainShell.getStyleClass().add("light");
         updateTexts();
+        updateLoggedInUser();
+        updateThemeButton();
+        updateSidebarLabels();
         setStatus(LanguageManager.get("status.ready"));
-
-        initializeContextMenu();
         setupKeyboardShortcuts();
-        setupMenuKeyboardAccess();
         applyRolePermissions();
-
-        employeesButton.requestFocus();
+        showDashboard();
     }
 
-    private void focusActiveButton(Button activeButton) {
-        activeButton.requestFocus();
+    @FXML
+    private void toggleSidebar() {
+        sidebarExpanded = !sidebarExpanded;
+        updateSidebarState();
     }
 
-    private void initializeContextMenu() {
+    @FXML
+    private void toggleTheme() {
+        darkMode = !darkMode;
+        mainShell.getStyleClass().removeAll(themeClasses);
+        mainShell.getStyleClass().add(darkMode ? "dark" : "light");
+        updateThemeButton();
+    }
 
-        ContextMenu contextMenu = new ContextMenu();
-
-        MenuItem refreshItem = new MenuItem("Refresh");
-        MenuItem helpItem = new MenuItem("Help");
-        MenuItem exitItem = new MenuItem("Exit");
-
-        refreshItem.setOnAction(e ->
-                setStatus("Content refreshed")
-        );
-
-        helpItem.setOnAction(e ->
-                showHelp()
-        );
-
-        exitItem.setOnAction(e ->
-                System.exit(0)
-        );
-
-        contextMenu.getItems().addAll(
-                refreshItem,
-                helpItem,
-                exitItem
-        );
-
-        contentArea.setOnContextMenuRequested(event ->
-                contextMenu.show(
-                        contentArea,
-                        event.getScreenX(),
-                        event.getScreenY()
-                )
-        );
+    @FXML
+    private void toggleLanguage() {
+        if (isAlbanian()) {
+            switchToEnglish();
+        } else {
+            switchToAlbanian();
+        }
     }
 
     private void setupKeyboardShortcuts() {
-        employeesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+E"));
-        contractsMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+K"));
-        salariesMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+S"));
-        dashboardMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+D"));
-        helpMenuItem.setAccelerator(KeyCombination.keyCombination("Shortcut+H"));
         Platform.runLater(() -> contentArea.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.F1 || (event.isShortcutDown() && event.getCode() == KeyCode.H)) {
+            if (event.isShortcutDown() && event.getCode() == KeyCode.D) {
+                showDashboard();
+                event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.E) {
+                showEmployees();
+                event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.K) {
+                showContracts();
+                event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.S) {
+                showSalaries();
+                event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.P) {
+                showProfile();
+                event.consume();
+            } else if (event.getCode() == KeyCode.F1 || (event.isShortcutDown() && event.getCode() == KeyCode.H)) {
                 showHelp();
+                event.consume();
+            } else if (KeyCombination.keyCombination("Shortcut+L").match(event)) {
+                toggleLanguage();
                 event.consume();
             }
         }));
-    }
-
-    private void setupMenuKeyboardAccess() {
-
-        menuBar.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-
-            if (menuBar.isFocused()
-                    && (event.getCode() == KeyCode.ENTER
-                    || event.getCode() == KeyCode.SPACE)) {
-
-                fileMenu.show();
-                event.consume();
-            }
-        });
     }
 
     private void applyRolePermissions() {
@@ -190,46 +159,94 @@ public class MainController {
         if (user == null) {
             return;
         }
-        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
 
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
         contractsButton.setVisible(isAdmin);
         contractsButton.setManaged(isAdmin);
         salariesButton.setVisible(isAdmin);
         salariesButton.setManaged(isAdmin);
-
-        contractsMenuItem.setVisible(isAdmin);
-        salariesMenuItem.setVisible(isAdmin);
     }
 
-    public void updateTexts() {
-        fileMenu.setText("☰");
-        manageMenu.setText("");
-        viewMenu.setText("");
-        languageMenu.setText("");
-        helpMenu.setText("");
-        accountMenu.setText("");
-
-        exitMenuItem.setText(LanguageManager.get("menu.exit"));
-        logoutMenuItem.setText(LanguageManager.get("menu.logout"));
-        employeesMenuItem.setText(LanguageManager.get("menu.employees"));
-        contractsMenuItem.setText(LanguageManager.get("menu.contracts"));
-        salariesMenuItem.setText(LanguageManager.get("menu.salaries"));
-        dashboardMenuItem.setText(LanguageManager.get("menu.dashboard"));
-        albanianMenuItem.setText(LanguageManager.get("language.albanian"));
-        englishMenuItem.setText(LanguageManager.get("language.english"));
-        helpMenuItem.setText(LanguageManager.get("menu.help"));
-        accountMenuItem.setText(LanguageManager.get("menu.account"));
-
-        employeesButton.setText(LanguageManager.get("menu.employees"));
-        contractsButton.setText(LanguageManager.get("menu.contracts"));
-        salariesButton.setText(LanguageManager.get("menu.salaries"));
-        dashboardButton.setText(LanguageManager.get("menu.dashboard"));
+    private void updateTexts() {
+        dashboardButton.setUserData(new NavItem("▦", LanguageManager.get("menu.dashboard")));
+        employeesButton.setUserData(new NavItem("◉", LanguageManager.get("menu.employees")));
+        contractsButton.setUserData(new NavItem("□", LanguageManager.get("menu.contracts")));
+        salariesButton.setUserData(new NavItem("$", LanguageManager.get("menu.salaries")));
+        departmentsButton.setUserData(new NavItem("◇", LanguageManager.get("menu.departments")));
+        profileButton.setUserData(new NavItem("◎", LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
+        languageButton.setText(isAlbanian() ? "English" : "Shqip");
+        updateSidebarLabels();
+        updateLoggedInUser();
 
         if ("welcome".equals(currentView)) {
             setStatus(LanguageManager.get("status.ready"));
         }
+    }
+
+    private void updateLoggedInUser() {
+        User user = Session.getUser();
+        String username = user == null ? "-" : user.getUsername();
+        loggedInLabel.setText("Logged in as: " + username);
+    }
+
+    private void updateThemeButton() {
+        themeButton.setText(darkMode ? "☀" : "☾");
+    }
+
+    private void updateSidebarState() {
+        sidebar.setPrefWidth(sidebarExpanded ? EXPANDED_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH);
+        sidebar.setMinWidth(sidebarExpanded ? EXPANDED_SIDEBAR_WIDTH : COLLAPSED_SIDEBAR_WIDTH);
+        sidebar.getStyleClass().remove("collapsed");
+
+        if (!sidebarExpanded) {
+            sidebar.getStyleClass().add("collapsed");
+        }
+
+        expandedFooter.setVisible(sidebarExpanded);
+        expandedFooter.setManaged(sidebarExpanded);
+        settingsButton.setVisible(!sidebarExpanded);
+        settingsButton.setManaged(!sidebarExpanded);
+        updateSidebarLabels();
+    }
+
+    private void updateSidebarLabels() {
+        setNavButtonText(dashboardButton);
+        setNavButtonText(employeesButton);
+        setNavButtonText(contractsButton);
+        setNavButtonText(salariesButton);
+        setNavButtonText(departmentsButton);
+        setNavButtonText(profileButton);
+    }
+
+    private void setNavButtonText(Button button) {
+        if (!(button.getUserData() instanceof NavItem item)) {
+            return;
+        }
+
+        button.setText(sidebarExpanded ? item.icon() + "  " + item.label() : item.icon());
+    }
+
+    private void setActiveButton(Button activeButton) {
+        List<Button> buttons = List.of(
+                dashboardButton,
+                employeesButton,
+                contractsButton,
+                salariesButton,
+                departmentsButton,
+                profileButton
+        );
+
+        for (Button button : buttons) {
+            button.getStyleClass().remove("active");
+        }
+
+        if (!activeButton.getStyleClass().contains("active")) {
+            activeButton.getStyleClass().add("active");
+        }
+
+        activeButton.requestFocus();
     }
 
     @FXML
@@ -248,28 +265,17 @@ public class MainController {
 
     private void refreshCurrentView() {
         switch (currentView) {
-            case "employees":
-                showEmployees();
-                break;
-            case "contracts":
-                showContracts();
-                break;
-            case "salaries":
-                showSalaries();
-                break;
-            case "dashboard":
-                showDashboard();
-                break;
-            case "help":
-                showHelp();
-                break;
-            case "account":
-                showAccount();
-                break;
-            default:
+            case "employees" -> showEmployees();
+            case "contracts" -> showContracts();
+            case "salaries" -> showSalaries();
+            case "dashboard" -> showDashboard();
+            case "departments" -> showDepartments();
+            case "help" -> showHelp();
+            case "profile" -> showProfile();
+            default -> {
                 setContent(welcomeLabel);
                 setStatus(LanguageManager.get("status.ready"));
-                break;
+            }
         }
     }
 
@@ -281,7 +287,6 @@ public class MainController {
         exit.setHeaderText("Are you sure you want to exit?");
         exit.setContentText(null);
 
-        // Custom buttons
         ButtonType mainMenuBtn = new ButtonType("Quit to Main Menu");
         ButtonType desktopBtn = new ButtonType("Quit to Desktop");
         ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -291,20 +296,10 @@ public class MainController {
         Optional<ButtonType> result = exit.showAndWait();
 
         if (result.isPresent()) {
-
             if (result.get() == mainMenuBtn) {
-
-                try {
-                    showWelcome();
-
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-
+                showWelcome();
             } else if (result.get() == desktopBtn) {
-
                 System.exit(0);
-
             }
         }
     }
@@ -316,8 +311,7 @@ public class MainController {
     }
 
     public void setContent(Node node) {
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(node);
+        contentArea.getChildren().setAll(node);
     }
 
     public void setStatus(String message) {
@@ -325,83 +319,38 @@ public class MainController {
     }
 
     @FXML
+    public void showDashboard() {
+        currentView = "dashboard";
+        setStatus(LanguageManager.get("status.dashboard"));
+        loadView("/views/dashboard-view.fxml", dashboardButton, "Failed to load dashboard.");
+    }
+
+    @FXML
     public void showEmployees() {
         currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/employees-view.fxml")
-            );
-
-            Parent employeesView = loader.load();
-            setContent(employeesView);
-            focusActiveButton(employeesButton);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            setStatus("Failed to load employees.");
-        }
+        loadView("/views/employees-view.fxml", employeesButton, "Failed to load employees.");
     }
 
-  @FXML
-public void showContracts() {
-    currentView = "contracts";
-    setStatus(LanguageManager.get("status.contracts"));
-
-    try {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/views/contracts-view.fxml")
-        );
-
-        Parent contractsView = loader.load();
-        setContent(contractsView);
-        focusActiveButton(contractsButton);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        setStatus("Failed to load contracts.");
+    @FXML
+    public void showContracts() {
+        currentView = "contracts";
+        setStatus(LanguageManager.get("status.contracts"));
+        loadView("/views/contracts-view.fxml", contractsButton, "Failed to load contracts.");
     }
-}
+
     @FXML
     public void showSalaries() {
         currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/salaries-view.fxml")
-            );
-
-            Parent salariesView = loader.load();
-            setContent(salariesView);
-            focusActiveButton(salariesButton);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            setStatus("Failed to load salaries.");
-        }
+        loadView("/views/salaries-view.fxml", salariesButton, "Failed to load salaries.");
     }
 
     @FXML
-    public void showDashboard() {
-        currentView = "dashboard";
-
-        setStatus(LanguageManager.get("status.dashboard"));
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/dashboard-view.fxml")
-            );
-
-            Parent dashboardView = loader.load();
-            setContent(dashboardView);
-            focusActiveButton(dashboardButton);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            setStatus("Failed to load dashboard.");
-        }
+    public void showDepartments() {
+        currentView = "departments";
+        setStatus(LanguageManager.get("status.departments"));
+        loadView("/views/departments-view.fxml", departmentsButton, "Failed to load departments.");
     }
 
     @FXML
@@ -410,86 +359,59 @@ public void showContracts() {
         setStatus(LanguageManager.get("status.help"));
 
         boolean sq = isAlbanian();
-
         Label title = new Label(LanguageManager.get("help.title"));
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #102a43;");
+        title.getStyleClass().add("page-title");
 
         Label intro = new Label(sq
                 ? "Kjo faqe shpjegon menyren e perdorimit te sistemit, navigimin dhe shkurtesat kryesore."
                 : "This page explains how to use the system, navigate through modules and use keyboard shortcuts.");
         intro.setWrapText(true);
-        intro.setStyle("-fx-font-size: 14px; -fx-text-fill: #52606d;");
+        intro.getStyleClass().add("body-text");
 
         VBox sections = new VBox(14);
         sections.getChildren().addAll(
                 createHelpSection(
                         sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni butonat ne toolbar per te hapur modulet kryesore." : "Use the toolbar buttons to open the main modules.",
-                        sq ? "Menuja ☰ permban daljen, modulet, gjuhen, ndihmen dhe llogarine." : "The ☰ menu contains exit, modules, language, help and account options.",
+                        sq ? "Perdorni menune anesore per te hapur modulet kryesore." : "Use the sidebar to open the main modules.",
+                        sq ? "Butoni i menus e zgjeron ose minimizon panelin anesor." : "The menu button expands or collapses the sidebar.",
                         sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."
                 ),
                 createHelpSection(
-                        sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
-                        "Ctrl+E - " + LanguageManager.get("menu.employees"),
-                        "Ctrl+K - " + LanguageManager.get("menu.contracts"),
-                        "Ctrl+S - " + LanguageManager.get("menu.salaries"),
-                        "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "F1 - " + LanguageManager.get("menu.help")
-                ),
-                createHelpSection(
-                        sq ? "Gjuha" : "Language",
-                        sq ? "Gjuha mund te ndryshohet nga menuja ☰ ose nga faqja e llogarise." : "The language can be changed from the ☰ menu or from the account page.",
-                        sq ? "Pas ndryshimit te gjuhes, tekstet kryesore perditesohen automatikisht." : "After changing the language, the main texts are updated automatically."
-                ),
-                createHelpSection(
-                        sq ? "Llogaria" : "Account",
-                        sq ? "Nga llogaria mund te shihni perdoruesin aktual dhe te ndryshoni gjuhen." : "From the account page you can view the current user and change the language.",
-                        sq ? "Butoni per dalje e mbyll sesionin dhe ju kthen te faqja e kyçjes." : "The logout button clears the session and returns you to the login page."
+                        sq ? "Gjuha dhe tema" : "Language and theme",
+                        sq ? "Butoni i gjuhes kalon mes Shqip dhe English." : "The language button toggles between Albanian and English.",
+                        sq ? "Ikona diell/hene kalon mes pamjes se erret dhe te ndritur." : "The sun/moon icon toggles between dark and light mode."
                 )
         );
 
         VBox helpView = new VBox(18, title, intro, sections);
-        helpView.setStyle("-fx-padding: 26; -fx-background-color: #f8fafc;");
+        helpView.getStyleClass().add("profile-page");
+        helpView.setStyle("-fx-padding: 26;");
 
-        ScrollPane scrollPane = new ScrollPane(helpView);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-
-        setContent(scrollPane);
+        setContent(helpView);
     }
 
     private VBox createHelpSection(String sectionTitle, String... lines) {
         Label title = new Label(sectionTitle);
-        title.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #19316c;");
+        title.getStyleClass().add("section-title");
 
         VBox content = new VBox(6, title);
 
         for (String line : lines) {
-            Label item = new Label("• " + line);
+            Label item = new Label("- " + line);
             item.setWrapText(true);
-            item.setStyle("-fx-font-size: 13px; -fx-text-fill: #334e68;");
+            item.getStyleClass().add("body-text");
             content.getChildren().add(item);
         }
 
-        content.setStyle("""
-                -fx-background-color: white;
-                -fx-background-radius: 8;
-                -fx-border-color: #d9e2ec;
-                -fx-border-radius: 8;
-                -fx-padding: 14;
-                """);
-
+        content.getStyleClass().add("content-card");
         return content;
     }
 
-    private boolean isAlbanian() {
-        return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
-    }
-
     @FXML
-    public void showAccount() {
-        currentView = "account";
+    public void showProfile() {
+        currentView = "profile";
         setStatus(LanguageManager.get("status.account"));
+        setActiveButton(profileButton);
 
         User user = Session.getUser();
 
@@ -498,101 +420,62 @@ public void showContracts() {
             return;
         }
 
-        String username = user.getUsername();
-        String role = user.getRole();
-        Timestamp createdAt = user.getCreatedAt();
+        String roleText = "ADMIN".equalsIgnoreCase(user.getRole())
+                ? LanguageManager.get("account.role.admin")
+                : LanguageManager.get("account.role.user");
 
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String formattedDate = createdAt.toLocalDateTime().format(formatter);
+        Label title = new Label(LanguageManager.get("menu.profile"));
+        title.getStyleClass().add("page-title");
 
-        Label icon = new Label("👤");
-        icon.setStyle("-fx-font-size: 60px;");
+        Label usernameLabel = new Label(user.getUsername());
+        usernameLabel.getStyleClass().add("section-title");
 
-        Label usernameLabel = new Label(username);
-        usernameLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-
-        String roleText = "ADMIN".equalsIgnoreCase(role) ? LanguageManager.get("account.role.admin") : LanguageManager.get("account.role.user");
         Label roleLabel = new Label(LanguageManager.get("account.role") + roleText);
-        roleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4a6d8d;");
+        roleLabel.getStyleClass().add("profile-detail");
 
+        Label createdAtLabel = new Label(LanguageManager.get("account.createdat") + formatCreatedAt(user.getCreatedAt()));
+        createdAtLabel.getStyleClass().add("profile-detail");
 
-        Label createdAtLable = new Label(LanguageManager.get("account.createdat") + formattedDate);
-        createdAtLable.setStyle("-fx-font-size: 12px; -fx-text-fill: #4a6d8d;");
-
-        VBox headerContent = new VBox(15, usernameLabel, roleLabel, createdAtLable);
-        HBox header = new HBox(15, icon, headerContent);
-
-        header.setStyle("-fx-alignment: center-left;");
-
-        Label passwordTitle = new Label(LanguageManager.get("login.password"));
-        passwordTitle.setStyle("-fx-font-weight: bold;");
-
-        Label passwordLabel = new Label("Stored securely and cannot be displayed.");
-
-        Button togglePassword = new Button(LanguageManager.get("account.showpassword"));
-
-        togglePassword.setDisable(true);
-
-
-        VBox passwordBox = new VBox(5,
-                passwordTitle,
-                passwordLabel,
-                togglePassword
-        );
-
-        Label langTitle = new Label(LanguageManager.get("account.language"));
-        langTitle.setStyle("-fx-font-weight: bold;");
-
-        ComboBox<String> languageBox = new ComboBox<>();
-        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
-
-        String currentLang = LanguageManager.getCurrentLocale().getLanguage();
-        languageBox.setValue(currentLang.equals("sq") ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
-
-        langMsg = new Label();
         Button logout = new Button(LanguageManager.get("account.logout"));
+        logout.getStyleClass().add("footer-button");
+        logout.setOnAction(e -> handleLogout());
 
-        languageBox.setOnAction(e -> {
+        VBox card = new VBox(12, usernameLabel, roleLabel, createdAtLabel, logout);
+        card.getStyleClass().add("profile-card");
+        card.setMaxWidth(460);
 
-            String selected = languageBox.getValue();
+        VBox profileView = new VBox(18, title, card);
+        profileView.getStyleClass().add("profile-page");
+        profileView.setStyle("-fx-padding: 28;");
 
-            if (LanguageManager.get("language.albanian").equals(selected)) {
-                switchToAlbanian();
-            } else {
-                switchToEnglish();
-            }
+        setContent(profileView);
+    }
 
-            langMsg.setText("✔ " + LanguageManager.get("account.language.success"));
-        });
+    private void loadView(String fxmlPath, Button activeButton, String errorMessage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+            setContent(view);
+            setActiveButton(activeButton);
+        } catch (Exception e) {
+            e.printStackTrace();
+            setStatus(errorMessage);
+        }
+    }
 
-        HBox languageMiniContainer = new HBox(15,
-                languageBox,
-                langMsg
-        );
+    private String formatCreatedAt(Timestamp createdAt) {
+        if (createdAt == null) {
+            return "-";
+        }
 
-        VBox languageBoxContainer = new VBox(5,
-                langTitle,
-                languageMiniContainer
-        );
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return createdAt.toLocalDateTime().format(formatter);
+    }
 
+    private boolean isAlbanian() {
+        return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
+    }
 
-        logout.setOnAction(e -> {
-            Session.clear();
-            showWelcome();
-        });
-
-        VBox rightSide = new VBox(20,
-                header,
-                passwordBox,
-                languageBoxContainer,
-                logout
-        );
-
-        rightSide.setStyle("""
-                    -fx-padding: 25;
-                    -fx-alignment: center-left;
-                """);
-
-        setContent(rightSide);
+    private record NavItem(String icon, String label) {
     }
 }
