@@ -332,13 +332,27 @@
 
 .table-view {
     -fx-background-color: -surface;
+    -fx-background-radius: 12;
     -fx-border-color: -border;
-    -fx-border-radius: 8;
+    -fx-border-radius: 12;
+    -fx-padding: 1;
 }
 
 .table-view .column-header-background,
 .table-view .column-header {
     -fx-background-color: -accent-dark;
+}
+
+.table-view .column-header-background {
+    -fx-background-radius: 11 11 0 0;
+}
+
+.table-view .column-header:first-visible {
+    -fx-background-radius: 11 0 0 0;
+}
+
+.table-view .column-header:last-visible {
+    -fx-background-radius: 0 11 0 0;
 }
 
 .table-view .column-header .label {
