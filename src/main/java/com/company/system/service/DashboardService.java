@@ -3,12 +3,15 @@ package com.company.system.service;
 import com.company.system.db.DBConnection;
 import com.company.system.model.DashboardStats;
 import com.company.system.model.DepartmentStats;
+import com.company.system.model.SalaryByDepartmentStats;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardService {
 
@@ -80,6 +83,65 @@ public class DashboardService {
                 );
 
                 list.add(stats);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public static Map<String, Integer> getContractsByStatus() {
+        Map<String, Integer> statusCounts = new LinkedHashMap<>();
+        statusCounts.put("Active", 0);
+        statusCounts.put("Pending", 0);
+        statusCounts.put("Expired", 0);
+
+        String sql = """
+                SELECT status, COUNT(*) AS contract_count
+                FROM contracts
+                GROUP BY status
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()
+        ) {
+            while (rs.next()) {
+                statusCounts.put(rs.getString("status"), rs.getInt("contract_count"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return statusCounts;
+    }
+
+    public static List<SalaryByDepartmentStats> getAverageSalaryPerDepartment() {
+        List<SalaryByDepartmentStats> list = new ArrayList<>();
+
+        String sql = """
+                SELECT d.name, AVG(s.net_salary) AS average_salary
+                FROM departments d
+                JOIN employees e ON e.department_id = d.id
+                JOIN salaries s ON s.employee_id = e.id
+                GROUP BY d.id, d.name
+                ORDER BY average_salary DESC
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()
+        ) {
+            while (rs.next()) {
+                list.add(new SalaryByDepartmentStats(
+                        rs.getString("name"),
+                        rs.getDouble("average_salary")
+                ));
             }
 
         } catch (Exception e) {
