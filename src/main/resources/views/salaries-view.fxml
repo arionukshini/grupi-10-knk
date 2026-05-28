@@ -2,51 +2,159 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.SalariesController"
             fitToWidth="true"
             pannable="true">
     <content>
-        <VBox spacing="18">
+        <VBox spacing="18"
+            style="-fx-padding: 24; -fx-background-color: #f8fafc;">
+            <!-- Header -->
             <VBox spacing="4">
-                <Label text="Pagat"/>
-                <Label text="Llogaritja mujore përfshin..."/>
+                <Label text="Pagat"
+                       style="-fx-font-size: 28px;
+                       -fx-font-weight: bold;
+                       -fx-text-fill: #0f172a;"/>
+                <Label text="Llogaritja mujore përfshin..."
+                       style="-fx-font-size: 14px;
+                       -fx-text-fill: #64748b;"/>
             </VBox>
+
+            <!-- Salaries Table -->
             <TableView fx:id="salariesTable"
-                       prefHeight="280">
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
-                <TableColumn fx:id="employeeColumn" text="Punëtori ID" prefWidth="95"/>
-                <TableColumn fx:id="grossColumn" text="Bruto"/>
-                <TableColumn fx:id="bonusColumn" text="Bonus"/>
-                <TableColumn fx:id="deductionsColumn" text="Zbritje"/>
-                <TableColumn fx:id="vacationColumn" text="Pushime"/>
-                <TableColumn fx:id="workHoursColumn" text="Orë pune"/>
-                <TableColumn fx:id="overtimeColumn" text="Orë shtesë"/>
-                <TableColumn fx:id="netColumn" text="Neto"/>
-                <TableColumn fx:id="dateColumn" text="Data"/>
+                       prefHeight="280" columnResizePolicy="CONSTRAINED_RESIZE_POLICY"
+                       style="-fx-background-color: white;
+                       -fx-border-color: #d9e2ec;
+                       -fx-border-radius: 8;
+                       -fx-background-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
+                    <TableColumn fx:id="employeeColumn" text="Punëtori ID" prefWidth="95"/>
+                    <TableColumn fx:id="grossColumn" text="Bruto" prefWidth="90"/>
+                    <TableColumn fx:id="bonusColumn" text="Bonus" prefWidth="90"/>
+                    <TableColumn fx:id="deductionsColumn" text="Zbritje" prefWidth="95"/>
+                    <TableColumn fx:id="vacationColumn" text="Pushime" prefWidth="90"/>
+                    <TableColumn fx:id="workHoursColumn" text="Orë pune" prefWidth="95"/>
+                    <TableColumn fx:id="overtimeColumn" text="Orë shtesë" prefWidth="100"/>
+                    <TableColumn fx:id="netColumn" text="Neto" prefWidth="95"/>
+                    <TableColumn fx:id="dateColumn" text="Data" prefWidth="110"/>
+                </columns>
             </TableView>
+
+            <!-- Form Section -->
             <HBox spacing="18">
-                <VBox spacing="14">
-                    <Label text="Llogaritja e pagës mujore"/>
+                <VBox spacing="14"
+                      HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white;
+                      -fx-padding: 18;
+                      -fx-border-color: #d9e2ec;
+                      -fx-border-radius: 8;
+                      -fx-background-radius: 8;">
 
-                    <TextField fx:id="employeeIdField" promptText="Punëtori ID"/>
-                    <TextField fx:id="baseSalaryField" promptText="Paga bazë mujore"/>
-                    <DatePicker fx:id="paymentDatePicker"/>
+                    <Label text="Llogaritja e pagës mujore"
+                           style="-fx-font-size: 18px;
+                           -fx-font-weight: bold;
+                           -fx-text-fill: #0f172a;"
+                    />
 
-                    <TextField fx:id="workedDaysField" promptText="Ditët e punës"/>
-                    <TextField fx:id="vacationDaysField" promptText="Ditët e pushimit"/>
-                    <TextField fx:id="workHoursField" promptText="Orët e punës"/>
+                    <GridPane alignment="CENTER_LEFT" hgap="12" vgap="12">
 
-                    <TextField fx:id="overtimeHoursField" promptText="Orët shtesë"/>
-                    <TextField fx:id="bonusField" promptText="Bonusi"/>
-                    <TextField fx:id="deductionsField" promptText="Zbritjet"/>
-                </VBox>
-                <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary"/>
-                <Button fx:id="saveButton" text="Ruaj" onAction="#handleSaveSalary"/>
-                <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary"/>
-                <Button text="Përditëso" onAction="#handleUpdateSalary"/>
-                <Button text="Pastro" onAction="#clearFields"/>
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="33"/>
+                        <ColumnConstraints percentWidth="33"/>
+                        <ColumnConstraints percentWidth="34"/>
+                    </columnConstraints>
+
+                    <!-- Row 1 -->
+                    <TextField fx:id="employeeIdField" promptText="Punëtori ID"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="0"
+                               GridPane.columnIndex="0"/>
+
+                    <TextField fx:id="baseSalaryField" promptText="Paga bazë mujore"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="0"
+                               GridPane.columnIndex="1"/>
+
+                    <DatePicker fx:id="paymentDatePicker"
+                                promptText="Data e pagesës"
+                                maxWidth="Infinity"
+                                GridPane.rowIndex="0"
+                                GridPane.columnIndex="2"/>
+
+                    <!-- Row 2 -->
+                    <TextField fx:id="workedDaysField" promptText="Ditët e punës"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="1"
+                               GridPane.columnIndex="0"/>
+
+                    <TextField fx:id="vacationDaysField" promptText="Ditët e pushimit"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="1"
+                               GridPane.columnIndex="1"/>
+
+                    <TextField fx:id="workHoursField" promptText="Orët e punës"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="1"
+                               GridPane.columnIndex="2"/>
+
+                    <!-- Row 3 -->
+                    <TextField fx:id="overtimeHoursField" promptText="Orët shtesë"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="2"
+                               GridPane.columnIndex="0"/>
+
+                    <TextField fx:id="bonusField" promptText="Bonusi"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="2"
+                               GridPane.columnIndex="1"/>
+
+                    <TextField fx:id="deductionsField" promptText="Zbritjet"
+                               maxWidth="Infinity"
+                               GridPane.rowIndex="2"
+                               GridPane.columnIndex="2"/>
+                    </GridPane>
+                    <!-- Buttons -->
+                    <HBox spacing="10">
+                        <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary"
+                                style="-fx-background-color: #2563eb;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 8;
+                                -fx-padding: 8 18;
+                                -fx-cursor: hand;"/>
+                        <Button fx:id="saveButton" text="Ruaj" onAction="#handleSaveSalary"
+                                style="-fx-background-color: #16a34a;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 8;
+                                -fx-padding: 8 18;
+                                -fx-cursor: hand;"/>
+                        <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary"
+                                style="-fx-background-color: #dc2626;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 8;
+                                -fx-padding: 8 18;
+                                -fx-cursor: hand;"/>
+                        <Button text="Përditëso" onAction="#handleUpdateSalary"
+                                style="-fx-background-color: #f59e0b;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 8;
+                                -fx-padding: 8 18;
+                                -fx-cursor: hand;"/>
+                        <Button text="Pastro" onAction="#clearFields"
+                                style="-fx-background-color: #64748b;
+                                -fx-text-fill: white;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 8;
+                                -fx-padding: 8 18;
+                                -fx-cursor: hand;"/>
+                    </HBox>
+             </VBox>
             </HBox>
         </VBox>
     </content>
