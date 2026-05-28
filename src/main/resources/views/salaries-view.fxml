@@ -26,6 +26,10 @@
                 <TableColumn fx:id="netColumn" text="Neto"/>
                 <TableColumn fx:id="dateColumn" text="Data"/>
             </TableView>
+            <HBox spacing="18">
+                <VBox spacing="14">
+                </VBox>
+            </HBox>
         </VBox>
     </content>
 </ScrollPane>
