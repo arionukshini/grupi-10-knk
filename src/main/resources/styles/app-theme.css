@@ -440,6 +440,8 @@
     -fx-text-fill: -text-main;
 }
 
+.main-shell.dark .pie-chart .chart-pie-label,
+.main-shell.dark .pie-chart .chart-legend .label,
 .main-shell.dark .chart-legend .label,
 .main-shell.dark .chart-pie-label {
     -fx-text-fill: white;
