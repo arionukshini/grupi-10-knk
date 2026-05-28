@@ -92,6 +92,14 @@
     -fx-cursor: hand;
 }
 
+.sidebar-svg-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #e7f3ff;
+    -fx-stroke-width: 2.15;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+
 .nav-button:hover {
     -fx-background-color: -side-hover;
 }
@@ -99,6 +107,10 @@
 .nav-button.active {
     -fx-background-color: -side-active;
     -fx-text-fill: #031b34;
+}
+
+.nav-button.active .sidebar-svg-icon {
+    -fx-stroke: #031b34;
 }
 
 .sidebar.collapsed .nav-button {
