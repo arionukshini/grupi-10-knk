@@ -87,6 +87,7 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-min-height: 42;
+    -fx-pref-height: 42;
     -fx-padding: 0 14 0 14;
     -fx-cursor: hand;
 }
@@ -102,7 +103,10 @@
 
 .sidebar.collapsed .nav-button {
     -fx-alignment: center;
-    -fx-font-size: 18px;
+    -fx-font-size: 15px;
+    -fx-min-width: 44;
+    -fx-pref-width: 44;
+    -fx-max-width: 44;
     -fx-padding: 0;
 }
 
@@ -192,6 +196,29 @@
 .profile-detail {
     -fx-font-size: 14px;
     -fx-text-fill: -text-main;
+}
+
+.success-button,
+.primary-button,
+.danger-button {
+    -fx-background-radius: 7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-height: 34;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
+}
+
+.success-button {
+    -fx-background-color: #16a34a;
+}
+
+.primary-button {
+    -fx-background-color: #2563eb;
+}
+
+.danger-button {
+    -fx-background-color: #dc2626;
 }
 
 .table-view {
