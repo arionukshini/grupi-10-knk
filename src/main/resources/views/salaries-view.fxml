@@ -17,6 +17,9 @@
                        prefHeight="280">
                 <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
                 <TableColumn fx:id="employeeColumn" text="Punëtori ID" prefWidth="95"/>
+                <TableColumn fx:id="grossColumn" text="Bruto"/>
+                <TableColumn fx:id="bonusColumn" text="Bonus"/>
+                <TableColumn fx:id="deductionsColumn" text="Zbritje"/>
             </TableView>
         </VBox>
     </content>
