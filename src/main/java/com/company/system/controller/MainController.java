@@ -440,6 +440,8 @@ public class MainController {
         );
 
         title.setWrapText(true);
+        title.setMaxWidth(360);
+        title.setAlignment(Pos.CENTER);
         title.setStyle("""
             -fx-font-size: 18px;
             -fx-font-weight: bold;
@@ -840,6 +842,8 @@ public class MainController {
         );
 
         title.setWrapText(true);
+        title.setMaxWidth(370);
+        title.setAlignment(Pos.CENTER);
 
         title.setStyle("""
             -fx-font-size: 18px;

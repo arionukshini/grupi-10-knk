@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.service.ContractService;
 import com.company.system.utils.DialogUtils;
@@ -18,6 +19,10 @@ public class ContractController {
 
     private final ObservableList<Contract> contracts = FXCollections.observableArrayList();
     private FilteredList<Contract> filteredContracts;
+
+    @FXML private Label titleLabel;
+    @FXML private Label subtitleLabel;
+    @FXML private Label formTitleLabel;
 
     @FXML private TextField searchField;
     @FXML private TableView<Contract> contractsTable;
@@ -38,12 +43,46 @@ public class ContractController {
     @FXML private TextField salaryField;
     @FXML private TextField statusField;
 
+    @FXML private Button addButton;
+    @FXML private Button updateButton;
+    @FXML private Button deleteButton;
+    @FXML private Button clearButton;
+
     @FXML
     public void initialize() {
+        loadTexts();
         setupTable();
         setupSearch();
         setupSelection();
         loadContracts();
+    }
+
+    private void loadTexts() {
+        titleLabel.setText(LanguageManager.get("menu.contracts"));
+        subtitleLabel.setText(LanguageManager.get("contracts.subtitle"));
+        searchField.setPromptText(LanguageManager.get("contracts.search"));
+        formTitleLabel.setText(LanguageManager.get("contracts.form"));
+
+        idColumn.setText(LanguageManager.get("table.id"));
+        employeeIdColumn.setText(LanguageManager.get("contracts.employeeId"));
+        employeeNameColumn.setText(LanguageManager.get("contracts.employee"));
+        contractTypeColumn.setText(LanguageManager.get("contracts.type"));
+        startDateColumn.setText(LanguageManager.get("contracts.startDate"));
+        endDateColumn.setText(LanguageManager.get("contracts.endDate"));
+        salaryColumn.setText(LanguageManager.get("contracts.salary"));
+        statusColumn.setText(LanguageManager.get("contracts.status"));
+
+        employeeIdField.setPromptText(LanguageManager.get("contracts.employeeId"));
+        contractTypeField.setPromptText(LanguageManager.get("contracts.type"));
+        startDatePicker.setPromptText(LanguageManager.get("contracts.startDate"));
+        endDatePicker.setPromptText(LanguageManager.get("contracts.endDate"));
+        salaryField.setPromptText(LanguageManager.get("contracts.salary"));
+        statusField.setPromptText(LanguageManager.get("contracts.status"));
+
+        addButton.setText(LanguageManager.get("contracts.add"));
+        updateButton.setText(LanguageManager.get("contracts.update"));
+        deleteButton.setText(LanguageManager.get("contracts.delete"));
+        clearButton.setText(LanguageManager.get("contracts.clear"));
     }
 
     private void setupTable() {
@@ -119,9 +158,9 @@ public class ContractController {
         if (ContractService.addContract(contract)) {
             loadContracts();
             clearForm();
-            showInfo("Kontrata u shtua me sukses.");
+            showInfo(LanguageManager.get("contracts.add.success"));
         } else {
-            showError("Kontrata nuk u shtua.");
+            showError(LanguageManager.get("contracts.add.error"));
         }
     }
 
@@ -130,7 +169,7 @@ public class ContractController {
         Contract selectedContract = contractsTable.getSelectionModel().getSelectedItem();
 
         if (selectedContract == null) {
-            showError("Zgjidhni nje kontrate per perditesim.");
+            showError(LanguageManager.get("contracts.select.update"));
             return;
         }
 
@@ -141,9 +180,9 @@ public class ContractController {
         if (ContractService.updateContract(contract)) {
             loadContracts();
             clearForm();
-            showInfo("Kontrata u perditesua me sukses.");
+            showInfo(LanguageManager.get("contracts.update.success"));
         } else {
-            showError("Kontrata nuk u perditesua.");
+            showError(LanguageManager.get("contracts.update.error"));
         }
     }
 
@@ -152,16 +191,16 @@ public class ContractController {
         Contract selectedContract = contractsTable.getSelectionModel().getSelectedItem();
 
         if (selectedContract == null) {
-            showError("Zgjidhni nje kontrate per fshirje.");
+            showError(LanguageManager.get("contracts.select.delete"));
             return;
         }
 
         if (ContractService.deleteContract(selectedContract.getId())) {
             loadContracts();
             clearForm();
-            showInfo("Kontrata u fshi me sukses.");
+            showInfo(LanguageManager.get("contracts.delete.success"));
         } else {
-            showError("Kontrata nuk u fshi.");
+            showError(LanguageManager.get("contracts.delete.error"));
         }
     }
 
@@ -186,7 +225,7 @@ public class ContractController {
             String status = statusField.getText().trim();
 
             if (contractType.isEmpty() || startDate == null || status.isEmpty()) {
-                showError("Plotesoni fushat kryesore.");
+                showError(LanguageManager.get("message.fillRequiredFields"));
                 return null;
             }
 
@@ -202,7 +241,7 @@ public class ContractController {
             );
 
         } catch (NumberFormatException e) {
-            showError("Employee ID dhe paga duhet te jene numra valid.");
+            showError(LanguageManager.get("contracts.number.error"));
             return null;
         }
     }
@@ -210,7 +249,7 @@ public class ContractController {
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         DialogUtils.style(alert);
-        alert.setTitle("Sukses");
+        alert.setTitle(LanguageManager.get("message.success.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
@@ -219,7 +258,7 @@ public class ContractController {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogUtils.style(alert);
-        alert.setTitle("Gabim");
+        alert.setTitle(LanguageManager.get("message.error.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Salary;
 import com.company.system.service.SalaryService;
 import com.company.system.utils.DialogUtils;
@@ -25,6 +26,18 @@ public class SalariesController {
     private SortedList<Salary> sortedSalaryHistory;
 
     private Salary calculatedSalary;
+
+    @FXML
+    private Label titleLabel;
+
+    @FXML
+    private Label subtitleLabel;
+
+    @FXML
+    private Label formTitleLabel;
+
+    @FXML
+    private Label historyTitleLabel;
 
     @FXML
     private TableView<Salary> salariesTable;
@@ -102,7 +115,23 @@ public class SalariesController {
     private DatePicker paymentDatePicker;
 
     @FXML
+    private Button calculateButton;
+
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private Button updateButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private Button clearButton;
+
+    @FXML
     public void initialize() {
+        loadTexts();
         setupSortedTables();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -133,6 +162,45 @@ public class SalariesController {
                         fillForm(selectedSalary);
                     }
                 });
+    }
+
+    private void loadTexts() {
+        titleLabel.setText(LanguageManager.get("menu.salaries"));
+        subtitleLabel.setText(LanguageManager.get("salaries.subtitle"));
+        formTitleLabel.setText(LanguageManager.get("salaries.form"));
+        historyTitleLabel.setText(LanguageManager.get("salaries.history"));
+
+        idColumn.setText(LanguageManager.get("table.id"));
+        employeeColumn.setText(LanguageManager.get("salaries.employee"));
+        grossColumn.setText(LanguageManager.get("salaries.gross"));
+        bonusColumn.setText(LanguageManager.get("salaries.bonus"));
+        deductionsColumn.setText(LanguageManager.get("salaries.deductions"));
+        vacationColumn.setText(LanguageManager.get("salaries.vacation"));
+        workHoursColumn.setText(LanguageManager.get("salaries.workHours"));
+        overtimeColumn.setText(LanguageManager.get("salaries.overtime"));
+        netColumn.setText(LanguageManager.get("salaries.net"));
+        dateColumn.setText(LanguageManager.get("salaries.paymentDate"));
+
+        historyDateColumn.setText(LanguageManager.get("salaries.paymentDate"));
+        historyGrossColumn.setText(LanguageManager.get("salaries.gross"));
+        historyBonusColumn.setText(LanguageManager.get("salaries.bonus"));
+        historyNetColumn.setText(LanguageManager.get("salaries.net"));
+
+        employeeIdField.setPromptText(LanguageManager.get("salaries.employeeId"));
+        baseSalaryField.setPromptText(LanguageManager.get("salaries.baseSalary"));
+        workedDaysField.setPromptText(LanguageManager.get("salaries.workedDays"));
+        vacationDaysField.setPromptText(LanguageManager.get("salaries.vacationDays"));
+        workHoursField.setPromptText(LanguageManager.get("salaries.workHours"));
+        overtimeHoursField.setPromptText(LanguageManager.get("salaries.overtimeHours"));
+        bonusField.setPromptText(LanguageManager.get("salaries.bonus"));
+        deductionsField.setPromptText(LanguageManager.get("salaries.deductions"));
+        paymentDatePicker.setPromptText(LanguageManager.get("salaries.paymentDate"));
+
+        calculateButton.setText(LanguageManager.get("salaries.calculate"));
+        saveButton.setText(LanguageManager.get("salaries.save"));
+        updateButton.setText(LanguageManager.get("salaries.update"));
+        deleteButton.setText(LanguageManager.get("salaries.delete"));
+        clearButton.setText(LanguageManager.get("salaries.clear"));
     }
 
     private void setupSortedTables() {
@@ -196,7 +264,9 @@ public class SalariesController {
             LocalDate localDate = paymentDatePicker.getValue();
 
             if (localDate == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Select payment date!");
+                showAlert(Alert.AlertType.ERROR,
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.paymentDate.required"));
                 return;
             }
 
@@ -216,13 +286,13 @@ public class SalariesController {
             );
 
             showAlert(Alert.AlertType.INFORMATION,
-                    "Success",
-                    "Salary calculated successfully!");
+                    LanguageManager.get("message.success.title"),
+                    LanguageManager.get("salaries.calculate.success"));
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
-                    "Error",
-                    "Invalid input values!");
+                    LanguageManager.get("message.error.title"),
+                    LanguageManager.get("salaries.invalid.input"));
         }
     }
 
@@ -232,8 +302,8 @@ public class SalariesController {
         if (calculatedSalary == null) {
 
             showAlert(Alert.AlertType.WARNING,
-                    "Warning",
-                    "Calculate salary first!");
+                    LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("salaries.calculate.first"));
 
             return;
         }
@@ -250,13 +320,13 @@ public class SalariesController {
             calculatedSalary = null;
 
             showAlert(Alert.AlertType.INFORMATION,
-                    "Success",
-                    "Salary saved + history updated!");
+                    LanguageManager.get("message.success.title"),
+                    LanguageManager.get("salaries.save.success"));
         } else {
 
             showAlert(Alert.AlertType.ERROR,
-                    "Error",
-                    "Salary could not be saved!");
+                    LanguageManager.get("message.error.title"),
+                    LanguageManager.get("salaries.save.error"));
         }
     }
 
@@ -267,8 +337,8 @@ public class SalariesController {
 
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING,
-                    "Warning",
-                    "Select a salary first!");
+                    LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("salaries.select.first"));
             return;
         }
 
@@ -276,8 +346,8 @@ public class SalariesController {
             loadSalaries();
 
             showAlert(Alert.AlertType.INFORMATION,
-                    "Success",
-                    "Salary deleted successfully!");
+                    LanguageManager.get("message.success.title"),
+                    LanguageManager.get("salaries.delete.success"));
         }
     }
 
@@ -288,8 +358,8 @@ public class SalariesController {
 
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING,
-                    "Warning",
-                    "Select a salary first!");
+                    LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("salaries.select.first"));
             return;
         }
 
@@ -308,7 +378,9 @@ public class SalariesController {
             LocalDate localDate = paymentDatePicker.getValue();
 
             if (localDate == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Select payment date!");
+                showAlert(Alert.AlertType.ERROR,
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.paymentDate.required"));
                 return;
             }
 
@@ -339,18 +411,18 @@ public class SalariesController {
                 clearFields();
 
                 showAlert(Alert.AlertType.INFORMATION,
-                        "Success",
-                        "Salary updated successfully!");
+                        LanguageManager.get("message.success.title"),
+                        LanguageManager.get("salaries.update.success"));
             } else {
                 showAlert(Alert.AlertType.ERROR,
-                        "Error",
-                        "Update failed!");
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.update.error"));
             }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
-                    "Error",
-                    "Invalid input values!");
+                    LanguageManager.get("message.error.title"),
+                    LanguageManager.get("salaries.invalid.input"));
         }
     }
 
