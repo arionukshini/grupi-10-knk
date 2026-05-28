@@ -42,6 +42,11 @@
                     <TextField fx:id="bonusField" promptText="Bonusi"/>
                     <TextField fx:id="deductionsField" promptText="Zbritjet"/>
                 </VBox>
+                <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary"/>
+                <Button fx:id="saveButton" text="Ruaj" onAction="#handleSaveSalary"/>
+                <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary"/>
+                <Button text="Përditëso" onAction="#handleUpdateSalary"/>
+                <Button text="Pastro" onAction="#clearFields"/>
             </HBox>
         </VBox>
     </content>
