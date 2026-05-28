@@ -2,6 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.model.Salary;
 import com.company.system.service.SalaryService;
+import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -375,6 +376,7 @@ public class SalariesController {
     private void showAlert(Alert.AlertType type, String title, String message) {
 
         Alert alert = new Alert(type);
+        DialogUtils.style(alert);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

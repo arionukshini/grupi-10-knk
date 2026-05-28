@@ -3,6 +3,7 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Department;
 import com.company.system.service.DepartmentService;
+import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -221,6 +222,7 @@ public class DepartmentsController {
 
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.style(alert);
         alert.setTitle(LanguageManager.get("departments.success.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -229,6 +231,7 @@ public class DepartmentsController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogUtils.style(alert);
         alert.setTitle(LanguageManager.get("departments.error.title"));
         alert.setHeaderText(null);
         alert.setContentText(message);

@@ -2,6 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.model.Employee;
 import com.company.system.service.EmployeeService;
+import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -283,6 +284,7 @@ public class EmployeesController {
 
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.style(alert);
         alert.setTitle("Sukses");
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -291,6 +293,7 @@ public class EmployeesController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogUtils.style(alert);
         alert.setTitle("Gabim");
         alert.setHeaderText(null);
         alert.setContentText(message);

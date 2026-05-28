@@ -3,6 +3,7 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.DialogUtils;
 import com.company.system.utils.Session;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -42,6 +43,7 @@ public class MainController {
     private String currentView = "welcome";
     private boolean sidebarExpanded = true;
     private boolean darkMode = false;
+    private boolean profileLanguageChanged = false;
 
     @FXML
     private BorderPane mainShell;
@@ -289,14 +291,15 @@ public class MainController {
     @FXML
     private void handleExit() {
         Alert exit = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogUtils.style(exit);
 
-        exit.setTitle("Exit");
-        exit.setHeaderText("Are you sure you want to exit?");
+        exit.setTitle(isAlbanian() ? "Dalje" : "Exit");
+        exit.setHeaderText(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
         exit.setContentText(null);
 
-        ButtonType mainMenuBtn = new ButtonType("Quit to Main Menu");
-        ButtonType desktopBtn = new ButtonType("Quit to Desktop");
-        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType mainMenuBtn = new ButtonType(isAlbanian() ? "Dil ne menune kryesore" : "Quit to Main Menu");
+        ButtonType desktopBtn = new ButtonType(isAlbanian() ? "Dil nga programi" : "Quit to Desktop");
+        ButtonType cancelBtn = new ButtonType(isAlbanian() ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         exit.getButtonTypes().setAll(mainMenuBtn, desktopBtn, cancelBtn);
 
@@ -485,18 +488,22 @@ public class MainController {
 
         languageBox.setOnAction(event -> {
             String selected = languageBox.getValue();
+            String albanianText = LanguageManager.get("language.albanian");
 
-            if (LanguageManager.get("language.albanian").equals(selected)) {
+            if (albanianText.equals(selected)) {
                 LanguageManager.setLanguage("sq");
             } else {
                 LanguageManager.setLanguage("en");
             }
 
+            profileLanguageChanged = true;
             updateTexts();
-            languageMessage.setText(LanguageManager.get("account.language.success"));
+            showProfile();
         });
 
         HBox languageRow = new HBox(12, languageBox, languageMessage);
+        languageMessage.setText(profileLanguageChanged ? LanguageManager.get("account.language.success") : "");
+        profileLanguageChanged = false;
 
         Button logout = new Button(LanguageManager.get("account.logout"));
         logout.getStyleClass().add("secondary-button");
@@ -524,6 +531,7 @@ public class MainController {
 
     private void confirmDeleteAccount(User user) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogUtils.style(alert);
         alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete account");
         alert.setHeaderText(isAlbanian()
                 ? "A jeni i sigurt qe doni ta fshini llogarine?"
