@@ -4,6 +4,7 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.Session;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,43 +15,23 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import com.company.system.utils.Session;
-
 
 public class LoginController {
 
-    @FXML
-    private Label titleLabel;
-
-    @FXML
-    private TextField usernameField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private TextField visiblePasswordField;
-
-    @FXML
-    private Button togglePasswordButton;
-
-    @FXML
-    private Hyperlink forgotPasswordLink;
-
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private HBox loadingBox;
-
-    @FXML
-    private Label loadingLabel;
-
-    @FXML
-    private Label messageLabel;
+    @FXML private Label titleLabel;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField visiblePasswordField;
+    @FXML private Button togglePasswordButton;
+    @FXML private Hyperlink forgotPasswordLink;
+    @FXML private Button loginButton;
+    @FXML private HBox loadingBox;
+    @FXML private Label loadingLabel;
+    @FXML private Label messageLabel;
 
     private boolean passwordVisible = false;
 
@@ -59,13 +40,23 @@ public class LoginController {
         updateTexts();
         setupKeyboardAccess();
         setupPasswordToggle();
-
     }
 
     private void setupKeyboardAccess() {
+        // Tab order: username -> password -> loginButton -> forgotPasswordLink
         usernameField.setOnAction(event -> passwordField.requestFocus());
         passwordField.setOnAction(event -> loginButton.fire());
         visiblePasswordField.setOnAction(event -> loginButton.fire());
+
+        // Toggle button nuk duhet të jetë në Tab order
+        togglePasswordButton.setFocusTraversable(false);
+
+        // Enter në forgotPasswordLink e aktivizon
+        forgotPasswordLink.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                forgotPasswordLink.fire();
+            }
+        });
 
         loginButton.setAccessibleText("Login");
         forgotPasswordLink.setAccessibleText("Forgot password");
@@ -110,7 +101,6 @@ public class LoginController {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
-
     }
 
     private void showLoadingState() {
@@ -146,13 +136,8 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/views/reset-password-view.fxml")
             );
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(loader.load());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
