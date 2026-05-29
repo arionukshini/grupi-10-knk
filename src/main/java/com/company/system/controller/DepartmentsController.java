@@ -86,7 +86,9 @@ public class DepartmentsController {
         nameColumn.setText(LanguageManager.get("departments.name"));
         descriptionColumn.setText(LanguageManager.get("departments.description"));
 
-        addButton.setText(LanguageManager.get("departments.add"));
+        if (addButton != null) {
+            addButton.setText(LanguageManager.get("departments.add"));
+        }
         updateButton.setText(LanguageManager.get("departments.update"));
         deleteButton.setText(LanguageManager.get("departments.delete"));
         clearButton.setText(LanguageManager.get("departments.clear"));

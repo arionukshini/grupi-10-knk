@@ -143,7 +143,9 @@ public class EmployeesController {
         hireDatePicker.setPromptText(LanguageManager.get("employees.hireDate"));
         salaryField.setPromptText(LanguageManager.get("employees.baseSalary"));
 
-        addButton.setText(LanguageManager.get("employees.add"));
+        if (addButton != null) {
+            addButton.setText(LanguageManager.get("employees.add"));
+        }
         updateButton.setText(LanguageManager.get("employees.update"));
         deleteButton.setText(LanguageManager.get("employees.delete"));
         clearButton.setText(LanguageManager.get("employees.clear"));

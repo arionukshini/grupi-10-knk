@@ -20,14 +20,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,6 +44,8 @@ import javafx.util.Duration;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,11 +71,14 @@ public class MainController {
     private static final String ICON_MOON = "M21 12.79 C20.16 13.05 19.28 13.18 18.36 13.18 C14.2 13.18 10.82 9.8 10.82 5.64 C10.82 4.72 10.95 3.84 11.21 3 C6.56 3.45 3 7.36 3 12.12 C3 17.07 6.93 21 11.88 21 C16.64 21 20.55 17.44 21 12.79 Z";
 
     private final List<String> themeClasses = List.of("light", "dark");
+    private final Deque<String> backHistory = new ArrayDeque<>();
+    private final Deque<String> forwardHistory = new ArrayDeque<>();
 
     private String currentView = "welcome";
     private boolean sidebarExpanded = true;
     private boolean darkMode = false;
     private boolean profileLanguageChanged = false;
+    private boolean navigatingHistory = false;
     private Timeline sidebarAnimation;
 
     @FXML
@@ -96,6 +107,9 @@ public class MainController {
 
     @FXML
     private Button departmentsButton;
+
+    @FXML
+    private Button usersButton;
 
     @FXML
     private Button profileButton;
@@ -133,6 +147,8 @@ public class MainController {
         updateSidebarLabels();
         setStatus(LanguageManager.get("status.ready"));
         setupKeyboardShortcuts();
+        setupMouseNavigation();
+        setupContextMenu();
         applyRolePermissions();
         showDashboard();
     }
@@ -174,8 +190,23 @@ public class MainController {
             } else if (event.isShortcutDown() && event.getCode() == KeyCode.S) {
                 showSalaries();
                 event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.R) {
+                showDepartments();
+                event.consume();
+            } else if (event.isShortcutDown() && event.getCode() == KeyCode.U) {
+                showUsers();
+                event.consume();
             } else if (event.isShortcutDown() && event.getCode() == KeyCode.P) {
                 showProfile();
+                event.consume();
+            } else if (event.isAltDown() && event.getCode() == KeyCode.LEFT) {
+                goBack();
+                event.consume();
+            } else if (event.isAltDown() && event.getCode() == KeyCode.RIGHT) {
+                goForward();
+                event.consume();
+            } else if (event.getCode() == KeyCode.F5) {
+                refreshCurrentView();
                 event.consume();
             } else if (event.getCode() == KeyCode.F1 || (event.isShortcutDown() && event.getCode() == KeyCode.H)) {
                 showHelp();
@@ -190,6 +221,55 @@ public class MainController {
         }));
     }
 
+    private void setupMouseNavigation() {
+        Platform.runLater(() -> contentArea.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.BACK) {
+                goBack();
+                event.consume();
+            } else if (event.getButton() == MouseButton.FORWARD) {
+                goForward();
+                event.consume();
+            }
+        }));
+    }
+
+    private void setupContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getStyleClass().add("app-context-menu");
+        contextMenu.setAutoHide(true);
+        contextMenu.setHideOnEscape(true);
+
+        MenuItem refreshItem = new MenuItem(isAlbanian() ? "Rifresko" : "Refresh");
+        refreshItem.setOnAction(event -> refreshCurrentView());
+
+        MenuItem helpItem = new MenuItem(LanguageManager.get("menu.help"));
+        helpItem.setOnAction(event -> showHelp());
+
+        MenuItem exitItem = new MenuItem(isAlbanian() ? "Dil nga programi" : "Exit program");
+        exitItem.setOnAction(event -> handleExit());
+
+        contextMenu.getItems().setAll(refreshItem, helpItem, new SeparatorMenuItem(), exitItem);
+
+        Platform.runLater(() -> contentArea.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (contextMenu.isShowing() && event.getButton() != MouseButton.SECONDARY) {
+                contextMenu.hide();
+            }
+        }));
+
+        mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
+            refreshItem.setText(isAlbanian() ? "Rifresko" : "Refresh");
+            helpItem.setText(LanguageManager.get("menu.help"));
+            exitItem.setText(isAlbanian() ? "Dil nga programi" : "Exit program");
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
+
+            contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
+            event.consume();
+        });
+    }
+
     private void applyRolePermissions() {
         User user = Session.getUser();
 
@@ -202,6 +282,8 @@ public class MainController {
         contractsButton.setManaged(isAdmin);
         salariesButton.setVisible(isAdmin);
         salariesButton.setManaged(isAdmin);
+        usersButton.setVisible(isAdmin);
+        usersButton.setManaged(isAdmin);
     }
 
     private void updateTexts() {
@@ -210,6 +292,7 @@ public class MainController {
         contractsButton.setUserData(new NavItem(ICON_CONTRACTS, LanguageManager.get("menu.contracts")));
         salariesButton.setUserData(new NavItem(ICON_SALARIES, LanguageManager.get("menu.salaries")));
         departmentsButton.setUserData(new NavItem(ICON_DEPARTMENTS, LanguageManager.get("menu.departments")));
+        usersButton.setUserData(new NavItem(ICON_USER, LanguageManager.get("menu.users")));
         profileButton.setUserData(new NavItem(ICON_SETTINGS, LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
@@ -226,8 +309,7 @@ public class MainController {
 
     private void updateLoggedInUser() {
         User user = Session.getUser();
-        String username = user == null ? "-" : user.getUsername();
-        loggedInLabel.setText("Logged in as: " + username);
+        loggedInLabel.setText("Logged in as: " + UserService.getDisplayName(user));
     }
 
     private void updateThemeButton() {
@@ -298,6 +380,7 @@ public class MainController {
         setNavButtonText(contractsButton);
         setNavButtonText(salariesButton);
         setNavButtonText(departmentsButton);
+        setNavButtonText(usersButton);
         setNavButtonText(profileButton);
     }
 
@@ -342,6 +425,7 @@ public class MainController {
                 contractsButton,
                 salariesButton,
                 departmentsButton,
+                usersButton,
                 profileButton
         );
 
@@ -363,6 +447,7 @@ public class MainController {
                 contractsButton,
                 salariesButton,
                 departmentsButton,
+                usersButton,
                 profileButton
         );
 
@@ -392,6 +477,7 @@ public class MainController {
             case "salaries" -> showSalaries();
             case "dashboard" -> showDashboard();
             case "departments" -> showDepartments();
+            case "users" -> showUsers();
             case "help" -> showHelp();
             case "profile" -> showProfile();
             default -> {
@@ -533,8 +619,63 @@ public class MainController {
         statusLabel.setText(message);
     }
 
+    private void recordNavigation(String targetView) {
+        if (navigatingHistory || targetView.equals(currentView)) {
+            return;
+        }
+
+        if (!"welcome".equals(currentView)) {
+            backHistory.push(currentView);
+        }
+
+        forwardHistory.clear();
+    }
+
+    private void goBack() {
+        if (backHistory.isEmpty()) {
+            return;
+        }
+
+        forwardHistory.push(currentView);
+        navigateHistoryTo(backHistory.pop());
+    }
+
+    private void goForward() {
+        if (forwardHistory.isEmpty()) {
+            return;
+        }
+
+        backHistory.push(currentView);
+        navigateHistoryTo(forwardHistory.pop());
+    }
+
+    private void navigateHistoryTo(String view) {
+        navigatingHistory = true;
+
+        try {
+            showViewByName(view);
+        } finally {
+            navigatingHistory = false;
+        }
+    }
+
+    private void showViewByName(String view) {
+        switch (view) {
+            case "employees" -> showEmployees();
+            case "contracts" -> showContracts();
+            case "salaries" -> showSalaries();
+            case "dashboard" -> showDashboard();
+            case "departments" -> showDepartments();
+            case "users" -> showUsers();
+            case "help" -> showHelp();
+            case "profile" -> showProfile();
+            default -> showDashboard();
+        }
+    }
+
     @FXML
     public void showDashboard() {
+        recordNavigation("dashboard");
         currentView = "dashboard";
         setStatus(LanguageManager.get("status.dashboard"));
         loadView("/views/dashboard-view.fxml", dashboardButton, "Failed to load dashboard.");
@@ -542,6 +683,7 @@ public class MainController {
 
     @FXML
     public void showEmployees() {
+        recordNavigation("employees");
         currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
         loadView("/views/employees-view.fxml", employeesButton, "Failed to load employees.");
@@ -549,6 +691,7 @@ public class MainController {
 
     @FXML
     public void showContracts() {
+        recordNavigation("contracts");
         currentView = "contracts";
         setStatus(LanguageManager.get("status.contracts"));
         loadView("/views/contracts-view.fxml", contractsButton, "Failed to load contracts.");
@@ -556,6 +699,7 @@ public class MainController {
 
     @FXML
     public void showSalaries() {
+        recordNavigation("salaries");
         currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
         loadView("/views/salaries-view.fxml", salariesButton, "Failed to load salaries.");
@@ -563,13 +707,23 @@ public class MainController {
 
     @FXML
     public void showDepartments() {
+        recordNavigation("departments");
         currentView = "departments";
         setStatus(LanguageManager.get("status.departments"));
         loadView("/views/departments-view.fxml", departmentsButton, "Failed to load departments.");
     }
 
     @FXML
+    public void showUsers() {
+        recordNavigation("users");
+        currentView = "users";
+        setStatus(LanguageManager.get("status.users"));
+        loadView("/views/users-view.fxml", usersButton, "Failed to load users.");
+    }
+
+    @FXML
     public void showHelp() {
+        recordNavigation("help");
         currentView = "help";
         setStatus(LanguageManager.get("status.help"));
         clearActiveButton();
@@ -598,7 +752,20 @@ public class MainController {
                         "Ctrl+K - " + LanguageManager.get("menu.contracts"),
                         "Ctrl+S - " + LanguageManager.get("menu.salaries"),
                         "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "F1 - " + LanguageManager.get("menu.help")
+                        "Ctrl+R - " + LanguageManager.get("menu.departments"),
+                        "Ctrl+U - " + LanguageManager.get("menu.users"),
+                        "Ctrl+P - " + LanguageManager.get("menu.profile"),
+                        "Ctrl+L - " + LanguageManager.get("menu.language"),
+                        "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
+                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
+                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
+                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Esc - " + LanguageManager.get("menu.exit")
+                ),
+                createHelpSection(
+                        sq ? "Menuja me klikim te djathte" : "Right-click menu",
+                        sq ? "Klikoni me te djathten ne nje hapesire te zbrazet per Rifresko, Ndihma dhe Dil nga programi." : "Right-click an empty area for Refresh, Help and Exit program.",
+                        sq ? "Rifresko ngarkon perseri pamjen aktuale pa ndryshuar modulin." : "Refresh reloads the current view without changing modules."
                 ),
                 createHelpSection(
                         sq ? "Gjuha" : "Language",
@@ -644,6 +811,7 @@ public class MainController {
 
     @FXML
     public void showProfile() {
+        recordNavigation("profile");
         currentView = "profile";
         setStatus(LanguageManager.get("status.account"));
         setActiveButton(profileButton);
@@ -805,11 +973,31 @@ public class MainController {
         DialogUtils.style(alert);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.getDialogPane().setContent(createWrappedDialogLabel(message, 380));
+        alert.getDialogPane().setPrefWidth(460);
         alert.showAndWait();
     }
 
+    private Label createWrappedDialogLabel(String message, double width) {
+        Label label = new Label(message);
+        label.setWrapText(true);
+        label.setMaxWidth(width);
+        label.setMinHeight(Label.USE_PREF_SIZE);
+        label.getStyleClass().add("body-text");
+        return label;
+    }
+
     private void confirmDeleteAccount(User user) {
+        if (UserService.isOnlyAdmin(user)) {
+            showStyledAlert(
+                    Alert.AlertType.WARNING,
+                    isAlbanian() ? "Nuk lejohet" : "Not allowed",
+                    isAlbanian()
+                            ? "Ju jeni administratori i vetem. Nuk mund ta fshini llogarine pa pasur te pakten edhe nje administrator tjeter."
+                            : "You are the only administrator. You cannot delete this account until another administrator exists."
+            );
+            return;
+        }
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
@@ -853,10 +1041,13 @@ public class MainController {
 
         Label subtitle = new Label(
                 isAlbanian()
-                        ? "Ky veprim nuk mund te kthehet."
-                        : "This action cannot be undone."
+                        ? "Ky veprim do te fshije llogarine, punetorin, kontratat, pagat dhe historikun e pagave."
+                        : "This will delete your account, employee record, contracts, salaries and salary history."
         );
 
+        subtitle.setWrapText(true);
+        subtitle.setMaxWidth(370);
+        subtitle.setMinHeight(Label.USE_PREF_SIZE);
         subtitle.setStyle("""
             -fx-font-size: 13px;
             -fx-opacity: 0.8;
@@ -867,7 +1058,7 @@ public class MainController {
 
         alert.getDialogPane().setContent(content);
         alert.getDialogPane().setPrefWidth(460);
-        alert.getDialogPane().setPrefHeight(320);
+        alert.getDialogPane().setPrefHeight(360);
 
         Platform.runLater(() -> {
 
@@ -906,11 +1097,19 @@ public class MainController {
 
         if (result.isPresent() && result.get() == yesType) {
 
-            boolean deleted = UserService.deleteUser(user.getId());
+            boolean deleted = UserService.deleteAccountAndEmployeeData(user);
 
             if (deleted) {
                 Session.clear();
                 showWelcome();
+            } else {
+                showStyledAlert(
+                        Alert.AlertType.ERROR,
+                        isAlbanian() ? "Gabim" : "Error",
+                        isAlbanian()
+                                ? "Llogaria nuk u fshi. Kontrolloni databazen ose provoni perseri."
+                                : "The account was not deleted. Check the database or try again."
+                );
             }
         }
     }

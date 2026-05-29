@@ -171,12 +171,21 @@ public class DBConnection {
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                     
-                        username VARCHAR(50) UNIQUE NOT NULL,
-                        password_hash VARCHAR(255) NOT NULL,
-                        role VARCHAR(20) NOT NULL DEFAULT 'USER',
+                        employee_id INT UNIQUE,
                     
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
+                        username VARCHAR(50) UNIQUE NOT NULL,
+                    
+                        password_hash VARCHAR(255) NOT NULL,
+                    
+                        role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
+                    
+                        must_change_password BOOLEAN DEFAULT TRUE,
+                    
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    
+                        FOREIGN KEY (employee_id)
+                        REFERENCES employees(id)
+                    );
                     """);
 
 
@@ -210,17 +219,15 @@ public class DBConnection {
                          VALUES
                          ('Arion', 'Ukshini', 'arion.ukshini@company.com', '+38344111222', 'Software Engineer', 3, '2024-01-15', 1200.00, 'Active'),
                         
-                         ('Sara', 'Berisha', 'sara.berisha@company.com', '+38344111333', 'HR Manager', 1, '2023-06-10', 1100.00, 'Active'),
+                         ('Arjanita', 'Lestrani', 'arjanita.lestrani@company.com', '+38344111333', 'HR Manager', 1, '2023-06-10', 1100.00, 'Active'),
                         
-                         ('Leon', 'Krasniqi', 'leon.krasniqi@company.com', '+38344111444', 'Accountant', 2, '2022-09-01', 1000.00, 'Active'),
+                         ('Florentina', 'Dervishaj', 'florentina.dervishaj@company.com', '+38344111444', 'Accountant', 2, '2022-09-01', 1000.00, 'Active'),
                         
-                         ('Diona', 'Gashi', 'diona.gashi@company.com', '+38344111555', 'Marketing Specialist', 4, '2024-03-20', 950.00, 'Active'),
+                         ('Edison', 'Ukshini', 'edison.ukshini@company.com', '+38344111555', 'Marketing Specialist', 4, '2024-03-20', 950.00, 'Active'),
                         
-                         ('Albin', 'Rexhepi', 'albin.rexhepi@company.com', '+38344111666', 'Sales Representative', 5, '2023-11-05', 900.00, 'Inactive'),
+                         ('Arijola', 'Krasniqi', 'arijola.krasniqi@company.com', '+38344111666', 'Sales Representative', 5, '2023-11-05', 900.00, 'Inactive'),
                         
-                         ('Era', 'Hasani', 'era.hasani@company.com', '+38344111777', 'System Administrator', 3, '2021-12-12', 1300.00, 'Active'),
-                        
-                         ('Blend', 'Shala', 'blend.shala@company.com', '+38344111888', 'Recruiter', 1, '2024-04-01', 850.00, 'Pending');
+                         ('Alekta', 'Thaqi', 'alekta.thaqi@company.com', '+38344111777', 'System Administrator', 3, '2021-12-12', 1300.00, 'Active');
                         """);
 
                 stmt.executeUpdate("""
@@ -237,9 +244,7 @@ public class DBConnection {
                         
                          (5, 'Internship', '2023-11-05', '2024-11-05', 900.00, 'Expired'),
                         
-                         (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'Active'),
-                        
-                         (7, 'Temporary', '2024-04-01', '2024-10-01', 850.00, 'Pending');
+                         (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'Active');
                         """);
 
                 stmt.executeUpdate("""
@@ -256,9 +261,7 @@ public class DBConnection {
                         
                         (5, 900.00, 0.00, 10.00, 0, 140, 0, 890.00, '2026-05-01'),
                         
-                        (6, 1300.00, 150.00, 60.00, 1, 170, 12, 1390.00, '2026-05-01'),
-                        
-                        (7, 850.00, 0.00, 0.00, 0, 135, 0, 850.00, '2026-05-01');
+                        (6, 1300.00, 150.00, 60.00, 1, 170, 12, 1390.00, '2026-05-01');
                         """);
 
                 stmt.executeUpdate("""
@@ -275,15 +278,14 @@ public class DBConnection {
                         
                             (5, 5, 900.00, 0.00, 10.00, 890.00, '2026-05-01'),
                         
-                            (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-01'),
-                        
-                            (7, 7, 850.00, 0.00, 0.00, 850.00, '2026-05-01');
+                            (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-01');
                         """);
 
                 System.out.println("Demo data inserted!");
             }
 
             seedDefaultAdmin(conn);
+            seedEmployeeUsers(conn);
             conn.close();
 
             System.out.println(
@@ -299,7 +301,7 @@ public class DBConnection {
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (NULL, ?, ?, ?, FALSE)";
 
         try (Statement countStmt = conn.createStatement();
              ResultSet rs = countStmt.executeQuery(countSql)) {
@@ -316,6 +318,54 @@ public class DBConnection {
             stmt.setString(2, PasswordUtils.hashPassword("1234"));
             stmt.setString(3, "ADMIN");
             stmt.executeUpdate();
+        }
+    }
+
+    private static void seedEmployeeUsers(Connection conn) throws SQLException {
+        String[][] users = {
+                {"Arion", "Ukshini", "arion.ukshini"},
+                {"Arjanita", "Lestrani", "arjanita.lestrani"},
+                {"Florentina", "Dervishaj", "florentina.dervishaj"},
+                {"Edison", "Ukshini", "edison.ukshini"},
+                {"Arijola", "Krasniqi", "arijola.krasniqi"},
+                {"Alekta", "Thaqi", "alekta.thaqi"}
+        };
+
+        String findEmployeeSql = "SELECT id FROM employees WHERE first_name = ? AND last_name = ?";
+        String userExistsSql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (?, ?, ?, 'USER', TRUE)";
+
+        try (PreparedStatement findEmployeeStmt = conn.prepareStatement(findEmployeeSql);
+             PreparedStatement userExistsStmt = conn.prepareStatement(userExistsSql);
+             PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+
+            for (String[] user : users) {
+                findEmployeeStmt.setString(1, user[0]);
+                findEmployeeStmt.setString(2, user[1]);
+
+                int employeeId;
+                try (ResultSet employeeRs = findEmployeeStmt.executeQuery()) {
+                    if (!employeeRs.next()) {
+                        continue;
+                    }
+
+                    employeeId = employeeRs.getInt("id");
+                }
+
+                userExistsStmt.setString(1, user[2]);
+                try (ResultSet userRs = userExistsStmt.executeQuery()) {
+                    userRs.next();
+
+                    if (userRs.getInt(1) > 0) {
+                        continue;
+                    }
+                }
+
+                insertStmt.setInt(1, employeeId);
+                insertStmt.setString(2, user[2]);
+                insertStmt.setString(3, PasswordUtils.hashPassword("1234"));
+                insertStmt.executeUpdate();
+            }
         }
     }
 }

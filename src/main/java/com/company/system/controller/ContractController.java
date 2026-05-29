@@ -79,7 +79,9 @@ public class ContractController {
         salaryField.setPromptText(LanguageManager.get("contracts.salary"));
         statusField.setPromptText(LanguageManager.get("contracts.status"));
 
-        addButton.setText(LanguageManager.get("contracts.add"));
+        if (addButton != null) {
+            addButton.setText(LanguageManager.get("contracts.add"));
+        }
         updateButton.setText(LanguageManager.get("contracts.update"));
         deleteButton.setText(LanguageManager.get("contracts.delete"));
         clearButton.setText(LanguageManager.get("contracts.clear"));

@@ -61,6 +61,10 @@
                         styleClass="nav-button"
                         maxWidth="Infinity"
                         onAction="#showDepartments"/>
+                <Button fx:id="usersButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showUsers"/>
                 <Button fx:id="profileButton"
                         styleClass="nav-button"
                         maxWidth="Infinity"

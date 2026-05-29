@@ -4,6 +4,7 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +14,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import com.company.system.utils.Session;
 
 
@@ -41,7 +44,10 @@ public class LoginController {
     private Button loginButton;
 
     @FXML
-    private Button registerButton;
+    private HBox loadingBox;
+
+    @FXML
+    private Label loadingLabel;
 
     @FXML
     private Label messageLabel;
@@ -62,7 +68,6 @@ public class LoginController {
         visiblePasswordField.setOnAction(event -> loginButton.fire());
 
         loginButton.setAccessibleText("Login");
-        registerButton.setAccessibleText("Register");
         forgotPasswordLink.setAccessibleText("Forgot password");
     }
 
@@ -77,7 +82,7 @@ public class LoginController {
         visiblePasswordField.setPromptText(LanguageManager.get("login.password"));
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
-        registerButton.setText(LanguageManager.get("login.goToRegister"));
+        loadingLabel.setText(LanguageManager.get("login.loading"));
         togglePasswordButton.setText("👁");
     }
 
@@ -100,12 +105,27 @@ public class LoginController {
             Session.setUser(user);
             messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
             messageLabel.setStyle("-fx-text-fill: green;");
-            MainApp.openMainApp();
+            showLoadingState();
         } else {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
 
+    }
+
+    private void showLoadingState() {
+        loginButton.setDisable(true);
+        forgotPasswordLink.setDisable(true);
+        usernameField.setDisable(true);
+        passwordField.setDisable(true);
+        visiblePasswordField.setDisable(true);
+        togglePasswordButton.setDisable(true);
+        loadingBox.setVisible(true);
+        loadingBox.setManaged(true);
+
+        PauseTransition transition = new PauseTransition(Duration.millis(120));
+        transition.setOnFinished(event -> MainApp.openMainApp());
+        transition.play();
     }
 
     @FXML
@@ -118,24 +138,6 @@ public class LoginController {
         passwordField.setManaged(!passwordVisible);
 
         togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
-    }
-
-    @FXML
-    public void goToRegister(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/register-view.fxml")
-            );
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.getScene().setRoot(loader.load());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML

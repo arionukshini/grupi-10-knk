@@ -202,7 +202,9 @@ public class SalariesController {
         paymentDatePicker.setPromptText(LanguageManager.get("salaries.paymentDate"));
 
         calculateButton.setText(LanguageManager.get("salaries.calculate"));
-        saveButton.setText(LanguageManager.get("salaries.save"));
+        if (saveButton != null) {
+            saveButton.setText(LanguageManager.get("salaries.save"));
+        }
         updateButton.setText(LanguageManager.get("salaries.update"));
         deleteButton.setText(LanguageManager.get("salaries.delete"));
         clearButton.setText(LanguageManager.get("salaries.clear"));

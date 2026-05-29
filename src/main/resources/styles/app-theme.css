@@ -440,6 +440,33 @@
     -fx-text-fill: -text-main;
 }
 
+.context-menu.app-context-menu {
+    -fx-background-color: -surface;
+    -fx-background-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-radius: 10;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(5, 20, 40, 0.18), 14, 0, 0, 5);
+}
+
+.context-menu.app-context-menu .menu-item {
+    -fx-background-radius: 8;
+    -fx-padding: 8 18 8 14;
+}
+
+.context-menu.app-context-menu .menu-item:focused {
+    -fx-background-color: -side-active;
+}
+
+.context-menu.app-context-menu .menu-item .label {
+    -fx-text-fill: -text-main;
+    -fx-font-size: 13px;
+}
+
+.context-menu.app-context-menu .separator .line {
+    -fx-border-color: -border transparent transparent transparent;
+}
+
 .main-shell.dark .pie-chart .chart-pie-label,
 .main-shell.dark .pie-chart .chart-legend .label,
 .main-shell.dark .chart-legend .label,
