@@ -21,7 +21,6 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Control;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -237,6 +236,8 @@ public class MainController {
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getStyleClass().add("app-context-menu");
+        contextMenu.setAutoHide(true);
+        contextMenu.setHideOnEscape(true);
 
         MenuItem refreshItem = new MenuItem(isAlbanian() ? "Rifresko" : "Refresh");
         refreshItem.setOnAction(event -> refreshCurrentView());
@@ -249,31 +250,24 @@ public class MainController {
 
         contextMenu.getItems().setAll(refreshItem, helpItem, new SeparatorMenuItem(), exitItem);
 
-        mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
-            if (isControlTarget(event.getTarget())) {
-                return;
+        Platform.runLater(() -> contentArea.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (contextMenu.isShowing() && event.getButton() != MouseButton.SECONDARY) {
+                contextMenu.hide();
             }
+        }));
 
+        mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
             refreshItem.setText(isAlbanian() ? "Rifresko" : "Refresh");
             helpItem.setText(LanguageManager.get("menu.help"));
             exitItem.setText(isAlbanian() ? "Dil nga programi" : "Exit program");
+
+            if (contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
+
             contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
             event.consume();
         });
-    }
-
-    private boolean isControlTarget(Object target) {
-        Object current = target;
-
-        while (current instanceof Node node) {
-            if (node instanceof Control) {
-                return true;
-            }
-
-            current = node.getParent();
-        }
-
-        return false;
     }
 
     private void applyRolePermissions() {
