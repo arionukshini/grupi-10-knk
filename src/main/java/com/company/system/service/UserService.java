@@ -240,6 +240,36 @@ public class UserService {
         return false;
     }
 
+    public static String getPasswordHashByUsernameAndEmail(String username, String email) {
+        String sql = """
+                SELECT u.password_hash
+                FROM users u
+                JOIN employees e ON u.employee_id = e.id
+                WHERE u.username = ? AND LOWER(e.email) = LOWER(?)
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null || username == null || username.isBlank() || email == null || email.isBlank()) {
+                return null;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username.trim());
+                stmt.setString(2, email.trim());
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getString("password_hash");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static boolean deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
 

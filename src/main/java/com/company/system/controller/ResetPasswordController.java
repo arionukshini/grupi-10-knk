@@ -22,6 +22,9 @@ public class ResetPasswordController {
     private TextField usernameField;
 
     @FXML
+    private TextField emailField;
+
+    @FXML
     private PasswordField newPasswordField;
 
     @FXML
@@ -58,6 +61,7 @@ public class ResetPasswordController {
     private void updateTexts() {
         titleLabel.setText(LanguageManager.get("reset.title"));
         usernameField.setPromptText(LanguageManager.get("reset.username"));
+        emailField.setPromptText(LanguageManager.get("reset.email"));
         newPasswordField.setPromptText(LanguageManager.get("reset.newPassword"));
         visibleNewPasswordField.setPromptText(LanguageManager.get("reset.newPassword"));
         confirmPasswordField.setPromptText(LanguageManager.get("reset.confirmPassword"));
@@ -68,7 +72,8 @@ public class ResetPasswordController {
     }
 
     private void setupKeyboardAccess() {
-        usernameField.setOnAction(event -> newPasswordField.requestFocus());
+        usernameField.setOnAction(event -> emailField.requestFocus());
+        emailField.setOnAction(event -> newPasswordField.requestFocus());
         newPasswordField.setOnAction(event -> confirmPasswordField.requestFocus());
         visibleNewPasswordField.setOnAction(event -> visibleConfirmPasswordField.requestFocus());
         confirmPasswordField.setOnAction(event -> resetButton.fire());
@@ -86,6 +91,7 @@ public class ResetPasswordController {
     @FXML
     public void handleReset() {
         String username = usernameField.getText();
+        String email = emailField.getText();
         String newPassword = passwordVisible
                 ? visibleNewPasswordField.getText()
                 : newPasswordField.getText();
@@ -93,22 +99,22 @@ public class ResetPasswordController {
                 ? visibleConfirmPasswordField.getText()
                 : confirmPasswordField.getText();
 
-        if (username.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+        if (username.isEmpty() || email.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             messageLabel.setText(LanguageManager.get("message.fillAllFields"));
+            messageLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        String oldPasswordHash = UserService.getPasswordHashByUsernameAndEmail(username, email);
+
+        if (oldPasswordHash == null) {
+            messageLabel.setText(LanguageManager.get("message.userEmailMismatch"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
             messageLabel.setText(LanguageManager.get("message.passwordsDoNotMatch"));
-            messageLabel.setStyle("-fx-text-fill: red;");
-            return;
-        }
-
-        String oldPasswordHash = UserService.getPasswordHashByUsername(username);
-
-        if (oldPasswordHash == null) {
-            messageLabel.setText(LanguageManager.get("message.userNotFound"));
             messageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
