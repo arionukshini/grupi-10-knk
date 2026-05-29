@@ -48,13 +48,14 @@
 
     <center>
         <ScrollPane fitToWidth="true"
+                    fitToHeight="true"
                     hbarPolicy="NEVER"
                     vbarPolicy="AS_NEEDED"
                     style="-fx-background-color: linear-gradient(to bottom, #eaf7fb, #f8fafc); -fx-background: transparent;">
             <content>
                 <VBox alignment="CENTER"
                       spacing="26"
-                      minHeight="430"
+                      minHeight="464"
                       style="-fx-background-color: linear-gradient(to bottom, #eaf7fb, #f8fafc);">
                     <padding>
                         <Insets top="42" right="32" bottom="42" left="32"/>
@@ -130,7 +131,7 @@
                     </FlowPane>
 
                     <Button fx:id="accessButton"
-                            text="Login"
+                            text="Enter"
                             onAction="#openLogin"
                             prefHeight="54"
                             prefWidth="220"

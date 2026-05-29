@@ -97,7 +97,7 @@ public class WelcomeController {
     private void updateTexts() {
         appTitleLabel.setText(LanguageManager.get("app.title"));
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
-        accessButton.setText(LanguageManager.get("login.button"));
+        accessButton.setText(LanguageManager.get("welcome.enter"));
 
         headerSubtitleLabel.setText(LanguageManager.get("welcome.headerSubtitle"));
         subtitleLabel.setText(LanguageManager.get("welcome.subtitle"));
