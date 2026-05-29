@@ -73,6 +73,19 @@
                 prefHeight="42"
                 style="-fx-background-color: linear-gradient(to right, #1f3b82, #17b6d0); -fx-text-fill: white; -fx-background-radius: 12; -fx-font-size: 14px; -fx-font-weight: bold;" />
 
+        <HBox fx:id="loadingBox"
+              alignment="CENTER"
+              spacing="8"
+              visible="false"
+              managed="false">
+            <ProgressIndicator prefWidth="22"
+                               prefHeight="22"
+                               progress="-1"/>
+            <Label fx:id="loadingLabel"
+                   text="Opening dashboard..."
+                   style="-fx-text-fill: #1e3a5f; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        </HBox>
+
         <Label fx:id="messageLabel"
                wrapText="true"
                style="-fx-text-fill: #dc2626; -fx-font-size: 13px;" />
