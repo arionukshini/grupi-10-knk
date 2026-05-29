@@ -261,6 +261,130 @@ public class UserService {
         return false;
     }
 
+    public static boolean isOnlyAdmin(User user) {
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return false;
+        }
+
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'";
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return true;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) <= 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    public static boolean deleteAccountAndEmployeeData(User user) {
+        if (user == null) {
+            return false;
+        }
+
+        String userSql = "SELECT employee_id, role FROM users WHERE id = ?";
+        String adminCountSql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'";
+        String deleteSalaryHistorySql = """
+                DELETE FROM salary_history
+                WHERE employee_id = ?
+                   OR salary_id IN (
+                       SELECT id
+                       FROM salaries
+                       WHERE employee_id = ?
+                   )
+                """;
+        String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
+        String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
+        String deleteUserSql = "DELETE FROM users WHERE id = ?";
+        String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return false;
+            }
+
+            conn.setAutoCommit(false);
+
+            try (
+                    PreparedStatement userStmt = conn.prepareStatement(userSql);
+                    PreparedStatement adminCountStmt = conn.prepareStatement(adminCountSql);
+                    PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
+                    PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
+                    PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
+                    PreparedStatement deleteUserStmt = conn.prepareStatement(deleteUserSql);
+                    PreparedStatement deleteEmployeeStmt = conn.prepareStatement(deleteEmployeeSql)
+            ) {
+                userStmt.setInt(1, user.getId());
+
+                Integer employeeId = null;
+                String role;
+                try (ResultSet userRs = userStmt.executeQuery()) {
+                    if (!userRs.next()) {
+                        conn.rollback();
+                        return false;
+                    }
+
+                    Object employeeIdValue = userRs.getObject("employee_id");
+                    employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
+                    role = userRs.getString("role");
+                }
+
+                if ("ADMIN".equalsIgnoreCase(role)) {
+                    try (ResultSet adminRs = adminCountStmt.executeQuery()) {
+                        adminRs.next();
+
+                        if (adminRs.getInt(1) <= 1) {
+                            conn.rollback();
+                            return false;
+                        }
+                    }
+                }
+
+                deleteUserStmt.setInt(1, user.getId());
+                boolean deletedUser = deleteUserStmt.executeUpdate() > 0;
+
+                if (!deletedUser) {
+                    conn.rollback();
+                    return false;
+                }
+
+                if (employeeId != null) {
+                    historyStmt.setInt(1, employeeId);
+                    historyStmt.setInt(2, employeeId);
+                    historyStmt.executeUpdate();
+
+                    salariesStmt.setInt(1, employeeId);
+                    salariesStmt.executeUpdate();
+
+                    contractsStmt.setInt(1, employeeId);
+                    contractsStmt.executeUpdate();
+
+                    deleteEmployeeStmt.setInt(1, employeeId);
+                    deleteEmployeeStmt.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
         private static boolean userExists(String username, Connection conn) throws SQLException {
             String sql = "SELECT 1 FROM users WHERE username = ?";
 
