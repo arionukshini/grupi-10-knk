@@ -41,9 +41,6 @@ public class LoginController {
     private Button loginButton;
 
     @FXML
-    private Button registerButton;
-
-    @FXML
     private Label messageLabel;
 
     private boolean passwordVisible = false;
@@ -62,7 +59,6 @@ public class LoginController {
         visiblePasswordField.setOnAction(event -> loginButton.fire());
 
         loginButton.setAccessibleText("Login");
-        registerButton.setAccessibleText("Register");
         forgotPasswordLink.setAccessibleText("Forgot password");
     }
 
@@ -77,7 +73,6 @@ public class LoginController {
         visiblePasswordField.setPromptText(LanguageManager.get("login.password"));
         forgotPasswordLink.setText(LanguageManager.get("login.forgotPassword"));
         loginButton.setText(LanguageManager.get("login.button"));
-        registerButton.setText(LanguageManager.get("login.goToRegister"));
         togglePasswordButton.setText("👁");
     }
 
@@ -118,24 +113,6 @@ public class LoginController {
         passwordField.setManaged(!passwordVisible);
 
         togglePasswordButton.setText(passwordVisible ? "🙈" : "👁");
-    }
-
-    @FXML
-    public void goToRegister(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/register-view.fxml")
-            );
-
-            Stage stage = (Stage) ((Node) event.getSource())
-                    .getScene()
-                    .getWindow();
-
-            stage.getScene().setRoot(loader.load());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML
