@@ -69,7 +69,6 @@
                 </GridPane>
 
                 <HBox spacing="10">
-                    <Button fx:id="addButton" text="Shto" onAction="#addEmployee" styleClass="success-button"/>
                     <Button fx:id="updateButton" text="Perditeso" onAction="#updateEmployee" styleClass="primary-button"/>
                     <Button fx:id="deleteButton" text="Fshi" onAction="#deleteEmployee" styleClass="danger-button"/>
                     <Button fx:id="clearButton" text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>
