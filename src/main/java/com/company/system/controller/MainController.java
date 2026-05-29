@@ -11,6 +11,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -24,6 +28,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -55,7 +63,6 @@ public class MainController {
     private static final String ICON_CONTRACTS = "M6 2 H15 L20 7 V22 H6 Z M14 3.5 V8 H18.5 M8 12 H18 M8 16 H18 M8 20 H14";
     private static final String ICON_SALARIES = "M9 3 H15 L14 7 H10 Z M10 7 H14 C18 9 20 12.5 20 17 C20 20.31 16.42 22 12 22 C7.58 22 4 20.31 4 17 C4 12.5 6 9 10 7 Z M12 11 V18 M9.5 13 H13.2 C14.2 13 15 13.67 15 14.55 C15 15.42 14.2 16 13.2 16 H10.8 C9.8 16 9 16.58 9 17.45 C9 18.33 9.8 19 10.8 19 H14.5";
     private static final String ICON_DEPARTMENTS = "M3 21 V9 H9 V21 Z M10 21 V3 H16 V21 Z M17 21 V12 H21 V21 Z M5 12 H7 M12 6 H14 M12 10 H14 M12 14 H14 M19 15 H19";
-    private static final String ICON_USERS = "M16 11 C18.21 11 20 9.21 20 7 C20 4.79 18.21 3 16 3 C13.79 3 12 4.79 12 7 C12 9.21 13.79 11 16 11 Z M8 11 C10.21 11 12 9.21 12 7 C12 4.79 10.21 3 8 3 C5.79 3 4 4.79 4 7 C4 9.21 5.79 11 8 11 Z M8 13 C5.33 13 0 14.34 0 17 V20 H16 V17 C16 14.34 10.67 13 8 13 Z M16 13 C15.69 13 15.34 13.02 14.97 13.05 C16.29 14 17 15.27 17 17 V20 H24 V17 C24 14.34 18.67 13 16 13 Z";
     private static final String ICON_SETTINGS = "M19.43 12.98 C19.47 12.66 19.5 12.34 19.5 12 C19.5 11.66 19.47 11.34 19.43 11.02 L21.54 9.37 L19.54 5.91 L17.05 6.91 C16.54 6.52 15.99 6.2 15.38 5.95 L15 3.29 H11 L10.62 5.95 C10.01 6.2 9.46 6.52 8.95 6.91 L6.46 5.91 L4.46 9.37 L6.57 11.02 C6.53 11.34 6.5 11.66 6.5 12 C6.5 12.34 6.53 12.66 6.57 12.98 L4.46 14.63 L6.46 18.09 L8.95 17.09 C9.46 17.48 10.01 17.8 10.62 18.05 L11 20.71 H15 L15.38 18.05 C15.99 17.8 16.54 17.48 17.05 17.09 L19.54 18.09 L21.54 14.63 Z M13 15.5 C11.07 15.5 9.5 13.93 9.5 12 C9.5 10.07 11.07 8.5 13 8.5 C14.93 8.5 16.5 10.07 16.5 12 C16.5 13.93 14.93 15.5 13 15.5 Z";
     private static final String ICON_USER = "M12 12 C14.76 12 17 9.76 17 7 C17 4.24 14.76 2 12 2 C9.24 2 7 4.24 7 7 C7 9.76 9.24 12 12 12 Z M4 22 C4 17.58 7.58 14 12 14 C16.42 14 20 17.58 20 22 Z";
     private static final String ICON_LANGUAGE = "M4 4 H13 V7 H11 C10.7 8.4 10.12 9.69 9.25 10.83 C10 11.45 10.9 12.04 12 12.56 L11 14.3 C9.9 13.76 8.93 13.13 8.08 12.43 C7.08 13.25 5.83 14.08 4.3 14.9 L3.35 13.22 C4.73 12.52 5.85 11.82 6.74 11.12 C6.14 10.45 5.62 9.72 5.17 8.92 L6.88 8.05 C7.2 8.6 7.57 9.1 8 9.57 C8.55 8.82 8.94 7.97 9.18 7 H4 Z M15 10 H17 L21 20 H18.9 L18.1 18 H13.9 L13.1 20 H11 Z M14.58 16.2 H17.42 L16 12.55 Z";
@@ -222,7 +229,7 @@ public class MainController {
         contractsButton.setUserData(new NavItem(ICON_CONTRACTS, LanguageManager.get("menu.contracts")));
         salariesButton.setUserData(new NavItem(ICON_SALARIES, LanguageManager.get("menu.salaries")));
         departmentsButton.setUserData(new NavItem(ICON_DEPARTMENTS, LanguageManager.get("menu.departments")));
-        usersButton.setUserData(new NavItem(ICON_USERS, LanguageManager.get("menu.users")));
+        usersButton.setUserData(new NavItem(ICON_USER, LanguageManager.get("menu.users")));
         profileButton.setUserData(new NavItem(ICON_SETTINGS, LanguageManager.get("menu.profile")));
 
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
@@ -239,8 +246,7 @@ public class MainController {
 
     private void updateLoggedInUser() {
         User user = Session.getUser();
-        String username = user == null ? "-" : user.getUsername();
-        loggedInLabel.setText("Logged in as: " + username);
+        loggedInLabel.setText("Logged in as: " + UserService.getDisplayName(user));
     }
 
     private void updateThemeButton() {
@@ -594,16 +600,143 @@ public class MainController {
         Label title = new Label(LanguageManager.get("menu.users"));
         title.getStyleClass().add("page-title");
 
-        VBox emptySection = new VBox();
-        emptySection.getStyleClass().add("content-card");
-        emptySection.setMinHeight(260);
-        emptySection.setMaxWidth(900);
+        TextField searchField = new TextField();
+        searchField.setPromptText(isAlbanian() ? "Kerko perdorues, punetor ose rol" : "Search by user, employee or role");
+        searchField.setPrefWidth(420);
 
-        VBox usersView = new VBox(18, title, emptySection);
+        VBox searchCard = new VBox(searchField);
+        searchCard.getStyleClass().add("content-card");
+
+        TableView<User> usersTable = new TableView<>();
+        usersTable.setPrefHeight(430);
+        usersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+
+        TableColumn<User, Integer> idColumn = new TableColumn<>(LanguageManager.get("table.id"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.setPrefWidth(55);
+
+        TableColumn<User, String> usernameColumn = new TableColumn<>(isAlbanian() ? "Perdoruesi" : "Username");
+        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        usernameColumn.setPrefWidth(150);
+
+        TableColumn<User, String> employeeColumn = new TableColumn<>(isAlbanian() ? "Punetori" : "Employee");
+        employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
+        employeeColumn.setPrefWidth(190);
+
+        TableColumn<User, String> roleColumn = new TableColumn<>(LanguageManager.get("account.role").replace(":", ""));
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+        roleColumn.setPrefWidth(110);
+
+        TableColumn<User, Timestamp> createdColumn = new TableColumn<>(isAlbanian() ? "Krijuar" : "Created");
+        createdColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+        createdColumn.setPrefWidth(160);
+
+        usersTable.getColumns().addAll(idColumn, usernameColumn, employeeColumn, roleColumn, createdColumn);
+
+        ObservableList<User> users = FXCollections.observableArrayList(UserService.getAllUsers());
+        FilteredList<User> filteredUsers = new FilteredList<>(users, user -> true);
+        SortedList<User> sortedUsers = new SortedList<>(filteredUsers);
+        sortedUsers.comparatorProperty().bind(usersTable.comparatorProperty());
+        usersTable.setItems(sortedUsers);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String keyword = newValue == null ? "" : newValue.toLowerCase().trim();
+
+            filteredUsers.setPredicate(user -> keyword.isEmpty()
+                    || contains(user.getUsername(), keyword)
+                    || contains(user.getEmployeeName(), keyword)
+                    || contains(user.getRole(), keyword));
+        });
+
+        VBox tableCard = new VBox(usersTable);
+        tableCard.getStyleClass().add("content-card");
+        VBox.setVgrow(usersTable, Priority.ALWAYS);
+
+        VBox tableSection = new VBox(14, searchCard, tableCard);
+        tableSection.setPrefWidth(720);
+        tableSection.setMaxWidth(820);
+        HBox.setHgrow(tableSection, Priority.ALWAYS);
+
+        StackPane userIcon = createSidebarIconBox(ICON_USER, 1.08);
+        userIcon.getStyleClass().add("profile-icon");
+
+        Label selectedTitle = new Label(isAlbanian() ? "Zgjidhni nje perdorues" : "Select a user");
+        selectedTitle.getStyleClass().add("section-title");
+
+        Label usernameValue = new Label("-");
+        Label employeeIdValue = new Label("-");
+        Label employeeValue = new Label("-");
+        Label passwordValue = new Label("-");
+        Label roleValue = new Label("-");
+        Label createdValue = new Label("-");
+
+        passwordValue.setWrapText(true);
+        passwordValue.setMaxWidth(300);
+
+        VBox detailsCard = new VBox(
+                14,
+                userIcon,
+                selectedTitle,
+                createDetailLine(isAlbanian() ? "Perdoruesi" : "Username", usernameValue),
+                createDetailLine("Employee ID", employeeIdValue),
+                createDetailLine(isAlbanian() ? "Punetori" : "Employee", employeeValue),
+                createDetailLine(isAlbanian() ? "Hash i fjalekalimit" : "Password hash", passwordValue),
+                createDetailLine(LanguageManager.get("account.role").replace(":", ""), roleValue),
+                createDetailLine(isAlbanian() ? "Krijuar" : "Created", createdValue)
+        );
+        detailsCard.setAlignment(Pos.TOP_CENTER);
+        detailsCard.getStyleClass().add("profile-card");
+        detailsCard.setPrefWidth(360);
+        detailsCard.setMaxWidth(390);
+
+        usersTable.getSelectionModel().selectedItemProperty().addListener((observable, oldUser, selectedUser) -> {
+            if (selectedUser == null) {
+                selectedTitle.setText(isAlbanian() ? "Zgjidhni nje perdorues" : "Select a user");
+                usernameValue.setText("-");
+                employeeIdValue.setText("-");
+                employeeValue.setText("-");
+                passwordValue.setText("-");
+                roleValue.setText("-");
+                createdValue.setText("-");
+                return;
+            }
+
+            selectedTitle.setText(UserService.getDisplayName(selectedUser));
+            usernameValue.setText(selectedUser.getUsername());
+            employeeIdValue.setText(selectedUser.getEmployeeId() == null ? "-" : String.valueOf(selectedUser.getEmployeeId()));
+            employeeValue.setText(selectedUser.getEmployeeName() == null ? "-" : selectedUser.getEmployeeName());
+            passwordValue.setText(selectedUser.getPasswordHash());
+            roleValue.setText(selectedUser.getRole());
+            createdValue.setText(formatCreatedAt(selectedUser.getCreatedAt()));
+        });
+
+        if (!users.isEmpty()) {
+            usersTable.getSelectionModel().selectFirst();
+        }
+
+        HBox usersContent = new HBox(18, tableSection, detailsCard);
+        usersContent.setMaxWidth(1220);
+
+        VBox usersView = new VBox(18, title, usersContent);
         usersView.getStyleClass().add("profile-page");
         usersView.setStyle("-fx-padding: 28;");
 
         setContent(usersView);
+    }
+
+    private VBox createDetailLine(String labelText, Label valueLabel) {
+        Label label = new Label(labelText);
+        label.getStyleClass().add("card-title");
+
+        valueLabel.getStyleClass().add("profile-detail");
+
+        VBox line = new VBox(4, label, valueLabel);
+        line.setMaxWidth(Double.MAX_VALUE);
+        return line;
+    }
+
+    private boolean contains(String value, String keyword) {
+        return value != null && value.toLowerCase().contains(keyword);
     }
 
     @FXML

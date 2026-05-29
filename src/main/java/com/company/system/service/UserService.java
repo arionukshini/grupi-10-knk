@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserService {
 
@@ -30,9 +32,14 @@ public class UserService {
                     String storedHash = rs.getString("password_hash");
 
                     if (PasswordUtils.verifyPassword(password, storedHash)) {
+                        Object employeeIdValue = rs.getObject("employee_id");
+                        Integer employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
+
                         return new User(
                                 rs.getInt("id"),
                                 rs.getString("username"),
+                                employeeId,
+                                getEmployeeName(employeeId, conn),
                                 storedHash,
                                 rs.getString("role"),
                                 rs.getTimestamp("created_at")
@@ -75,6 +82,91 @@ public class UserService {
         }
 
         return false;
+    }
+
+    public static List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = """
+                SELECT u.id,
+                       u.employee_id,
+                       CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+                       u.username,
+                       u.password_hash,
+                       u.role,
+                       u.created_at
+                FROM users u
+                LEFT JOIN employees e ON u.employee_id = e.id
+                ORDER BY u.id
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return users;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    Object employeeIdValue = rs.getObject("employee_id");
+                    Integer employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
+
+                    users.add(new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            employeeId,
+                            rs.getString("employee_name"),
+                            rs.getString("password_hash"),
+                            rs.getString("role"),
+                            rs.getTimestamp("created_at")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+    public static String getDisplayName(User user) {
+        if (user == null) {
+            return "-";
+        }
+
+        if (user.getEmployeeName() != null && !user.getEmployeeName().isBlank()) {
+            return user.getEmployeeName();
+        }
+
+        if (user.getEmployeeId() == null) {
+            return user.getUsername();
+        }
+
+        String sql = "SELECT CONCAT(first_name, ' ', last_name) AS employee_name FROM employees WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return user.getUsername();
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, user.getEmployeeId());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        String employeeName = rs.getString("employee_name");
+
+                        if (employeeName != null && !employeeName.isBlank()) {
+                            return employeeName;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user.getUsername();
     }
 
     public static boolean resetPassword(String username, String newPassword) {
@@ -178,5 +270,25 @@ public class UserService {
                 ResultSet rs = stmt.executeQuery();
                 return rs.next();
             }
+        }
+
+        private static String getEmployeeName(Integer employeeId, Connection conn) throws SQLException {
+            if (employeeId == null || employeeId <= 0) {
+                return null;
+            }
+
+            String sql = "SELECT CONCAT(first_name, ' ', last_name) AS employee_name FROM employees WHERE id = ?";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, employeeId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("employee_name");
+                    }
+                }
+            }
+
+            return null;
         }
 }
