@@ -151,6 +151,7 @@ public class MainController {
         setupContextMenu();
         applyRolePermissions();
         showDashboard();
+        checkExpiringContracts();
     }
 
     @FXML
@@ -270,6 +271,51 @@ public class MainController {
         });
     }
 
+    private void checkExpiringContracts() {
+        User user = Session.getUser();
+        if (user == null || user.getEmployeeId() == null) return;
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
+
+        List<com.company.system.model.Contract> expiring =
+                com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
+
+        if (expiring.isEmpty()) return;
+
+        boolean sq = isAlbanian();
+
+        StringBuilder message = new StringBuilder();
+        message.append(sq
+                ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
+                : "The following contracts will expire within 14 days:\n\n");
+
+        for (com.company.system.model.Contract c : expiring) {
+            message.append("• ")
+                    .append(c.getContractType())
+                    .append(" - ")
+                    .append(sq ? "Skadon" : "Expires")
+                    .append(": ")
+                    .append(c.getEndDate())
+                    .append("\n");
+        }
+
+        message.append(sq
+                ? "\nJu lutem kontaktoni administratorin per rinovim."
+                : "\nPlease contact the administrator for renewal.");
+
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            DialogUtils.style(alert);
+            alert.setTitle(sq ? "Paralajmerim - Kontrata" : "Warning — Contract");
+            alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
+            Label content = new Label(message.toString());
+            content.setWrapText(true);
+            content.setMaxWidth(400);
+            content.setStyle("-fx-font-size: 13px;");
+            alert.getDialogPane().setContent(content);
+            alert.getDialogPane().setPrefWidth(480);
+            alert.showAndWait();
+        });
+    }
     private void applyRolePermissions() {
         User user = Session.getUser();
 
