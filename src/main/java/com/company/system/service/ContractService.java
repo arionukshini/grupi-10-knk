@@ -110,4 +110,44 @@ public class ContractService {
 
         return false;
     }
+
+public static Contract getLatestContractByEmployeeId(int employeeId) {
+    String sql = """
+                SELECT c.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+                FROM contracts c
+                JOIN employees e ON c.employee_id = e.id
+                WHERE c.employee_id = ?
+                ORDER BY COALESCE(c.end_date, c.start_date) DESC, c.id DESC
+                LIMIT 1
+                """;
+
+    try (Connection conn = DBConnection.connect()) {
+        if (conn == null) {
+            return null;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, employeeId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Contract(
+                            rs.getInt("id"),
+                            rs.getInt("employee_id"),
+                            rs.getString("employee_name"),
+                            rs.getString("contract_type"),
+                            rs.getDate("start_date"),
+                            rs.getDate("end_date"),
+                            rs.getDouble("salary"),
+                            rs.getString("status")
+                    );
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
 }
