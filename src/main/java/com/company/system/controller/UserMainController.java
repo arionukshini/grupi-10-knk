@@ -11,17 +11,12 @@ import com.company.system.service.ContractService;
 import com.company.system.service.DepartmentService;
 import com.company.system.service.EmployeeService;
 import com.company.system.service.SalaryService;
-import com.company.system.service.UserService;
-import com.company.system.utils.DialogUtils;
-import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -41,7 +36,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class UserMainController {
 
@@ -363,11 +357,6 @@ public class UserMainController {
             showSettings();
         });
 
-        if (profileLanguageChanged) {
-            languageMessage.setText(t("Language changed successfully!", "Gjuha u ndryshua me sukses!"));
-            profileLanguageChanged = false;
-        }
-
         Button logoutButton = new Button(t("Logout", "Logout"));
         logoutButton.getStyleClass().add("secondary-button");
         logoutButton.setOnAction(e -> handleLogout());
@@ -381,6 +370,11 @@ public class UserMainController {
                 logoutButton
         );
 
+        if (profileLanguageChanged) {
+            languageMessage.setText(t("Language changed successfully!", "Gjuha u ndryshua me sukses!"));
+            profileLanguageChanged = false;
+        }
+
         root.getChildren().add(card);
 
         if (user != null) {
@@ -390,26 +384,6 @@ public class UserMainController {
                     t("Created at", "Krijuar me") + ": " + formatCreatedAt(user.getCreatedAt())
             ));
         }
-
-        VBox passwordCard = new VBox(12);
-        passwordCard.getStyleClass().add("content-card");
-        passwordCard.setPadding(new Insets(18));
-
-        Label passwordTitle = new Label(isAlbanian() ? "Change password" : "Change password");
-        passwordTitle.getStyleClass().add("section-title");
-
-        PasswordField currentPasswordField = new PasswordField();
-        currentPasswordField.setPromptText(isAlbanian() ? "Current password" : "Current password");
-
-        PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setPromptText(isAlbanian() ? "New password" : "New password");
-
-        Button changePasswordButton = new Button(isAlbanian() ? "Change password" : "Change password");
-        changePasswordButton.getStyleClass().add("primary-button");
-        changePasswordButton.setOnAction(e -> changePassword(user, currentPasswordField, newPasswordField));
-
-        passwordCard.getChildren().addAll(passwordTitle, currentPasswordField, newPasswordField, changePasswordButton);
-        root.getChildren().add(passwordCard);
 
         return wrap(root);
     }
@@ -500,63 +474,6 @@ public class UserMainController {
         StackPane box = new StackPane(icon);
         box.getStyleClass().add("sidebar-icon-box");
         return box;
-    }
-
-    private void changePassword(User user, PasswordField currentPasswordField, PasswordField newPasswordField) {
-        if (user == null) {
-            return;
-        }
-
-        String currentPassword = currentPasswordField.getText();
-        String newPassword = newPasswordField.getText();
-        String storedHash = UserService.getPasswordHashByUsername(user.getUsername());
-
-        if (currentPassword == null || currentPassword.isBlank() || newPassword == null || newPassword.isBlank()) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Plotesoni te dy fushat e fjalekalimit." : "Fill both password fields.");
-            return;
-        }
-
-        if (!PasswordUtils.verifyPassword(currentPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi aktual nuk eshte i sakte." : "Current password is not correct.");
-            return;
-        }
-
-        if (PasswordUtils.verifyPassword(newPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi i ri nuk mund te jete i njejte me te vjetrin." : "New password cannot be the same as the old one.");
-            return;
-        }
-
-        if (UserService.resetPassword(user.getUsername(), newPassword)) {
-            currentPasswordField.clear();
-            newPasswordField.clear();
-            showStyledAlert(Alert.AlertType.INFORMATION, isAlbanian() ? "Sukses" : "Success",
-                    isAlbanian() ? "Fjalekalimi u ndryshua me sukses." : "Password changed successfully.");
-        } else {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi nuk u ndryshua." : "Password was not changed.");
-        }
-    }
-
-    private void showStyledAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        DialogUtils.style(alert);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.getDialogPane().setContent(createWrappedDialogLabel(message, 380));
-        alert.getDialogPane().setPrefWidth(460);
-        alert.showAndWait();
-    }
-
-    private Label createWrappedDialogLabel(String message, double width) {
-        Label label = new Label(message);
-        label.setWrapText(true);
-        label.setMaxWidth(width);
-        label.setMinHeight(Label.USE_PREF_SIZE);
-        label.getStyleClass().add("body-text");
-        return label;
     }
 
     private String formatSqlDate(Date date) {
