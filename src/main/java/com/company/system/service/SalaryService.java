@@ -9,6 +9,9 @@ import java.util.List;
 
 public class SalaryService {
 
+    private static final double STANDARD_WORK_DAYS = 22.0;
+    private static final double STANDARD_WORK_HOURS = 8.0;
+
     public static List<Salary> getAllSalaries() {
 
         List<Salary> salaries = new ArrayList<>();
@@ -35,7 +38,7 @@ public class SalaryService {
                         rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),
-                        0,
+                        rs.getInt("worked_days"),
                         rs.getInt("vacation_days"),
                         rs.getDouble("work_hours"),
                         rs.getDouble("overtime_hours"),
@@ -102,6 +105,7 @@ public class SalaryService {
                     gross_salary,
                     bonus,
                     deductions,
+                    worked_days,
                     vacation_days,
                     work_hours,
                     overtime_hours,
@@ -110,7 +114,7 @@ public class SalaryService {
                     net_salary,
                     payment_date
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = DBConnection.connect();
@@ -120,13 +124,14 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getVacationDays());
-            stmt.setDouble(6, salary.getWorkHours());
-            stmt.setDouble(7, salary.getOvertimeHours());
-            stmt.setDouble(8, salary.getDailyRate());
-            stmt.setDouble(9, salary.getOvertimePay());
-            stmt.setDouble(10, salary.getNetSalary());
-            stmt.setDate(11, salary.getPaymentDate());
+            stmt.setInt(5, salary.getWorkedDays());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDouble(11, salary.getNetSalary());
+            stmt.setDate(12, salary.getPaymentDate());
 
             int affected = stmt.executeUpdate();
 
@@ -158,6 +163,7 @@ public class SalaryService {
                     gross_salary = ?,
                     bonus = ?,
                     deductions = ?,
+                    worked_days = ?,
                     vacation_days = ?,
                     work_hours = ?,
                     overtime_hours = ?,
@@ -177,14 +183,15 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getVacationDays());
-            stmt.setDouble(6, salary.getWorkHours());
-            stmt.setDouble(7, salary.getOvertimeHours());
-            stmt.setDouble(8, salary.getDailyRate());
-            stmt.setDouble(9, salary.getOvertimePay());
-            stmt.setDouble(10, salary.getNetSalary());
-            stmt.setDate(11, salary.getPaymentDate());
-            stmt.setInt(12, salary.getId());
+            stmt.setInt(5, salary.getWorkedDays());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDouble(11, salary.getNetSalary());
+            stmt.setDate(12, salary.getPaymentDate());
+            stmt.setInt(13, salary.getId());
 
             int updated = stmt.executeUpdate();
 
@@ -237,11 +244,13 @@ public class SalaryService {
             Date paymentDate
     ) {
 
-        double dailyRate = monthlySalary / 22;
+        double dailyRate = monthlySalary / STANDARD_WORK_DAYS;
 
-        double overtimePay = overtimeHours * (dailyRate / 8) * 1.5;
+        int paidDays = Math.max(0, Math.min((workedDays + vacationDays), (int) STANDARD_WORK_DAYS));
+        double basePay = dailyRate * paidDays;
+        double overtimePay = overtimeHours * (dailyRate / STANDARD_WORK_HOURS) * 1.5;
 
-        double grossSalary = monthlySalary + overtimePay;
+        double grossSalary = basePay + overtimePay;
 
         double netSalary = grossSalary + bonus - deductions;
 
