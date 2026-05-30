@@ -61,7 +61,19 @@
                     <Button fx:id="clearButton" text="Pastro" onAction="#clearFields" styleClass="secondary-button"/>
                 </HBox>
             </VBox>
-
+            <VBox spacing="8" styleClass="content-card">
+                <Label fx:id="previewTitleLabel" text="Pamja e llogaritjes" styleClass="section-title"/>
+                <HBox spacing="28">
+                    <VBox spacing="4">
+                        <Label fx:id="previewGrossTitleLabel" text="Bruto" styleClass="card-title"/>
+                        <Label fx:id="grossPreviewLabel" text="-" styleClass="metric-value"/>
+                    </VBox>
+                    <VBox spacing="4">
+                        <Label fx:id="previewNetTitleLabel" text="Neto" styleClass="card-title"/>
+                        <Label fx:id="netPreviewLabel" text="-" styleClass="metric-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
             <VBox spacing="12" styleClass="content-card">
                 <Label fx:id="historyTitleLabel" text="Historiku i pagave" styleClass="section-title"/>
 
