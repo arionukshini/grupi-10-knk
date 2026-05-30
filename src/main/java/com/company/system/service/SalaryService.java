@@ -52,7 +52,47 @@ public class SalaryService {
 
         return salaries;
     }
+    public static Salary getLatestSalaryByEmployeeId(int employeeId) {
+        String sql = """
+            SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+            FROM salaries s
+            JOIN employees e ON s.employee_id = e.id
+            WHERE s.employee_id = ?
+            ORDER BY s.payment_date DESC, s.id DESC
+            LIMIT 1
+            """;
 
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Salary(
+                            rs.getInt("id"),
+                            rs.getInt("employee_id"),
+                            rs.getString("employee_name"),
+                            rs.getDouble("gross_salary"),
+                            rs.getDouble("bonus"),
+                            rs.getDouble("deductions"),
+                            0,
+                            rs.getInt("vacation_days"),
+                            rs.getDouble("work_hours"),
+                            rs.getDouble("overtime_hours"),
+                            rs.getDouble("daily_rate"),
+                            rs.getDouble("overtime_pay"),
+                            rs.getDouble("net_salary"),
+                            rs.getDate("payment_date")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     public static boolean addSalary(Salary salary) {
 
         String sql = """
