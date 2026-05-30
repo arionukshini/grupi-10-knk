@@ -146,6 +146,16 @@ public class DBConnection {
                     );
                     """);
 
+            try (ResultSet salaryColumns = stmt.executeQuery("""
+                    SHOW COLUMNS FROM salaries LIKE 'worked_days'
+                    """)) {
+                if (!salaryColumns.next()) {
+                    stmt.executeUpdate("""
+                            ALTER TABLE salaries
+                            ADD COLUMN worked_days INT DEFAULT 0
+                            """);
+                }
+            }
             stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS salary_history (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -249,20 +259,20 @@ public class DBConnection {
 
                 stmt.executeUpdate("""
                         INSERT INTO salaries
-                        (employee_id,gross_salary,bonus,deductions,vacation_days,work_hours,overtime_hours,net_salary,payment_date)
+                       (employee_id,gross_salary,bonus,deductions,worked_days,vacation_days,work_hours,overtime_hours,net_salary,payment_date)
                         VALUES
-                        (1, 1200.00, 100.00, 50.00, 2, 160, 10, 1250.00, '2026-05-01'),
-                        
-                        (2, 1100.00, 50.00, 20.00, 1, 155, 5, 1130.00, '2026-05-01'),
-                        
-                        (3, 1000.00, 0.00, 30.00, 0, 150, 0, 970.00, '2026-05-01'),
-                        
-                        (4, 950.00, 25.00, 15.00, 3, 145, 2, 960.00, '2026-05-01'),
-                        
-                        (5, 900.00, 0.00, 10.00, 0, 140, 0, 890.00, '2026-05-01'),
-                        
-                        (6, 1300.00, 150.00, 60.00, 1, 170, 12, 1390.00, '2026-05-01');
-                        """);
+                        (1, 1200.00, 100.00, 50.00, 20, 2, 160, 10, 1250.00, '2026-05-01'),
+                    
+                        (2, 1100.00, 50.00, 20.00, 21, 1, 155, 5, 1130.00, '2026-05-01'),
+                       
+                        (3, 1000.00, 0.00, 30.00, 22, 0, 150, 0, 970.00, '2026-05-01'),
+                       
+                        (4, 950.00, 25.00, 15.00, 19, 3, 145, 2, 960.00, '2026-05-01'),
+                       
+                        (5, 900.00, 0.00, 10.00, 18, 0, 140, 0, 890.00, '2026-05-01'),
+                       
+                        (6, 1300.00, 150.00, 60.00, 22, 1, 170, 12, 1390.00, '2026-05-01');
+                       """);
 
                 stmt.executeUpdate("""
                             INSERT INTO salary_history
