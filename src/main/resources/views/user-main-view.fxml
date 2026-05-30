@@ -1,122 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
 
 <BorderPane fx:id="mainShell"
-            xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.company.system.controller.UserMainController"
-            style="-fx-background-color: #f4f6f8;">
+            styleClass="main-shell"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.UserMainController">
+
+    <stylesheets>
+        <URL value="@../styles/app-theme.css"/>
+    </stylesheets>
 
     <top>
-        <HBox fx:id="topBar"
-              alignment="CENTER_LEFT"
-              spacing="14"
-              style="-fx-background-color: linear-gradient(to right, #0d2f66, #0eb3cf); -fx-min-height: 96px; -fx-pref-height: 96px;">
+        <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="14">
             <padding>
                 <Insets top="0" right="18" bottom="0" left="12"/>
             </padding>
 
             <Button fx:id="menuToggleButton"
                     text="☰"
-                    onAction="#toggleSidebar"
-                    style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: rgba(255,255,255,0.25);"/>
+                    styleClass="icon-button"
+                    onAction="#toggleSidebar"/>
 
             <Label fx:id="appTitleLabel"
                    text="Contract Manager"
-                   style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                   styleClass="app-title"/>
 
             <Pane HBox.hgrow="ALWAYS"/>
 
             <Label fx:id="loggedInLabel"
                    text="Logged in as: -"
-                   style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                   styleClass="logged-in-label"/>
         </HBox>
     </top>
 
     <left>
         <VBox fx:id="sidebar"
-              spacing="14"
-              prefWidth="240"
-              style="-fx-background-color: #123b72; -fx-border-color: #0b2b54; -fx-border-width: 0 1 0 0;">
-            <padding>
-                <Insets top="18" right="16" bottom="18" left="16"/>
-            </padding>
+              styleClass="sidebar"
+              alignment="CENTER"
+              spacing="10"
+              prefWidth="220"
+              minWidth="220">
 
-            <Label text="Navigation"
-                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <VBox styleClass="nav-list" alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+                <Button fx:id="dashboardButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showDashboard"/>
 
-            <Button fx:id="dashboardButton"
-                    text="Dashboard"
-                    onAction="#showDashboard"
-                    maxWidth="1.7976931348623157E308"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+                <Button fx:id="contractButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showContract"/>
 
-            <Button fx:id="contractButton"
-                    text="My Contract"
-                    onAction="#showContract"
-                    maxWidth="1.7976931348623157E308"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+                <Button fx:id="salaryButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showSalary"/>
 
-            <Button fx:id="salaryButton"
-                    text="My Salary"
-                    onAction="#showSalary"
-                    maxWidth="1.7976931348623157E308"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+                <Button fx:id="departmentButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showDepartment"/>
 
-            <Button fx:id="departmentButton"
-                    text="My Department"
-                    onAction="#showDepartment"
-                    maxWidth="1.7976931348623157E308"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
-
-            <Button fx:id="settingsButton"
-                    text="Settings"
-                    onAction="#showSettings"
-                    maxWidth="1.7976931348623157E308"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+                <Button fx:id="settingsButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showSettings"/>
+            </VBox>
 
             <HBox fx:id="expandedFooter"
+                  styleClass="sidebar-footer"
                   alignment="CENTER"
-                  spacing="8"
-                  style="-fx-padding: 255 0 0 0;">
+                  spacing="8">
                 <Button fx:id="languageButton"
-                        text="SQ"
-                        onAction="#toggleLanguage"
-                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;-fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+                        styleClass="footer-icon-button"
+                        onAction="#toggleLanguage"/>
                 <Button fx:id="helpFooterButton"
                         text="?"
-                        onAction="#showHelp"
-                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;-fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+                        styleClass="footer-icon-button"
+                        onAction="#showHelp"/>
                 <Button fx:id="themeButton"
-                        text="☾"
-                        onAction="#toggleTheme"
-                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+                        styleClass="footer-icon-button"
+                        onAction="#toggleTheme"/>
             </HBox>
+
+            <Button fx:id="themeButton2"
+                    text="⚙"
+                    styleClass="footer-icon-button"
+                    visible="false"
+                    managed="false"
+                    onAction="#toggleTheme"/>
         </VBox>
     </left>
 
     <center>
-        <StackPane fx:id="contentArea"
-                   style="-fx-background-color: #f4f6f8;">
+        <StackPane fx:id="contentArea" styleClass="content-area">
             <padding>
-                <Insets top="16" right="16" bottom="16" left="16"/>
+                <Insets top="18" right="18" bottom="18" left="18"/>
             </padding>
+            <Label text="Welcome" styleClass="welcome-label"/>
         </StackPane>
     </center>
 
     <bottom>
-        <HBox fx:id="statusBar"
-              alignment="CENTER_LEFT"
-              style="-fx-background-color: linear-gradient(to right, #0d2f66, #0eb3cf);">
+        <HBox fx:id="statusBar" styleClass="status-bar" alignment="CENTER_LEFT">
             <padding>
-                <Insets top="8" right="16" bottom="8" left="16"/>
+                <Insets top="6" right="14" bottom="6" left="14"/>
             </padding>
-            <Label fx:id="statusLabel"
-                   text="Ready"
-                   style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Label fx:id="statusLabel" text="Ready"/>
         </HBox>
     </bottom>
 </BorderPane>
