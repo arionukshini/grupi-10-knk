@@ -79,14 +79,14 @@ public class AddUserWizardController {
     }
 
     private void setupStatusOptions() {
-        statusCombo.getItems().addAll("Active", "Inactive", "On Leave");
+        statusCombo.getItems().addAll("Active", "Inactive", "Suspended", "Pending");
         statusCombo.setValue("Active");
     }
 
     private void setupContractOptions() {
-        contractTypeCombo.getItems().addAll("Full-Time", "Part-Time", "Internship", "Contract");
+        contractTypeCombo.getItems().addAll("Full-Time", "Part-Time", "Temporary", "Internship");
         contractTypeCombo.setValue("Full-Time");
-        contractStatusCombo.getItems().addAll("Active", "Expired", "Terminated");
+        contractStatusCombo.getItems().addAll("Active", "Expired", "Pending");
         contractStatusCombo.setValue("Active");
         startDatePicker.setValue(LocalDate.now());
     }

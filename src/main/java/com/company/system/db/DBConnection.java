@@ -185,7 +185,7 @@ public class DBConnection {
                         role VARCHAR(20) DEFAULT 'USER',
                         employee_id INT,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        must_reset_password BOOLEAN NOT NULL DEFAULT FALSE
+                        must_change_password BOOLEAN NOT NULL DEFAULT FALSE
                     )
                     """);
 
