@@ -105,4 +105,33 @@ public class DepartmentService {
 
         return false;
     }
+    public static Department getDepartmentById(int departmentId) {
+        String sql = """
+                SELECT id, name, description
+                FROM departments
+                WHERE id = ?
+                """;
+
+        try (
+                Connection conn = DBConnection.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, departmentId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Department(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

@@ -7,12 +7,15 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
     private static Stage primaryStage;
+
+    private static final int[] ICON_SIZES = {16, 32, 48, 64, 128, 256};
 
     @Override
     public void start(Stage stage) {
@@ -23,6 +26,7 @@ public class MainApp extends Application {
         primaryStage.setMinHeight(650);
 
         configureStageBounds();
+        setAppIcons();
 
         primaryStage.setTitle("Contract & Payroll System");
 
@@ -124,5 +128,18 @@ public class MainApp extends Application {
     private static double currentSceneHeight() {
         Scene scene = primaryStage.getScene();
         return boundedHeight(scene == null || scene.getHeight() <= 0 ? 650 : scene.getHeight());
+    }
+
+    private static void setAppIcons() {
+        for (int size : ICON_SIZES) {
+            try {
+                Image icon = new Image(
+                        MainApp.class.getResourceAsStream("/icons/icon-" + size + ".png")
+                );
+                if (!icon.isError()) {
+                    primaryStage.getIcons().add(icon);
+                }
+            } catch (Exception ignored) {}
+        }
     }
 }
