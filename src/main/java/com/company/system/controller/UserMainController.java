@@ -17,14 +17,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -229,8 +225,8 @@ public class UserMainController {
         Contract contract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
 
         VBox root = createPageContainer(
-                t("My Contract", "My Contract"),
-                t("Your latest contract details.", "Detajet e kontrates suaj me te fundit.")
+                t("My Contract", "Kontrata ime"),
+                t("A quick view of your current contract details.", "Pamje e shpejte e detajeve te kontrates tende.")
         );
 
         if (contract == null) {
@@ -238,14 +234,28 @@ public class UserMainController {
             return wrap(root);
         }
 
-        root.getChildren().add(simpleCard(
-                t("Type", "Lloji") + ": " + valueOrDash(contract.getContractType()),
-                t("Start date", "Data e fillimit") + ": " + formatSqlDate(contract.getStartDate()),
-                t("End date", "Data e mbarimit") + ": " + formatSqlDate(contract.getEndDate()),
-                t("Status", "Statusi") + ": " + valueOrDash(contract.getStatus()),
-                t("Contract salary", "Paga e kontrates") + ": " + formatCurrency(contract.getSalary())
-        ));
+        HBox topRow = new HBox(18);
+        topRow.getChildren().addAll(
+                createHighlightCard(
+                        t("Contract Type", "Lloji i kontrates"),
+                        valueOrDash(contract.getContractType()),
+                        t("Status", "Statusi") + ": " + valueOrDash(contract.getStatus())
+                ),
+                createHighlightCard(
+                        t("Salary", "Paga"),
+                        formatCurrency(contract.getSalary()),
+                        t("Start", "Fillimi") + ": " + formatSqlDate(contract.getStartDate())
+                )
+        );
 
+        VBox detailsCard = createDetailCard(
+                t("Contract period", "Periudha e kontrates"),
+                createInfoRow(t("Start date", "Data e fillimit"), formatSqlDate(contract.getStartDate())),
+                createInfoRow(t("End date", "Data e mbarimit"), formatSqlDate(contract.getEndDate())),
+                createInfoRow(t("Status", "Statusi"), valueOrDash(contract.getStatus()))
+        );
+
+        root.getChildren().addAll(topRow, detailsCard);
         return wrap(root);
     }
 
@@ -258,8 +268,8 @@ public class UserMainController {
         Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
 
         VBox root = createPageContainer(
-                t("My Salary", "My Salary"),
-                t("Your latest salary summary.", "Permbledhja e pages suaj me te fundit.")
+                t("My Salary", "Paga ime"),
+                t("A clear summary of your latest salary and breakdown.", "Permbledhje e qarte e pages suaj me te fundit dhe struktures se saj.")
         );
 
         if (salary == null) {
@@ -267,14 +277,48 @@ public class UserMainController {
             return wrap(root);
         }
 
-        root.getChildren().add(simpleCard(
-                t("Gross salary", "Paga bruto") + ": " + formatCurrency(salary.getGrossSalary()),
-                t("Bonus", "Bonusi") + ": " + formatCurrency(salary.getBonus()),
-                t("Deductions", "Zbritjet") + ": " + formatCurrency(salary.getDeductions()),
-                t("Net salary", "Paga neto") + ": " + formatCurrency(salary.getNetSalary()),
-                t("Payment date", "Data e pageses") + ": " + formatSqlDate(salary.getPaymentDate())
-        ));
+        HBox topRow = new HBox(18);
+        topRow.getChildren().addAll(
+                createAccentCard(
+                        t("Net Salary", "Paga neto"),
+                        formatCurrency(salary.getNetSalary()),
+                        t("Money you receive after deductions.", "Shuma qe merr pas zbritjeve.")
+                ),
+                createAccentCard(
+                        t("Gross Salary", "Paga bruto"),
+                        formatCurrency(salary.getGrossSalary()),
+                        t("Total salary before deductions.", "Paga totale para zbritjeve.")
+                )
+        );
 
+        VBox breakdownCard = createDetailCard(
+                t("Salary breakdown", "Struktura e pages"),
+                createInfoRow(t("Bonus", "Bonusi"), formatCurrency(salary.getBonus())),
+                createInfoRow(t("Deductions", "Zbritjet"), formatCurrency(salary.getDeductions())),
+                createInfoRow(t("Payment date", "Data e pageses"), formatSqlDate(salary.getPaymentDate()))
+        );
+
+        HBox bottomRow = new HBox(18);
+        bottomRow.getChildren().addAll(
+                createSmallStatCard(
+                        t("Work hours", "Orari i punes"),
+                        formatHours(salary.getWorkHours())
+                ),
+                createSmallStatCard(
+                        t("Overtime hours", "Oret shtese"),
+                        formatNumber(salary.getOvertimeHours())
+                ),
+                createSmallStatCard(
+                        t("Daily rate", "Paga ditore"),
+                        formatCurrency(salary.getDailyRate())
+                ),
+                createSmallStatCard(
+                        t("Overtime pay", "Pagesa shtese"),
+                        formatCurrency(salary.getOvertimePay())
+                )
+        );
+
+        root.getChildren().addAll(topRow, breakdownCard, bottomRow);
         return wrap(root);
     }
 
@@ -293,36 +337,37 @@ public class UserMainController {
         List<Employee> colleagues = EmployeeService.getEmployeesByDepartment(employee.getDepartmentId(), employee.getId());
 
         VBox root = createPageContainer(
-                t("My Department", "My Department"),
-                t("People from your department.", "Personat nga departamenti yt.")
+                t("My Department", "Departamenti im"),
+                t("Your department and colleagues in one place.", "Departamenti yt dhe koleget ne nje vend.")
         );
 
-        root.getChildren().add(simpleCard(
-                t("Department", "Departamenti") + ": " + valueOrDash(department == null ? null : department.getName()),
-                t("Description", "Pershkrimi") + ": " + valueOrDash(department == null ? null : department.getDescription()),
-                t("Colleagues", "Koleget") + ": " + colleagues.size()
-        ));
+        VBox departmentCard = createDetailCard(
+                t("Department overview", "Permbledhje e departamentit"),
+                createInfoRow(t("Name", "Emri"), valueOrDash(department == null ? null : department.getName())),
+                createInfoRow(t("Description", "Pershkrimi"), valueOrDash(department == null ? null : department.getDescription())),
+                createInfoRow(t("Colleagues", "Koleget"), String.valueOf(colleagues.size()))
+        );
 
-        VBox colleagueBox = new VBox(8);
-        colleagueBox.getStyleClass().add("content-card");
-        colleagueBox.setPadding(new Insets(18));
+        VBox colleaguesBox = new VBox(12);
+        colleaguesBox.getStyleClass().add("content-card");
+        colleaguesBox.setPadding(new Insets(18));
 
         Label colleaguesTitle = new Label(t("Colleagues", "Koleget"));
         colleaguesTitle.getStyleClass().add("section-title");
 
-        colleagueBox.getChildren().add(colleaguesTitle);
+        colleaguesBox.getChildren().add(colleaguesTitle);
 
         if (colleagues.isEmpty()) {
-            colleagueBox.getChildren().add(simpleLabel(t("No colleagues found in this department.", "Nuk u gjeten kolege ne kete departament.")));
+            colleaguesBox.getChildren().add(simpleLabel(
+                    t("No colleagues found in this department.", "Nuk u gjeten kolege ne kete departament.")
+            ));
         } else {
             for (Employee colleague : colleagues) {
-                colleagueBox.getChildren().add(simpleLabel(
-                        colleague.getFirstName() + " " + colleague.getLastName() + " - " + colleague.getPosition()
-                ));
+                colleaguesBox.getChildren().add(createColleagueCard(colleague));
             }
         }
 
-        root.getChildren().add(colleagueBox);
+        root.getChildren().addAll(departmentCard, colleaguesBox);
         return wrap(root);
     }
 
@@ -366,7 +411,7 @@ public class UserMainController {
                 languageBox,
                 languageMessage,
                 simpleLabel(t("Theme", "Tema")),
-                simpleLabel(t("Use the theme button in the footer.", "Përdor butonin e temës poshtë.")),
+                simpleLabel(t("Use the theme button in the footer.", "Perdore butonin e temes poshte.")),
                 logoutButton
         );
 
@@ -391,15 +436,15 @@ public class UserMainController {
     private Node buildHelpView() {
         VBox root = createPageContainer(
                 t("Help", "Ndihma"),
-                t("Use the sidebar to navigate your personal pages.", "Përdor sidebar-in për me lëvizë në faqet personale.")
+                t("Use the sidebar to navigate your personal pages.", "Perdore sidebar-in per me levize ne faqet personale.")
         );
 
         root.getChildren().add(simpleCard(
-                t("Dashboard shows your summary.", "Dashboard shfaq përmbledhjen tënde."),
-                t("My Contract shows contract details.", "My Contract shfaq detajet e kontratës."),
-                t("My Salary shows salary details.", "My Salary shfaq detajet e pagës."),
-                t("My Department shows colleagues.", "My Department shfaq kolegët."),
-                t("Settings contains language and theme controls.", "Settings ka gjuhën dhe temën.")
+                t("Dashboard shows your summary.", "Dashboard shfaq permbledhjen tende."),
+                t("My Contract shows contract details.", "My Contract shfaq detajet e kontrates."),
+                t("My Salary shows salary details.", "My Salary shfaq detajet e pages."),
+                t("My Department shows colleagues.", "My Department shfaq koleget."),
+                t("Settings contains language and theme controls.", "Settings ka gjuhen dhe temen.")
         ));
 
         return wrap(root);
@@ -430,6 +475,115 @@ public class UserMainController {
             card.getChildren().add(simpleLabel(line));
         }
 
+        return card;
+    }
+
+    private VBox createHighlightCard(String title, String value, String subtitle) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("profile-card");
+        card.setPadding(new Insets(18));
+        card.setPrefWidth(360);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("section-title");
+
+        Label valueLabel = new Label(value);
+        valueLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+
+        Label subtitleLabel = new Label(subtitle);
+        subtitleLabel.getStyleClass().add("body-text");
+        subtitleLabel.setWrapText(true);
+
+        card.getChildren().addAll(titleLabel, valueLabel, subtitleLabel);
+        return card;
+    }
+
+    private VBox createAccentCard(String title, String value, String subtitle) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("profile-card");
+        card.setPadding(new Insets(18));
+        card.setPrefWidth(360);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("section-title");
+
+        Label valueLabel = new Label(value);
+        valueLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+
+        Label subtitleLabel = new Label(subtitle);
+        subtitleLabel.getStyleClass().add("body-text");
+        subtitleLabel.setWrapText(true);
+
+        card.getChildren().addAll(titleLabel, valueLabel, subtitleLabel);
+        return card;
+    }
+
+    private VBox createSmallStatCard(String title, String value) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("profile-card");
+        card.setPadding(new Insets(16));
+        card.setPrefWidth(170);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("section-title");
+
+        Label valueLabel = new Label(value);
+        valueLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        card.getChildren().addAll(titleLabel, valueLabel);
+        return card;
+    }
+
+    private VBox createDetailCard(String title, Node... rows) {
+        VBox card = new VBox(12);
+        card.getStyleClass().add("profile-card");
+        card.setPadding(new Insets(18));
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("section-title");
+
+        card.getChildren().add(titleLabel);
+        for (Node row : rows) {
+            card.getChildren().add(row);
+        }
+
+        return card;
+    }
+
+    private HBox createInfoRow(String label, String value) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        Label left = new Label(label + ":");
+        left.setMinWidth(150);
+        left.setStyle("-fx-font-weight: bold;");
+
+        Label right = new Label(value);
+        right.setWrapText(true);
+        right.getStyleClass().add("body-text");
+
+        row.getChildren().addAll(left, right);
+        return row;
+    }
+
+    private VBox createColleagueCard(Employee colleague) {
+        VBox card = new VBox(6);
+        card.getStyleClass().add("content-card");
+        card.setPadding(new Insets(14));
+
+        Label name = new Label(colleague.getFirstName() + " " + colleague.getLastName());
+        name.getStyleClass().add("section-title");
+
+        Label position = new Label(t("Position", "Pozita") + ": " + valueOrDash(colleague.getPosition()));
+        position.getStyleClass().add("body-text");
+
+        Label email = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
+        email.getStyleClass().add("body-text");
+
+        Label status = new Label(t("Status", "Statusi") + ": " + valueOrDash(colleague.getStatus()));
+        status.getStyleClass().add("body-text");
+
+        card.getChildren().addAll(name, position, email, status);
         return card;
     }
 
@@ -488,6 +642,14 @@ public class UserMainController {
 
     private String formatCurrency(double value) {
         return String.format("%.2f EUR", value);
+    }
+
+    private String formatHours(double value) {
+        return String.format("%.2f ore", value);
+    }
+
+    private String formatNumber(double value) {
+        return String.format("%.2f", value);
     }
 
     private String valueOrDash(String value) {
