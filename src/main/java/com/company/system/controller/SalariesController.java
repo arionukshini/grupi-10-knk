@@ -2,6 +2,8 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Salary;
+import com.company.system.model.Employee;
+import com.company.system.service.EmployeeService;
 import com.company.system.service.SalaryService;
 import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
@@ -61,6 +63,9 @@ public class SalariesController {
     private TableColumn<Salary, Double> deductionsColumn;
 
     @FXML
+    private TableColumn<Salary, Integer> workedDaysColumn;
+
+    @FXML
     private TableColumn<Salary, Integer> vacationColumn;
 
     @FXML
@@ -89,6 +94,21 @@ public class SalariesController {
 
     @FXML
     private TableColumn<Salary, Double> historyNetColumn;
+
+    @FXML
+    private Label previewTitleLabel;
+
+    @FXML
+    private Label previewGrossTitleLabel;
+
+    @FXML
+    private Label previewNetTitleLabel;
+
+    @FXML
+    private Label grossPreviewLabel;
+
+    @FXML
+    private Label netPreviewLabel;
 
     @FXML
     private TextField employeeIdField;
@@ -136,6 +156,7 @@ public class SalariesController {
     public void initialize() {
         loadTexts();
         setupSortedTables();
+        setupLivePreview();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
@@ -143,6 +164,7 @@ public class SalariesController {
         grossColumn.setCellValueFactory(new PropertyValueFactory<>("grossSalary"));
         bonusColumn.setCellValueFactory(new PropertyValueFactory<>("bonus"));
         deductionsColumn.setCellValueFactory(new PropertyValueFactory<>("deductions"));
+        workedDaysColumn.setCellValueFactory(new PropertyValueFactory<>("workedDays"));
         vacationColumn.setCellValueFactory(new PropertyValueFactory<>("vacationDays"));
         workHoursColumn.setCellValueFactory(new PropertyValueFactory<>("workHours"));
         overtimeColumn.setCellValueFactory(new PropertyValueFactory<>("overtimeHours"));
@@ -180,6 +202,7 @@ public class SalariesController {
         grossColumn.setText(LanguageManager.get("salaries.gross"));
         bonusColumn.setText(LanguageManager.get("salaries.bonus"));
         deductionsColumn.setText(LanguageManager.get("salaries.deductions"));
+        workedDaysColumn.setText(LanguageManager.get("salaries.workedDays"));
         vacationColumn.setText(LanguageManager.get("salaries.vacation"));
         workHoursColumn.setText(LanguageManager.get("salaries.workHours"));
         overtimeColumn.setText(LanguageManager.get("salaries.overtime"));
@@ -200,6 +223,16 @@ public class SalariesController {
         bonusField.setPromptText(LanguageManager.get("salaries.bonus"));
         deductionsField.setPromptText(LanguageManager.get("salaries.deductions"));
         paymentDatePicker.setPromptText(LanguageManager.get("salaries.paymentDate"));
+
+        if (previewTitleLabel != null) {
+            previewTitleLabel.setText(LanguageManager.get("salaries.preview"));
+        }
+        if (previewGrossTitleLabel != null) {
+            previewGrossTitleLabel.setText(LanguageManager.get("salaries.gross"));
+        }
+        if (previewNetTitleLabel != null) {
+            previewNetTitleLabel.setText(LanguageManager.get("salaries.net"));
+        }
 
         calculateButton.setText(LanguageManager.get("salaries.calculate"));
         if (saveButton != null) {
@@ -223,11 +256,33 @@ public class SalariesController {
         historyTable.setItems(sortedSalaryHistory);
     }
 
+    private void setupLivePreview() {
+        Runnable refresh = this::refreshSalaryPreview;
+
+        employeeIdField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        baseSalaryField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        workedDaysField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        vacationDaysField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        workHoursField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        overtimeHoursField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        bonusField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        deductionsField.textProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+        paymentDatePicker.valueProperty().addListener((obs, oldValue, newValue) -> refresh.run());
+
+        refreshSalaryPreview();
+    }
     private void fillForm(Salary salary) {
 
         employeeIdField.setText(String.valueOf(salary.getEmployeeId()));
-        baseSalaryField.setText(String.valueOf(salary.getGrossSalary()));
 
+        Employee employee = EmployeeService.getEmployeeById(salary.getEmployeeId());
+        if (employee != null) {
+            baseSalaryField.setText(String.valueOf(employee.getBaseSalary()));
+        } else {
+            baseSalaryField.setText(String.valueOf(salary.getDailyRate() * 22));
+        }
+
+        workedDaysField.setText(String.valueOf(salary.getWorkedDays()));
         vacationDaysField.setText(String.valueOf(salary.getVacationDays()));
         workHoursField.setText(String.valueOf(salary.getWorkHours()));
         overtimeHoursField.setText(String.valueOf(salary.getOvertimeHours()));
@@ -239,6 +294,40 @@ public class SalariesController {
         }
     }
 
+
+    private void refreshSalaryPreview() {
+        try {
+            Salary preview = buildSalaryFromForm(0, false);
+            calculatedSalary = preview;
+            updatePreviewLabels(preview);
+        } catch (Exception ignored) {
+            calculatedSalary = null;
+            clearPreviewLabels();
+        }
+    }
+
+    private void updatePreviewLabels(Salary salary) {
+        if (salary == null) {
+            clearPreviewLabels();
+            return;
+        }
+
+        if (grossPreviewLabel != null) {
+            grossPreviewLabel.setText(String.format("%.2f €", salary.getGrossSalary()));
+        }
+        if (netPreviewLabel != null) {
+            netPreviewLabel.setText(String.format("%.2f €", salary.getNetSalary()));
+        }
+    }
+
+    private void clearPreviewLabels() {
+        if (grossPreviewLabel != null) {
+            grossPreviewLabel.setText("-");
+        }
+        if (netPreviewLabel != null) {
+            netPreviewLabel.setText("-");
+        }
+    }
     private void loadSalaries() {
         salaries.setAll(SalaryService.getAllSalaries());
     }
@@ -253,44 +342,13 @@ public class SalariesController {
 
     @FXML
     private void handleCalculateSalary() {
-
         try {
+            Salary salary = buildSalaryFromForm(0, false);
 
-            int employeeId = Integer.parseInt(employeeIdField.getText());
-            double baseSalary = Double.parseDouble(baseSalaryField.getText());
+            if (salary == null) return;
 
-            int workedDays = Integer.parseInt(workedDaysField.getText());
-            int vacationDays = Integer.parseInt(vacationDaysField.getText());
-
-            double workHours = Double.parseDouble(workHoursField.getText());
-            double overtimeHours = Double.parseDouble(overtimeHoursField.getText());
-
-            double bonus = Double.parseDouble(bonusField.getText());
-            double deductions = Double.parseDouble(deductionsField.getText());
-
-            LocalDate localDate = paymentDatePicker.getValue();
-
-            if (localDate == null) {
-                showAlert(Alert.AlertType.ERROR,
-                        LanguageManager.get("message.error.title"),
-                        LanguageManager.get("salaries.paymentDate.required"));
-                return;
-            }
-
-            Date paymentDate = Date.valueOf(localDate);
-
-            calculatedSalary = SalaryService.calculateSalary(
-                    0,
-                    employeeId,
-                    baseSalary,
-                    workedDays,
-                    vacationDays,
-                    workHours,
-                    overtimeHours,
-                    bonus,
-                    deductions,
-                    paymentDate
-            );
+            calculatedSalary = salary;
+            updatePreviewLabels(salary);
 
             showAlert(Alert.AlertType.INFORMATION,
                     LanguageManager.get("message.success.title"),
@@ -302,7 +360,6 @@ public class SalariesController {
                     LanguageManager.get("salaries.invalid.input"));
         }
     }
-
     @FXML
     private void handleSaveSalary() {
 
@@ -325,6 +382,7 @@ public class SalariesController {
             loadSalaries();
             clearFields();
             calculatedSalary = null;
+
 
             showAlert(Alert.AlertType.INFORMATION,
                     LanguageManager.get("message.success.title"),
@@ -450,8 +508,46 @@ public class SalariesController {
         paymentDatePicker.setValue(null);
 
         calculatedSalary = null;
+
+        clearPreviewLabels();
+    }
+private Salary buildSalaryFromForm(int id, boolean requirePaymentDate) {
+    int employeeId = Integer.parseInt(employeeIdField.getText().trim());
+    double baseSalary = Double.parseDouble(baseSalaryField.getText().trim());
+    int workedDays = Integer.parseInt(workedDaysField.getText().trim());
+    int vacationDays = Integer.parseInt(vacationDaysField.getText().trim());
+    double workHours = Double.parseDouble(workHoursField.getText().trim());
+    double overtimeHours = Double.parseDouble(overtimeHoursField.getText().trim());
+    double bonus = Double.parseDouble(bonusField.getText().trim());
+    double deductions = Double.parseDouble(deductionsField.getText().trim());
+
+    LocalDate localDate = paymentDatePicker.getValue();
+    if (localDate == null) {
+        if (requirePaymentDate) {
+            showAlert(Alert.AlertType.ERROR,
+                    LanguageManager.get("message.error.title"),
+                    LanguageManager.get("salaries.paymentDate.required"));
+            return null;
+        }
+
+        localDate = LocalDate.now();
     }
 
+    Date paymentDate = Date.valueOf(localDate);
+
+    return SalaryService.calculateSalary(
+            id,
+            employeeId,
+            baseSalary,
+            workedDays,
+            vacationDays,
+            workHours,
+            overtimeHours,
+            bonus,
+            deductions,
+            paymentDate
+    );
+}
     private void showAlert(Alert.AlertType type, String title, String message) {
 
         Alert alert = new Alert(type);
