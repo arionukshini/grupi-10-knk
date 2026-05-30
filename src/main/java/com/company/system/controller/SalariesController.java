@@ -433,6 +433,7 @@ public class SalariesController {
             int employeeId = Integer.parseInt(employeeIdField.getText());
             double grossSalary = Double.parseDouble(baseSalaryField.getText());
 
+            int workedDays = Integer.parseInt(workedDaysField.getText());
             int vacationDays = Integer.parseInt(vacationDaysField.getText());
             double workHours = Double.parseDouble(workHoursField.getText());
             double overtimeHours = Double.parseDouble(overtimeHoursField.getText());
@@ -461,6 +462,7 @@ public class SalariesController {
                     grossSalary,
                     bonus,
                     deductions,
+                    workedDays,
                     vacationDays,
                     workHours,
                     overtimeHours,
