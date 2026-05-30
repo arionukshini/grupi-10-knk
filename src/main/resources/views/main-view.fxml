@@ -65,6 +65,10 @@
                         styleClass="nav-button"
                         maxWidth="Infinity"
                         onAction="#showUsers"/>
+                <Button fx:id="exportButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showExports"/>
                 <Button fx:id="profileButton"
                         styleClass="nav-button"
                         maxWidth="Infinity"
