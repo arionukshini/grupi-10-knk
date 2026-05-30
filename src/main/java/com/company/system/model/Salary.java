@@ -12,6 +12,7 @@ public class Salary {
     private final double bonus;
     private final double deductions;
 
+    private final int workedDays;
     private final int vacationDays;
     private final double workHours;
     private final double overtimeHours;
@@ -30,6 +31,7 @@ public class Salary {
             double grossSalary,
             double bonus,
             double deductions,
+            int workedDays,
             int vacationDays,
             double workHours,
             double overtimeHours,
@@ -44,6 +46,7 @@ public class Salary {
         this.grossSalary = grossSalary;
         this.bonus = bonus;
         this.deductions = deductions;
+        this.workedDays = workedDays;
         this.vacationDays = vacationDays;
         this.workHours = workHours;
         this.overtimeHours = overtimeHours;
@@ -59,6 +62,7 @@ public class Salary {
             double grossSalary,
             double bonus,
             double deductions,
+            int workedDays,
             int vacationDays,
             double workHours,
             double overtimeHours,
@@ -74,6 +78,7 @@ public class Salary {
                 grossSalary,
                 bonus,
                 deductions,
+                workedDays,
                 vacationDays,
                 workHours,
                 overtimeHours,
@@ -107,6 +112,8 @@ public class Salary {
     public double getDeductions() {
         return deductions;
     }
+
+    public int getWorkedDays() {return workedDays; }
 
     public int getVacationDays() {
         return vacationDays;
