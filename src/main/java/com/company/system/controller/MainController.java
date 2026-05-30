@@ -738,7 +738,42 @@ public class MainController {
         recordNavigation("dashboard");
         currentView = "dashboard";
         setStatus(LanguageManager.get("status.dashboard"));
+
+        User user = Session.getUser();
+        if (user != null && !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            showUserDashboard(user);
+            return;
+        }
+
         loadView("/views/dashboard-view.fxml", dashboardButton, "Failed to load dashboard.");
+    }
+
+    private void showUserDashboard(User user) {
+        setActiveButton(dashboardButton);
+
+        Label title = new Label(LanguageManager.get("dashboard.title"));
+        title.getStyleClass().add("page-title");
+
+        Label subtitle = new Label(isAlbanian()
+                ? "Permbledhje personale e punes, kontrates dhe departamentit tuaj."
+                : "Personal overview of your work, contract and department.");
+        subtitle.setWrapText(true);
+        subtitle.getStyleClass().add("page-subtitle");
+
+        VBox heading = new VBox(4, title, subtitle);
+        VBox workSection = buildWorkSection(user);
+
+        VBox dashboardView = new VBox(18, heading, workSection);
+        dashboardView.getStyleClass().add("profile-page");
+        dashboardView.setStyle("-fx-padding: 28;");
+
+        ScrollPane scrollPane = new ScrollPane(dashboardView);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.getStyleClass().add("module-scroll");
+
+        setContent(scrollPane);
     }
 
     @FXML
@@ -909,8 +944,6 @@ public class MainController {
         userCard.getStyleClass().add("profile-card");
         userCard.setMaxWidth(900);
 
-        VBox workSection = buildWorkSection(user);
-
         Label languageTitle = new Label(LanguageManager.get("account.language") + ":");
         languageTitle.getStyleClass().add("section-title");
 
@@ -983,7 +1016,7 @@ public class MainController {
         actionsCard.getStyleClass().add("profile-card");
         actionsCard.setMaxWidth(900);
 
-        VBox profileView = new VBox(18, title, userCard, workSection, accountOptions, actionsCard);
+        VBox profileView = new VBox(18, title, userCard, accountOptions, actionsCard);
         profileView.getStyleClass().add("profile-page");
         profileView.setStyle("-fx-padding: 28;");
         VBox.setVgrow(profileView, Priority.NEVER);
@@ -1361,8 +1394,12 @@ private String valueOrDash(String value) {
             );
         }
 
+        Contract contract = user.getEmployeeId() == null
+                ? null
+                : ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
+
         VBox employeeCard = createEmployeeCard(employee, department);
-        VBox contractCard = createContractCard(null); // për momentin NULL sepse ContractService s’e kemi parë
+        VBox contractCard = createContractCard(contract);
         VBox departmentCard = createDepartmentCard(department, colleagues);
 
         HBox topRow = new HBox(18, employeeCard, contractCard);
