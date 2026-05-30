@@ -341,15 +341,29 @@ public class UserMainController {
                 t("Your department and colleagues in one place.", "Departamenti yt dhe koleget ne nje vend.")
         );
 
-        VBox departmentCard = createDetailCard(
+        HBox topRow = new HBox(18);
+        topRow.getChildren().addAll(
+                createAccentCard(
+                        t("Department", "Departamenti"),
+                        valueOrDash(department == null ? null : department.getName()),
+                        t("Your main department.", "Departamenti yt kryesor.")
+                ),
+                createAccentCard(
+                        t("Colleagues", "Koleget"),
+                        String.valueOf(colleagues.size()),
+                        t("People in the same department.", "Personat ne te njejtin departament.")
+                )
+        );
+
+        VBox overviewCard = createDetailCard(
                 t("Department overview", "Permbledhje e departamentit"),
                 createInfoRow(t("Name", "Emri"), valueOrDash(department == null ? null : department.getName())),
                 createInfoRow(t("Description", "Pershkrimi"), valueOrDash(department == null ? null : department.getDescription())),
-                createInfoRow(t("Colleagues", "Koleget"), String.valueOf(colleagues.size()))
+                createInfoRow(t("Your position", "Pozita jote"), valueOrDash(employee.getPosition()))
         );
 
         VBox colleaguesBox = new VBox(12);
-        colleaguesBox.getStyleClass().add("content-card");
+        colleaguesBox.getStyleClass().add("profile-card");
         colleaguesBox.setPadding(new Insets(18));
 
         Label colleaguesTitle = new Label(t("Colleagues", "Koleget"));
@@ -358,8 +372,9 @@ public class UserMainController {
         colleaguesBox.getChildren().add(colleaguesTitle);
 
         if (colleagues.isEmpty()) {
-            colleaguesBox.getChildren().add(simpleLabel(
-                    t("No colleagues found in this department.", "Nuk u gjeten kolege ne kete departament.")
+            colleaguesBox.getChildren().add(createEmptyStateCard(
+                    t("No colleagues found in this department.", "Nuk u gjeten kolege ne kete departament."),
+                    t("This usually means you are the only employee in this department.", "Kjo zakonisht do te thote qe je i vetmi punetor ne kete departament.")
             ));
         } else {
             for (Employee colleague : colleagues) {
@@ -367,7 +382,7 @@ public class UserMainController {
             }
         }
 
-        root.getChildren().addAll(departmentCard, colleaguesBox);
+        root.getChildren().addAll(topRow, overviewCard, colleaguesBox);
         return wrap(root);
     }
 
@@ -477,6 +492,22 @@ public class UserMainController {
 
         return card;
     }
+    private VBox createEmptyStateCard(String title, String subtitle) {
+        VBox card = new VBox(6);
+        card.getStyleClass().add("content-card");
+        card.setPadding(new Insets(16));
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("section-title");
+
+        Label subtitleLabel = new Label(subtitle);
+        subtitleLabel.getStyleClass().add("body-text");
+        subtitleLabel.setWrapText(true);
+
+        card.getChildren().addAll(titleLabel, subtitleLabel);
+        return card;
+    }
+
 
     private VBox createHighlightCard(String title, String value, String subtitle) {
         VBox card = new VBox(10);
@@ -567,23 +598,33 @@ public class UserMainController {
     }
 
     private VBox createColleagueCard(Employee colleague) {
-        VBox card = new VBox(6);
-        card.getStyleClass().add("content-card");
+        VBox card = new VBox(8);
+        card.getStyleClass().add("profile-card");
         card.setPadding(new Insets(14));
 
         Label name = new Label(colleague.getFirstName() + " " + colleague.getLastName());
         name.getStyleClass().add("section-title");
 
+        HBox infoRow = new HBox(18);
+        infoRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox leftInfo = new VBox(4);
         Label position = new Label(t("Position", "Pozita") + ": " + valueOrDash(colleague.getPosition()));
-        position.getStyleClass().add("body-text");
-
-        Label email = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
-        email.getStyleClass().add("body-text");
-
         Label status = new Label(t("Status", "Statusi") + ": " + valueOrDash(colleague.getStatus()));
+
+        position.getStyleClass().add("body-text");
         status.getStyleClass().add("body-text");
 
-        card.getChildren().addAll(name, position, email, status);
+        leftInfo.getChildren().addAll(position, status);
+
+        VBox rightInfo = new VBox(4);
+        Label email = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
+        email.getStyleClass().add("body-text");
+        rightInfo.getChildren().add(email);
+
+        infoRow.getChildren().addAll(leftInfo, rightInfo);
+
+        card.getChildren().addAll(name, infoRow);
         return card;
     }
 
