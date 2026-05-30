@@ -179,13 +179,6 @@ public class DBConnection {
                     )
                     """);
 
-            ensureColumnExists(
-                    conn,
-                    "users",
-                    "must_reset_password",
-                    "ALTER TABLE users ADD COLUMN must_reset_password BOOLEAN NOT NULL DEFAULT FALSE"
-            );
-
             ResultSet rs =
                     stmt.executeQuery(
                             "SELECT COUNT(*) FROM departments"
@@ -366,16 +359,4 @@ public class DBConnection {
         }
     }
 
-    private static void ensureColumnExists(Connection conn, String tableName, String columnName, String alterSql) throws SQLException {
-        DatabaseMetaData metaData = conn.getMetaData();
-        try (ResultSet columns = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
-            if (columns.next()) {
-                return;
-            }
-        }
-
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(alterSql);
-        }
-    }
 }
