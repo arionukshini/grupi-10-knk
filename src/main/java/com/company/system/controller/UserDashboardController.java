@@ -4,11 +4,14 @@ import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.model.Department;
 import com.company.system.model.Employee;
+import com.company.system.model.Salary;
 import com.company.system.model.User;
 import com.company.system.service.ContractService;
 import com.company.system.service.DepartmentService;
 import com.company.system.service.EmployeeService;
+import com.company.system.service.SalaryService;
 import com.company.system.utils.Session;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -28,11 +31,15 @@ public class UserDashboardController {
     @FXML private Label subtitleLabel;
     @FXML private Label employeeTitleLabel;
     @FXML private Label contractTitleLabel;
+    @FXML private Label salaryTitleLabel;
     @FXML private Label departmentTitleLabel;
     @FXML private Label colleaguesTitleLabel;
+
     @FXML private VBox employeeDetailsBox;
     @FXML private VBox contractDetailsBox;
+    @FXML private VBox salaryDetailsBox;
     @FXML private VBox departmentDetailsBox;
+
     @FXML private TableView<Employee> colleaguesTable;
     @FXML private TableColumn<Employee, String> colleagueNameColumn;
     @FXML private TableColumn<Employee, String> colleaguePositionColumn;
@@ -49,10 +56,14 @@ public class UserDashboardController {
     private void loadTexts() {
         titleLabel.setText(LanguageManager.get("dashboard.title"));
         subtitleLabel.setText(isAlbanian()
-                ? "Permbledhje personale e punes, kontrates dhe departamentit tuaj."
-                : "Personal overview of your work, contract and department.");
+                ? "Permbledhje personale e punes, kontrates, pages dhe departamentit tuaj."
+                : "Personal overview of your work, contract, salary and department.");
+
         employeeTitleLabel.setText(isAlbanian() ? "Informata personale" : "Personal details");
         contractTitleLabel.setText(LanguageManager.get("profile.contractInfo"));
+        if (salaryTitleLabel != null) {
+            salaryTitleLabel.setText(isAlbanian() ? "Informata te pages" : "Salary information");
+        }
         departmentTitleLabel.setText(LanguageManager.get("profile.departmentInfo"));
         colleaguesTitleLabel.setText(LanguageManager.get("profile.colleagues"));
     }
@@ -62,7 +73,9 @@ public class UserDashboardController {
         colleaguesTable.setPlaceholder(new Label(LanguageManager.get("profile.noColleagues")));
 
         colleagueNameColumn.setText(LanguageManager.get("profile.colleagueName"));
-        colleagueNameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        colleagueNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
+                valueOrDash(cellData.getValue().getFirstName()) + " " + valueOrDash(cellData.getValue().getLastName())
+        ));
 
         colleaguePositionColumn.setText(LanguageManager.get("profile.colleaguePosition"));
         colleaguePositionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
@@ -80,6 +93,7 @@ public class UserDashboardController {
         if (user == null || user.getEmployeeId() == null) {
             employeeDetailsBox.getChildren().setAll(createDetail(LanguageManager.get("message.userNotFound")));
             contractDetailsBox.getChildren().setAll(createDetail(LanguageManager.get("profile.noContract")));
+            loadSalaryDetails(null);
             departmentDetailsBox.getChildren().setAll(createDetail(LanguageManager.get("profile.noDepartment")));
             colleaguesTable.setItems(FXCollections.observableArrayList());
             return;
@@ -88,6 +102,8 @@ public class UserDashboardController {
         Employee employee = EmployeeService.getEmployeeById(user.getEmployeeId());
         Department department = employee == null ? null : DepartmentService.getDepartmentById(employee.getDepartmentId());
         Contract contract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
+        Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
+
         List<Employee> colleagues = new ArrayList<>();
 
         if (department != null && employee != null) {
@@ -96,6 +112,7 @@ public class UserDashboardController {
 
         loadEmployeeDetails(employee, department);
         loadContractDetails(contract);
+        loadSalaryDetails(salary);
         loadDepartmentDetails(department);
         colleaguesTable.setItems(FXCollections.observableArrayList(colleagues));
     }
@@ -122,6 +139,29 @@ public class UserDashboardController {
                 createDetail(LanguageManager.get("profile.contractEnd") + ": " + formatSqlDate(contract.getEndDate())),
                 createDetail(LanguageManager.get("profile.contractStatus") + ": " + valueOrDash(contract.getStatus())),
                 createDetail(LanguageManager.get("contracts.salary") + ": " + formatCurrency(contract.getSalary()))
+        );
+    }
+
+    private void loadSalaryDetails(Salary salary) {
+        if (salaryDetailsBox == null) {
+            return;
+        }
+
+        if (salary == null) {
+            salaryDetailsBox.getChildren().setAll(createDetail(
+                    isAlbanian()
+                            ? "Nuk u gjeten informata per page."
+                            : "No salary information found."
+            ));
+            return;
+        }
+
+        salaryDetailsBox.getChildren().setAll(
+                createDetail((isAlbanian() ? "Paga bruto" : "Gross salary") + ": " + formatCurrency(salary.getGrossSalary())),
+                createDetail((isAlbanian() ? "Bonusi" : "Bonus") + ": " + formatCurrency(salary.getBonus())),
+                createDetail((isAlbanian() ? "Zbritjet" : "Deductions") + ": " + formatCurrency(salary.getDeductions())),
+                createDetail((isAlbanian() ? "Paga neto" : "Net salary") + ": " + formatCurrency(salary.getNetSalary())),
+                createDetail((isAlbanian() ? "Data e pageses" : "Payment date") + ": " + formatSqlDate(salary.getPaymentDate()))
         );
     }
 
