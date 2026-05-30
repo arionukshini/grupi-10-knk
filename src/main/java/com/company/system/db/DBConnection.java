@@ -179,6 +179,12 @@ public class DBConnection {
                     )
                     """);
 
+            ensureColumnExists(
+                    conn,
+                    "users",
+                    "must_reset_password",
+                    "ALTER TABLE users ADD COLUMN must_reset_password BOOLEAN NOT NULL DEFAULT FALSE"
+            );
 
             ResultSet rs =
                     stmt.executeQuery(
@@ -292,7 +298,7 @@ public class DBConnection {
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (NULL, ?, ?, ?, FALSE)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_reset_password) VALUES (NULL, ?, ?, ?, FALSE)";
 
         try (Statement countStmt = conn.createStatement();
              ResultSet rs = countStmt.executeQuery(countSql)) {
@@ -324,7 +330,7 @@ public class DBConnection {
 
         String findEmployeeSql = "SELECT id FROM employees WHERE first_name = ? AND last_name = ?";
         String userExistsSql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (?, ?, ?, 'USER', TRUE)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_reset_password) VALUES (?, ?, ?, 'USER', TRUE)";
 
         try (PreparedStatement findEmployeeStmt = conn.prepareStatement(findEmployeeSql);
              PreparedStatement userExistsStmt = conn.prepareStatement(userExistsSql);
@@ -357,6 +363,19 @@ public class DBConnection {
                 insertStmt.setString(3, PasswordUtils.hashPassword("1234"));
                 insertStmt.executeUpdate();
             }
+        }
+    }
+
+    private static void ensureColumnExists(Connection conn, String tableName, String columnName, String alterSql) throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+        try (ResultSet columns = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
+            if (columns.next()) {
+                return;
+            }
+        }
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(alterSql);
         }
     }
 }
