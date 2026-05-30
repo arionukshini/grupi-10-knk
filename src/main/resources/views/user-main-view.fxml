@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainShell"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.company.system.controller.UserMainController"
+            style="-fx-background-color: #f4f6f8;">
+
+    <top>
+        <HBox fx:id="topBar"
+              alignment="CENTER_LEFT"
+              spacing="14"
+              style="-fx-background-color: linear-gradient(to right, #0d2f66, #0eb3cf); -fx-min-height: 96px; -fx-pref-height: 96px;">
+            <padding>
+                <Insets top="0" right="18" bottom="0" left="12"/>
+            </padding>
+
+            <Button fx:id="menuToggleButton"
+                    text="☰"
+                    onAction="#toggleSidebar"
+                    style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: rgba(255,255,255,0.25);"/>
+
+            <Label fx:id="appTitleLabel"
+                   text="Contract Manager"
+                   style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <Label fx:id="loggedInLabel"
+                   text="Logged in as: -"
+                   style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox fx:id="sidebar"
+              spacing="14"
+              prefWidth="240"
+              style="-fx-background-color: #123b72; -fx-border-color: #0b2b54; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets top="18" right="16" bottom="18" left="16"/>
+            </padding>
+
+            <Label text="Navigation"
+                   style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+            <Button fx:id="dashboardButton"
+                    text="Dashboard"
+                    onAction="#showDashboard"
+                    maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+
+            <Button fx:id="contractButton"
+                    text="My Contract"
+                    onAction="#showContract"
+                    maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+
+            <Button fx:id="salaryButton"
+                    text="My Salary"
+                    onAction="#showSalary"
+                    maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+
+            <Button fx:id="departmentButton"
+                    text="My Department"
+                    onAction="#showDepartment"
+                    maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+
+            <Button fx:id="settingsButton"
+                    text="Settings"
+                    onAction="#showSettings"
+                    maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 12; -fx-border-radius: 12; -fx-alignment: center-left; -fx-padding: 12 14 12 14;"/>
+
+            <HBox fx:id="expandedFooter"
+                  alignment="CENTER"
+                  spacing="8"
+                  style="-fx-padding: 255 0 0 0;">
+                <Button fx:id="languageButton"
+                        text="SQ"
+                        onAction="#toggleLanguage"
+                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;-fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+                <Button fx:id="helpFooterButton"
+                        text="?"
+                        onAction="#showHelp"
+                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;-fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+                <Button fx:id="themeButton"
+                        text="☾"
+                        onAction="#toggleTheme"
+                        style="-fx-background-color: rgba(255,255,255,0.12); -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-min-height: 38; -fx-background-radius: 10; -fx-border-radius: 8; -fx-border-color: rgba(255,255,255,0.22);"/>
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea"
+                   style="-fx-background-color: #f4f6f8;">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox fx:id="statusBar"
+              alignment="CENTER_LEFT"
+              style="-fx-background-color: linear-gradient(to right, #0d2f66, #0eb3cf);">
+            <padding>
+                <Insets top="8" right="16" bottom="8" left="16"/>
+            </padding>
+            <Label fx:id="statusLabel"
+                   text="Ready"
+                   style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

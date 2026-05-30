@@ -1,6 +1,8 @@
 package com.company.system;
 
 import com.company.system.db.DBConnection;
+import com.company.system.model.User;
+import com.company.system.utils.Session;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -73,11 +75,15 @@ public class MainApp extends Application {
 
     // MAIN APP
     public static void openMainApp() {
-
         try {
+            User user = Session.getUser();
+
+            String viewPath = (user != null && "ADMIN".equalsIgnoreCase(user.getRole()))
+                    ? "/views/main-view.fxml"
+                    : "/views/user-main-view.fxml";
 
             FXMLLoader loader = new FXMLLoader(
-                    MainApp.class.getResource("/views/main-view.fxml")
+                    MainApp.class.getResource(viewPath)
             );
 
             Scene scene = new Scene(
