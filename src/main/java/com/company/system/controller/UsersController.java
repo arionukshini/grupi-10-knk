@@ -8,7 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -16,7 +22,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 
@@ -26,6 +35,7 @@ public class UsersController {
 
     private final ObservableList<User> users = FXCollections.observableArrayList();
     private FilteredList<User> filteredUsers;
+
 
     @FXML private Label titleLabel;
     @FXML private TextField searchField;
@@ -48,6 +58,9 @@ public class UsersController {
     @FXML private Label roleValueLabel;
     @FXML private Label createdDetailLabel;
     @FXML private Label createdValueLabel;
+    @FXML private Button addUserBtn;
+    @FXML private Button editUserBtn;
+    @FXML private Button deleteUserBtn;
 
     @FXML
     public void initialize() {
@@ -57,7 +70,9 @@ public class UsersController {
         setupSearch();
         setupSelection();
         loadUsers();
+        setupActionButtons();
     }
+
 
     private void loadTexts() {
         boolean sq = isAlbanian();
@@ -164,5 +179,106 @@ public class UsersController {
 
     private boolean isAlbanian() {
         return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
+    }
+
+
+    private void setupActionButtons() {
+        if (editUserBtn == null || deleteUserBtn == null) return;
+
+        editUserBtn.setDisable(true);
+        deleteUserBtn.setDisable(true);
+
+        usersTable.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldVal, newVal) -> {
+                    boolean noneSelected = (newVal == null);
+                    editUserBtn.setDisable(noneSelected);
+                    deleteUserBtn.setDisable(noneSelected);
+                }
+        );
+    }
+
+    @FXML
+    private void onAddUser() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/add-user-wizard.fxml"));
+            Parent root = loader.load();
+
+            AddUserWizardController ctrl = loader.getController();
+            ctrl.setOnSuccess(this::loadUsers);
+
+            Stage stage = new Stage();
+            stage.setTitle(isAlbanian() ? "Shto Perdorues te Ri" : "Add New User");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Gabim gjate hapjes se wizard-it.");
+        }
+    }
+
+    @FXML
+    private void onEditUser() {
+        User selected = usersTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/edit-user.fxml"));
+            Parent root = loader.load();
+
+            EditUserController ctrl = loader.getController();
+            ctrl.setUser(selected);
+            ctrl.setOnSuccess(this::loadUsers);
+
+            Stage stage = new Stage();
+            stage.setTitle(isAlbanian() ? "Edito Perdoruesin" : "Edit User");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root, 420, 420));
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Gabim gjate hapjes se formes.");
+        }
+    }
+
+    @FXML
+    private void onDeleteUser() {
+        User selected = usersTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        if (UserService.isOnlyAdmin(selected)) {
+            showError("Nuk mund te fshini administratorin e vetem.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Fshi Perdoruesin");
+        confirm.setHeaderText("A jeni te sigurt?");
+        confirm.setContentText("Do te fshihet i gjithe rekordja e \""
+                + selected.getUsername() + "\" duke perfshire punonjesin.");
+        confirm.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.OK) {
+                boolean ok = UserService.deleteAccountAndEmployeeData(selected);
+                if (ok) {
+                    loadUsers();
+                } else {
+                    showError("Gabim gjate fshirjes. Provoni perseri.");
+                }
+            }
+        });
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Gabim");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

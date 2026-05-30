@@ -180,22 +180,13 @@ public class DBConnection {
             stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                    
-                        employee_id INT UNIQUE,
-                    
-                        username VARCHAR(50) UNIQUE NOT NULL,
-                    
+                        username VARCHAR(100) NOT NULL,
                         password_hash VARCHAR(255) NOT NULL,
-                    
-                        role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
-                    
-                        must_change_password BOOLEAN DEFAULT TRUE,
-                    
+                        role VARCHAR(20) DEFAULT 'USER',
+                        employee_id INT,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    
-                        FOREIGN KEY (employee_id)
-                        REFERENCES employees(id)
-                    );
+                        must_reset_password BOOLEAN NOT NULL DEFAULT FALSE
+                    )
                     """);
 
 
