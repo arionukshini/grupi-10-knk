@@ -175,7 +175,7 @@ public class DBConnection {
                         role VARCHAR(20) DEFAULT 'USER',
                         employee_id INT,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        must_reset_password BOOLEAN NOT NULL DEFAULT FALSE
+                        must_change_password BOOLEAN NOT NULL DEFAULT FALSE
                     )
                     """);
 
@@ -292,7 +292,7 @@ public class DBConnection {
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (NULL, ?, ?, ?, FALSE)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_reset_password) VALUES (NULL, ?, ?, ?, FALSE)";
 
         try (Statement countStmt = conn.createStatement();
              ResultSet rs = countStmt.executeQuery(countSql)) {
