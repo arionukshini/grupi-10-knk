@@ -71,6 +71,8 @@ public class MainController {
     private static final String ICON_LANGUAGE = "M4 4 H13 V7 H11 C10.7 8.4 10.12 9.69 9.25 10.83 C10 11.45 10.9 12.04 12 12.56 L11 14.3 C9.9 13.76 8.93 13.13 8.08 12.43 C7.08 13.25 5.83 14.08 4.3 14.9 L3.35 13.22 C4.73 12.52 5.85 11.82 6.74 11.12 C6.14 10.45 5.62 9.72 5.17 8.92 L6.88 8.05 C7.2 8.6 7.57 9.1 8 9.57 C8.55 8.82 8.94 7.97 9.18 7 H4 Z M15 10 H17 L21 20 H18.9 L18.1 18 H13.9 L13.1 20 H11 Z M14.58 16.2 H17.42 L16 12.55 Z";
     private static final String ICON_HELP = "M12 2 C6.48 2 2 6.48 2 12 C2 17.52 6.48 22 12 22 C17.52 22 22 17.52 22 12 C22 6.48 17.52 2 12 2 Z M11 18 H13 V16 H11 Z M12 6 C9.79 6 8 7.79 8 10 H10 C10 8.9 10.9 8 12 8 C13.1 8 14 8.9 14 10 C14 12 11 11.75 11 15 H13 C13 12.75 16 12.5 16 10 C16 7.79 14.21 6 12 6 Z";
     private static final String ICON_EXPORT = "M14 2 H6 C4.9 2 4 2.9 4 4 V20 C4 21.1 4.9 22 6 22 H18 C19.1 22 20 21.1 20 20 V8 Z M16 18 H8 V16 H16 Z M16 14 H8 V12 H16 Z M13 9 V3.5 L18.5 9 Z";
+    private static final String ICON_EXIT = "M15 3 H5 C3.9 3 3 3.9 3 5 V19 C3 20.1 3.9 21 5 21 H15 M10 12 H21 M17 8 L21 12 L17 16";
+    private static final String ICON_DELETE = "M3 6 H21 M8 6 V4 H16 V6 M6 6 L7 21 H17 L18 6 M10 10 V17 M14 10 V17";
     private static final String ICON_SUN = "M12 4 V2 M12 22 V20 M4.93 4.93 L3.52 3.52 M20.48 20.48 L19.07 19.07 M4 12 H2 M22 12 H20 M4.93 19.07 L3.52 20.48 M20.48 3.52 L19.07 4.93 M12 7 C9.24 7 7 9.24 7 12 C7 14.76 9.24 17 12 17 C14.76 17 17 14.76 17 12 C17 9.24 14.76 7 12 7 Z";
     private static final String ICON_MOON = "M21 12.79 C20.16 13.05 19.28 13.18 18.36 13.18 C14.2 13.18 10.82 9.8 10.82 5.64 C10.82 4.72 10.95 3.84 11.21 3 C6.56 3.45 3 7.36 3 12.12 C3 17.07 6.93 21 11.88 21 C16.64 21 20.55 17.44 21 12.79 Z";
 
@@ -119,7 +121,7 @@ public class MainController {
         setupContextMenu();
         applyRolePermissions();
         showDashboard();
-        checkExpiringContracts();
+        checkExpiringContractsPopup();
     }
 
     @FXML
@@ -250,6 +252,47 @@ public class MainController {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             DialogUtils.style(alert);
             alert.setTitle(sq ? "Paralajmerim — Kontrata" : "Warning — Contract");
+            alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
+            Label content = new Label(message.toString());
+            content.setWrapText(true);
+            content.setMaxWidth(400);
+            content.setStyle("-fx-font-size: 13px;");
+            alert.getDialogPane().setContent(content);
+            alert.getDialogPane().setPrefWidth(480);
+            alert.showAndWait();
+        });
+    }
+
+    private void checkExpiringContractsPopup() {
+        User user = Session.getUser();
+        if (user == null || user.getEmployeeId() == null) return;
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
+
+        List<com.company.system.model.Contract> expiring =
+                com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
+
+        if (expiring.isEmpty()) return;
+
+        boolean sq = isAlbanian();
+        StringBuilder message = new StringBuilder();
+        message.append(sq
+                ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
+                : "The following contracts will expire within 14 days:\n\n");
+
+        for (com.company.system.model.Contract contract : expiring) {
+            message.append("- ").append(contract.getContractType())
+                    .append(" - ").append(sq ? "Skadon" : "Expires")
+                    .append(": ").append(contract.getEndDate()).append("\n");
+        }
+
+        message.append(sq
+                ? "\nJu lutem kontaktoni administratorin per rinovim."
+                : "\nPlease contact the administrator for renewal.");
+
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            DialogUtils.style(alert);
+            alert.setTitle(sq ? "Paralajmerim - Kontrata" : "Warning - Contract");
             alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
             Label content = new Label(message.toString());
             content.setWrapText(true);
@@ -400,6 +443,20 @@ public class MainController {
         return icon;
     }
 
+    private StackPane createPopupIcon(String iconPath, String color) {
+        SVGPath icon = new SVGPath();
+        icon.setContent(iconPath);
+        icon.setStyle("-fx-fill: transparent; -fx-stroke: " + color + "; -fx-stroke-width: 2.2; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;");
+        icon.setScaleX(2.2);
+        icon.setScaleY(2.2);
+
+        StackPane box = new StackPane(icon);
+        box.setMinSize(72, 72);
+        box.setPrefSize(72, 72);
+        box.setMaxSize(72, 72);
+        return box;
+    }
+
     private void setActiveButton(Button activeButton) {
         List<Button> buttons = List.of(dashboardButton, employeesButton, contractsButton,
                 salariesButton, departmentsButton, usersButton, exportButton, profileButton);
@@ -445,7 +502,9 @@ public class MainController {
         alert.getButtonTypes().setAll(mainMenuType, desktopType, cancelType);
 
         Label icon = new Label("🚪");
-        icon.setStyle("-fx-font-size: 64px; -fx-padding: 10;");
+        icon.setText("");
+        icon.setGraphic(createPopupIcon(ICON_EXIT, "#3b82f6"));
+        icon.setStyle("-fx-padding: 10;");
 
         Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
         title.setWrapText(true); title.setMaxWidth(360); title.setAlignment(Pos.CENTER);
@@ -668,8 +727,11 @@ public class MainController {
         recordNavigation("help"); currentView = "help";
         setStatus(LanguageManager.get("status.help"));
         clearActiveButton();
+        setContent(createAdminHelpView());
+    }
 
-        boolean sq = isAlbanian();
+    public static Node createAdminHelpView() {
+        boolean sq = isAlbanianLocale();
         Label title = new Label(LanguageManager.get("help.title"));
         title.getStyleClass().add("page-title");
 
@@ -710,19 +772,60 @@ public class MainController {
                         sq ? "Butoni per dalje e mbyll sesionin dhe ju kthen te faqja e kyçjes." : "The logout button clears the session and returns you to the login page.")
         );
 
+        return wrapHelpView(title, intro, sections);
+    }
+
+    public static Node createUserHelpView() {
+        boolean sq = isAlbanianLocale();
+        Label title = new Label(LanguageManager.get("help.title"));
+        title.getStyleClass().add("page-title");
+
+        Label intro = new Label(sq
+                ? "Kjo faqe shpjegon navigimin e user-it dhe shkurtesat kryesore."
+                : "This page explains user navigation and the main shortcuts.");
+        intro.setWrapText(true);
+        intro.getStyleClass().add("body-text");
+
+        VBox sections = new VBox(14);
+        sections.getChildren().addAll(
+                createHelpSection(sq ? "Navigimi kryesor" : "Main navigation",
+                        sq ? "Perdorni sidebar-in per Dashboard, My Contract, My Salary, My Department dhe Settings."
+                                : "Use the sidebar for Dashboard, My Contract, My Salary, My Department and Settings.",
+                        sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."),
+                createHelpSection(sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
+                        "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
+                        "Ctrl+K - My Contract",
+                        "Ctrl+S - My Salary",
+                        "Ctrl+R - My Department",
+                        "Ctrl+P - Settings",
+                        "Ctrl+L - " + LanguageManager.get("menu.language"),
+                        "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
+                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
+                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
+                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Esc - " + LanguageManager.get("menu.exit")),
+                createHelpSection(sq ? "Menuja me klikim te djathte" : "Right-click menu",
+                        sq ? "Klikoni me te djathten kudo ne program per Rifresko, Ndihma dhe Dil nga programi."
+                                : "Right-click anywhere in the program for Refresh, Help and Exit program.",
+                        sq ? "Klikimi diku tjeter e mbyll menune." : "Clicking somewhere else closes the menu.")
+        );
+
+        return wrapHelpView(title, intro, sections);
+    }
+
+    private static ScrollPane wrapHelpView(Label title, Label intro, VBox sections) {
         VBox helpView = new VBox(18, title, intro, sections);
         helpView.getStyleClass().add("profile-page");
         helpView.setStyle("-fx-padding: 26;");
-
         ScrollPane scrollPane = new ScrollPane(helpView);
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.getStyleClass().add("module-scroll");
-        setContent(scrollPane);
+        return scrollPane;
     }
 
-    private VBox createHelpSection(String sectionTitle, String... lines) {
+    private static VBox createHelpSection(String sectionTitle, String... lines) {
         Label title = new Label(sectionTitle);
         title.getStyleClass().add("section-title");
         VBox content = new VBox(6, title);
@@ -734,6 +837,10 @@ public class MainController {
         }
         content.getStyleClass().add("content-card");
         return content;
+    }
+
+    private static boolean isAlbanianLocale() {
+        return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
     }
 
     @FXML
@@ -920,7 +1027,9 @@ private String valueOrDash(String value) {
         alert.getButtonTypes().setAll(yesType, noType);
 
         Label icon = new Label("🗑");
-        icon.setStyle("-fx-font-size: 64px; -fx-padding: 10;");
+        icon.setText("");
+        icon.setGraphic(createPopupIcon(ICON_DELETE, "#dc2626"));
+        icon.setStyle("-fx-padding: 10;");
 
         Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni ta fshini llogarine?" : "Are you sure you want to delete your account?");
         title.setWrapText(true); title.setMaxWidth(370); title.setAlignment(Pos.CENTER);
