@@ -52,6 +52,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.sql.Timestamp;
 import java.sql.Date;
@@ -1337,5 +1339,37 @@ private String valueOrDash(String value) {
     }
 
     private record NavItem(String iconPath, String label) {
+    }
+    private VBox buildWorkSection(User user) {
+
+        if (user.getEmployeeId() == null) {
+            return new VBox();
+        }
+
+        Employee employee = EmployeeService.getEmployeeById(user.getEmployeeId());
+
+        Department department = null;
+        if (employee != null) {
+            department = DepartmentService.getDepartmentById(employee.getDepartmentId());
+        }
+
+        List<Employee> colleagues = new ArrayList<>();
+        if (department != null) {
+            colleagues = EmployeeService.getEmployeesByDepartment(
+                    department.getId(),
+                    employee.getId()
+            );
+        }
+
+        VBox employeeCard = createEmployeeCard(employee, department);
+        VBox contractCard = createContractCard(null); // për momentin NULL sepse ContractService s’e kemi parë
+        VBox departmentCard = createDepartmentCard(department, colleagues);
+
+        HBox topRow = new HBox(18, employeeCard, contractCard);
+
+        VBox section = new VBox(18, topRow, departmentCard);
+        section.setMaxWidth(900);
+
+        return section;
     }
 }
