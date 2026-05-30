@@ -222,4 +222,90 @@ public class EmployeeService {
 
         return false;
     }
+    public static Employee getEmployeeById(int employeeId) {
+        String sql = """
+                SELECT *
+                FROM employees
+                WHERE id = ?
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return null;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, employeeId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new Employee(
+                                rs.getInt("id"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("position"),
+                                rs.getInt("department_id"),
+                                rs.getDate("hire_date"),
+                                rs.getDouble("base_salary"),
+                                rs.getString("status")
+                        );
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static List<Employee> getEmployeesByDepartment(int departmentId, Integer excludeEmployeeId) {
+        List<Employee> employees = new ArrayList<>();
+
+        String sql = """
+                SELECT *
+                FROM employees
+                WHERE department_id = ?
+                ORDER BY last_name, first_name
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return employees;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, departmentId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int employeeId = rs.getInt("id");
+
+                        if (excludeEmployeeId != null && employeeId == excludeEmployeeId) {
+                            continue;
+                        }
+
+                        employees.add(new Employee(
+                                employeeId,
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("position"),
+                                rs.getInt("department_id"),
+                                rs.getDate("hire_date"),
+                                rs.getDouble("base_salary"),
+                                rs.getString("status")
+                        ));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return employees;
+    }
 }

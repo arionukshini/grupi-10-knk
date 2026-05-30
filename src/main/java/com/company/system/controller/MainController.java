@@ -1,11 +1,19 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.model.Contract;
+import com.company.system.model.Department;
+import com.company.system.model.Employee;
 import com.company.system.model.User;
+import com.company.system.service.ContractService;
+import com.company.system.service.DepartmentService;
+import com.company.system.service.EmployeeService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
 import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -27,6 +35,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -41,9 +52,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.sql.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -761,6 +775,8 @@ public class MainController {
         userCard.getStyleClass().add("profile-card");
         userCard.setMaxWidth(900);
 
+        VBox workSection = buildWorkSection(user);
+
         Label languageTitle = new Label(LanguageManager.get("account.language") + ":");
         languageTitle.getStyleClass().add("section-title");
 
@@ -828,12 +844,136 @@ public class MainController {
         actionsCard.getStyleClass().add("profile-card");
         actionsCard.setMaxWidth(900);
 
-        VBox profileView = new VBox(18, title, userCard, accountOptions, actionsCard);
+        VBox profileView = new VBox(18, title, userCard, workSection, accountOptions, actionsCard);
         profileView.getStyleClass().add("profile-page");
         profileView.setStyle("-fx-padding: 28;");
         VBox.setVgrow(profileView, Priority.NEVER);
         setContent(profileView);
     }
+
+private VBox createEmployeeCard(Employee employee, Department department) {
+    Label title = new Label(isAlbanian() ? "Informata personale" : "Personal details");
+    title.getStyleClass().add("section-title");
+
+    VBox details = new VBox(6);
+    details.getChildren().addAll(
+            createProfileDetail(LanguageManager.get("profile.position") + ": " + valueOrDash(employee == null ? null : employee.getPosition())),
+            createProfileDetail(LanguageManager.get("profile.hireDate") + ": " + formatSqlDate(employee == null ? null : employee.getHireDate())),
+            createProfileDetail(LanguageManager.get("profile.baseSalary") + ": " + formatCurrency(employee == null ? 0 : employee.getBaseSalary())),
+            createProfileDetail(LanguageManager.get("profile.employeeStatus") + ": " + valueOrDash(employee == null ? null : employee.getStatus())),
+            createProfileDetail(LanguageManager.get("profile.department") + ": " + valueOrDash(department == null ? null : department.getName()))
+    );
+
+    VBox card = new VBox(8, title, details);
+    card.getStyleClass().add("profile-card");
+    card.setPrefWidth(430);
+    card.setMaxWidth(Double.MAX_VALUE);
+    return card;
+}
+
+private VBox createContractCard(Contract contract) {
+    Label title = new Label(LanguageManager.get("profile.contractInfo"));
+    title.getStyleClass().add("section-title");
+
+    VBox content = new VBox(6);
+
+    if (contract == null) {
+        Label empty = new Label(LanguageManager.get("profile.noContract"));
+        empty.setWrapText(true);
+        empty.getStyleClass().add("body-text");
+        content.getChildren().add(empty);
+    } else {
+        content.getChildren().addAll(
+                createProfileDetail(LanguageManager.get("profile.contractType") + ": " + valueOrDash(contract.getContractType())),
+                createProfileDetail(LanguageManager.get("profile.contractStart") + ": " + formatSqlDate(contract.getStartDate())),
+                createProfileDetail(LanguageManager.get("profile.contractEnd") + ": " + formatSqlDate(contract.getEndDate())),
+                createProfileDetail(LanguageManager.get("profile.contractStatus") + ": " + valueOrDash(contract.getStatus())),
+                createProfileDetail(LanguageManager.get("contracts.salary") + ": " + formatCurrency(contract.getSalary()))
+        );
+    }
+
+    VBox card = new VBox(8, title, content);
+    card.getStyleClass().add("profile-card");
+    card.setPrefWidth(430);
+    card.setMaxWidth(Double.MAX_VALUE);
+    return card;
+}
+
+private VBox createDepartmentCard(Department department, List<Employee> colleagues) {
+    Label title = new Label(LanguageManager.get("profile.departmentInfo"));
+    title.getStyleClass().add("section-title");
+
+    VBox content = new VBox(8);
+
+    if (department == null) {
+        Label empty = new Label(LanguageManager.get("profile.noDepartment"));
+        empty.setWrapText(true);
+        empty.getStyleClass().add("body-text");
+        content.getChildren().add(empty);
+    } else {
+        Label departmentName = createProfileDetail(LanguageManager.get("departments.name") + ": " + valueOrDash(department.getName()));
+        Label description = createProfileDetail(LanguageManager.get("departments.description") + ": " + valueOrDash(department.getDescription()));
+        Label colleaguesTitle = new Label(LanguageManager.get("profile.colleagues"));
+        colleaguesTitle.getStyleClass().add("section-title");
+
+        TableView<Employee> colleaguesTable = createColleaguesTable(colleagues);
+
+        content.getChildren().addAll(departmentName, description, colleaguesTitle, colleaguesTable);
+    }
+
+    VBox card = new VBox(8, title, content);
+    card.getStyleClass().add("profile-card");
+    card.setMaxWidth(900);
+    return card;
+}
+
+private TableView<Employee> createColleaguesTable(List<Employee> colleagues) {
+    ObservableList<Employee> colleagueItems = FXCollections.observableArrayList(colleagues);
+
+    TableView<Employee> table = new TableView<>(colleagueItems);
+    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+    table.setPrefHeight(220);
+    table.setPlaceholder(new Label(LanguageManager.get("profile.noColleagues")));
+
+    TableColumn<Employee, String> nameColumn = new TableColumn<>(LanguageManager.get("profile.colleagueName"));
+    nameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+
+    TableColumn<Employee, String> positionColumn = new TableColumn<>(LanguageManager.get("profile.colleaguePosition"));
+    positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+
+    TableColumn<Employee, String> emailColumn = new TableColumn<>(LanguageManager.get("profile.colleagueEmail"));
+    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+
+    TableColumn<Employee, String> statusColumn = new TableColumn<>(LanguageManager.get("profile.colleagueStatus"));
+    statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+    table.getColumns().setAll(nameColumn, positionColumn, emailColumn, statusColumn);
+    return table;
+}
+
+private Label createProfileDetail(String text) {
+    Label label = new Label(text);
+    label.setWrapText(true);
+    label.getStyleClass().add("profile-detail");
+    return label;
+}
+
+private String formatSqlDate(Date date) {
+    if (date == null) {
+        return "-";
+    }
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    return date.toLocalDate().format(formatter);
+}
+
+private String formatCurrency(double value) {
+    return String.format("%.2f €", value);
+}
+
+private String valueOrDash(String value) {
+    return value == null || value.isBlank() ? "-" : value;
+}
 
     private void changePassword(User user, PasswordField currentPasswordField, PasswordField newPasswordField) {
         String currentPassword = currentPasswordField.getText();
@@ -964,5 +1104,38 @@ public class MainController {
         return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
     }
 
-    private record NavItem(String iconPath, String label) {}
+    private record NavItem(String iconPath, String label) {
+    }
+    private VBox buildWorkSection(User user) {
+
+        if (user.getEmployeeId() == null) {
+            return new VBox();
+        }
+
+        Employee employee = EmployeeService.getEmployeeById(user.getEmployeeId());
+
+        Department department = null;
+        if (employee != null) {
+            department = DepartmentService.getDepartmentById(employee.getDepartmentId());
+        }
+
+        List<Employee> colleagues = new ArrayList<>();
+        if (department != null) {
+            colleagues = EmployeeService.getEmployeesByDepartment(
+                    department.getId(),
+                    employee.getId()
+            );
+        }
+
+        VBox employeeCard = createEmployeeCard(employee, department);
+        VBox contractCard = createContractCard(null); // për momentin NULL sepse ContractService s’e kemi parë
+        VBox departmentCard = createDepartmentCard(department, colleagues);
+
+        HBox topRow = new HBox(18, employeeCard, contractCard);
+
+        VBox section = new VBox(18, topRow, departmentCard);
+        section.setMaxWidth(900);
+
+        return section;
+    }
 }
