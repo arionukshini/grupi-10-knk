@@ -123,7 +123,7 @@ public class UserMainController {
         updateLoggedInUser();
         updateThemeButton();
         updateSidebarLabels();
-        setStatus(t("Ready", "Gati"));
+        setStatus(LanguageManager.get("user.status.ready"));
         setupKeyboardShortcuts();
         setupMouseNavigation();
         setupContextMenu();
@@ -140,18 +140,18 @@ public class UserMainController {
 
     private void updateTexts() {
         if (appTitleLabel != null) {
-            appTitleLabel.setText("Contract Manager");
+            appTitleLabel.setText(LanguageManager.get("user.appTitle"));
         }
 
-        dashboardButton.setUserData(new NavItem(ICON_DASHBOARD, t("Dashboard", "Dashboard")));
-        contractButton.setUserData(new NavItem(ICON_CONTRACTS, t("My Contract", "My Contract")));
-        salaryButton.setUserData(new NavItem(ICON_SALARIES, t("My Salary", "My Salary")));
-        departmentButton.setUserData(new NavItem(ICON_DEPARTMENTS, t("My Department", "My Department")));
-        settingsButton.setUserData(new NavItem(ICON_SETTINGS, t("Settings", "Settings")));
-        // ★ E RE
+        dashboardButton.setUserData(new NavItem(ICON_DASHBOARD, LanguageManager.get("user.dashboard")));
+        contractButton.setUserData(new NavItem(ICON_CONTRACTS, LanguageManager.get("user.contract")));
+        salaryButton.setUserData(new NavItem(ICON_SALARIES, LanguageManager.get("user.salary")));
+        departmentButton.setUserData(new NavItem(ICON_DEPARTMENTS, LanguageManager.get("user.department")));
+        settingsButton.setUserData(new NavItem(ICON_SETTINGS, LanguageManager.get("user.settings")));
         if (leaveButton != null) {
             leaveButton.setUserData(new NavItem(ICON_LEAVES, t("My Leaves", "Pushimet e mia")));
         }
+
 
         setIconOnlyButton(languageButton, ICON_LANGUAGE);
         setIconOnlyButton(helpFooterButton, ICON_HELP);
@@ -166,21 +166,21 @@ public class UserMainController {
 
     private void updateStatusText() {
         switch (currentView) {
-            case "dashboard" -> setStatus(t("Dashboard opened", "Dashboard u hap"));
-            case "contract"  -> setStatus(t("My Contract opened", "My Contract u hap"));
-            case "salary"    -> setStatus(t("My Salary opened", "My Salary u hap"));
-            case "department"-> setStatus(t("My Department opened", "My Department u hap"));
-            case "settings"  -> setStatus(t("Settings opened", "Settings u hapen"));
-            case "help"      -> setStatus(t("Help opened", "Ndihma u hap"));
-            case "leave"     -> setStatus(t("Leave requests opened", "Kerkesat per pushime u hapen")); // ★
-            default          -> setStatus(t("Ready", "Gati"));
+            case "dashboard" -> setStatus(LanguageManager.get("user.status.dashboard"));
+            case "contract" -> setStatus(LanguageManager.get("user.status.contract"));
+            case "salary" -> setStatus(LanguageManager.get("user.status.salary"));
+            case "department" -> setStatus(LanguageManager.get("user.status.department"));
+            case "settings" -> setStatus(LanguageManager.get("user.status.settings"));
+            case "help" -> setStatus(LanguageManager.get("user.status.help"));
+            case "leave"     -> setStatus(t("Leave requests opened", "Kerkesat per pushime u hapen"));
+            default -> setStatus(LanguageManager.get("user.status.ready"));
         }
     }
 
     private void updateLoggedInUser() {
         User user = Session.getUser();
         if (loggedInLabel != null) {
-            loggedInLabel.setText(t("Logged in as: ", "I kycur si: ") + UserService.getDisplayName(user));
+            loggedInLabel.setText(LanguageManager.get("user.loggedInAs") + " " + UserService.getDisplayName(user));
         }
     }
 
@@ -205,7 +205,7 @@ public class UserMainController {
     @FXML private void showDashboard() {
         recordNavigation("dashboard");
         currentView = "dashboard";
-        setStatus(t("Dashboard opened", "Dashboard u hap"));
+        setStatus(LanguageManager.get("user.status.dashboard"));
         setActiveButton(dashboardButton);
         setContent(loadView("/views/user-dashboard-view.fxml"));
     }
@@ -213,7 +213,7 @@ public class UserMainController {
     @FXML private void showContract() {
         recordNavigation("contract");
         currentView = "contract";
-        setStatus(t("My Contract opened", "My Contract u hap"));
+        setStatus(LanguageManager.get("user.status.contract"));
         setActiveButton(contractButton);
         setContent(buildContractView());
     }
@@ -221,7 +221,7 @@ public class UserMainController {
     @FXML private void showSalary() {
         recordNavigation("salary");
         currentView = "salary";
-        setStatus(t("My Salary opened", "My Salary u hap"));
+        setStatus(LanguageManager.get("user.status.salary"));
         setActiveButton(salaryButton);
         setContent(buildSalaryView());
     }
@@ -229,7 +229,7 @@ public class UserMainController {
     @FXML private void showDepartment() {
         recordNavigation("department");
         currentView = "department";
-        setStatus(t("My Department opened", "My Department u hap"));
+        setStatus(LanguageManager.get("user.status.department"));
         setActiveButton(departmentButton);
         setContent(buildDepartmentView());
     }
@@ -237,7 +237,7 @@ public class UserMainController {
     @FXML private void showSettings() {
         recordNavigation("settings");
         currentView = "settings";
-        setStatus(t("Settings opened", "Settings u hapen"));
+        setStatus(LanguageManager.get("user.status.settings"));
         setActiveButton(settingsButton);
         setContent(buildSettingsView());
     }
@@ -245,7 +245,7 @@ public class UserMainController {
     @FXML private void showHelp() {
         recordNavigation("help");
         currentView = "help";
-        setStatus(t("Help opened", "Ndihma u hap"));
+        setStatus(LanguageManager.get("user.status.help"));
         clearActiveButton();
         setContent(MainController.createUserHelpView());
     }
@@ -318,11 +318,13 @@ public class UserMainController {
         contextMenu.setAutoHide(true);
         contextMenu.setHideOnEscape(true);
 
-        MenuItem refreshItem = new MenuItem();
+        MenuItem refreshItem = new MenuItem(LanguageManager.get("user.context.refresh"));
         refreshItem.setOnAction(event -> refreshCurrentView());
-        MenuItem helpItem = new MenuItem();
+
+        MenuItem helpItem = new MenuItem(LanguageManager.get("user.context.help"));
         helpItem.setOnAction(event -> showHelp());
-        MenuItem exitItem = new MenuItem();
+
+        MenuItem exitItem = new MenuItem(LanguageManager.get("user.context.exit"));
         exitItem.setOnAction(event -> handleExit());
 
         contextMenu.getItems().setAll(refreshItem, helpItem, new SeparatorMenuItem(), exitItem);
@@ -331,12 +333,12 @@ public class UserMainController {
             if (contextMenu.isShowing() && event.getButton() != MouseButton.SECONDARY) contextMenu.hide();
         }));
 
-        mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
-            refreshItem.setText(t("Refresh", "Rifresko"));
-            helpItem.setText(t("Help", "Ndihma"));
-            exitItem.setText(t("Exit program", "Dil nga programi"));
+        contentArea.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
+            refreshItem.setText(LanguageManager.get("user.context.refresh"));
+            helpItem.setText(LanguageManager.get("user.context.help"));
+            exitItem.setText(LanguageManager.get("user.context.exit"));
             if (contextMenu.isShowing()) contextMenu.hide();
-            contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
+            contextMenu.show(contentArea, event.getScreenX(), event.getScreenY());
             event.consume();
         });
     }
@@ -386,26 +388,30 @@ public class UserMainController {
             return loader.load();
         } catch (Exception e) {
             e.printStackTrace();
-            return simplePlaceholder("Failed to load view.");
+            return simplePlaceholder(LanguageManager.get("user.load.failed"));
         }
     }
 
     private void handleExit() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Dalje" : "Exit");
+        alert.setTitle(LanguageManager.get("user.exit.title"));
         alert.setHeaderText(null);
 
-        ButtonType mainMenuType = new ButtonType(isAlbanian() ? "Menyja kryesore" : "Main Menu", ButtonBar.ButtonData.OTHER);
-        ButtonType desktopType  = new ButtonType(isAlbanian() ? "Dil nga programi" : "Quit to Desktop", ButtonBar.ButtonData.OTHER);
-        ButtonType cancelType   = new ButtonType(isAlbanian() ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType mainMenuType = new ButtonType(LanguageManager.get("user.exit.mainMenu"), ButtonBar.ButtonData.OTHER);
+        ButtonType desktopType = new ButtonType(LanguageManager.get("user.exit.desktop"), ButtonBar.ButtonData.OTHER);
+        ButtonType cancelType = new ButtonType(LanguageManager.get("user.exit.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(mainMenuType, desktopType, cancelType);
 
         StackPane icon = createPopupIcon(ICON_EXIT, "#3b82f6");
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
-        title.setWrapText(true); title.setMaxWidth(360); title.setAlignment(Pos.CENTER);
+
+        Label title = new Label(LanguageManager.get("user.exit.confirmTitle"));
+        title.setWrapText(true);
+        title.setMaxWidth(360);
+        title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        Label subtitle = new Label(isAlbanian() ? "Zgjidhni nje opsion per dalje." : "Choose an exit option.");
+
+        Label subtitle = new Label(LanguageManager.get("user.exit.confirmSubtitle"));
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
         VBox content = new VBox(12, icon, title, subtitle);
@@ -416,11 +422,16 @@ public class UserMainController {
 
         Platform.runLater(() -> {
             Button mainMenuBtn = (Button) alert.getDialogPane().lookupButton(mainMenuType);
-            Button desktopBtn  = (Button) alert.getDialogPane().lookupButton(desktopType);
-            Button cancelBtn   = (Button) alert.getDialogPane().lookupButton(cancelType);
-            mainMenuBtn.setMaxWidth(Double.MAX_VALUE); mainMenuBtn.setPrefHeight(42);
-            desktopBtn.setMaxWidth(Double.MAX_VALUE);  desktopBtn.setPrefHeight(42);
-            cancelBtn.setMaxWidth(Double.MAX_VALUE);   cancelBtn.setPrefHeight(42);
+            Button desktopBtn = (Button) alert.getDialogPane().lookupButton(desktopType);
+            Button cancelBtn = (Button) alert.getDialogPane().lookupButton(cancelType);
+
+            mainMenuBtn.setMaxWidth(Double.MAX_VALUE);
+            mainMenuBtn.setPrefHeight(42);
+            desktopBtn.setMaxWidth(Double.MAX_VALUE);
+            desktopBtn.setPrefHeight(42);
+            cancelBtn.setMaxWidth(Double.MAX_VALUE);
+            cancelBtn.setPrefHeight(42);
+
             mainMenuBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
             desktopBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
             cancelBtn.setStyle("-fx-background-radius: 10; -fx-cursor: hand;");
@@ -431,8 +442,11 @@ public class UserMainController {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent()) {
-            if (result.get() == mainMenuType) showWelcome();
-            else if (result.get() == desktopType) System.exit(0);
+            if (result.get() == mainMenuType) {
+                showWelcome();
+            } else if (result.get() == desktopType) {
+                System.exit(0);
+            }
         }
     }
 
@@ -442,53 +456,59 @@ public class UserMainController {
         String storedHash = UserService.getPasswordHashByUsername(user.getUsername());
 
         if (currentPassword == null || currentPassword.isBlank() || newPassword == null || newPassword.isBlank()) {
-            showStyledAlert(Alert.AlertType.ERROR, t("Error", "Gabim"),
-                    t("Fill both password fields.", "Plotesoni te dy fushat e fjalekalimit.")); return;
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("user.message.error"),
+                    LanguageManager.get("user.password.fillBothFields"));
+            return;
         }
         if (!PasswordUtils.verifyPassword(currentPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, t("Error", "Gabim"),
-                    t("Current password is not correct.", "Fjalekalimi aktual nuk eshte i sakte.")); return;
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("user.message.error"),
+                    LanguageManager.get("user.password.currentIncorrect"));
+            return;
         }
         if (PasswordUtils.verifyPassword(newPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, t("Error", "Gabim"),
-                    t("New password cannot be the same as the old one.", "Fjalekalimi i ri nuk mund te jete i njejte me te vjetrin.")); return;
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("user.message.error"),
+                    LanguageManager.get("user.password.sameAsOld"));
+            return;
         }
         if (UserService.resetPassword(user.getUsername(), newPassword)) {
-            currentPasswordField.clear(); newPasswordField.clear();
-            showStyledAlert(Alert.AlertType.INFORMATION, t("Success", "Sukses"),
-                    t("Password changed successfully.", "Fjalekalimi u ndryshua me sukses."));
+            currentPasswordField.clear();
+            newPasswordField.clear();
+            showStyledAlert(Alert.AlertType.INFORMATION, LanguageManager.get("user.message.success"),
+                    LanguageManager.get("user.password.changed"));
         } else {
-            showStyledAlert(Alert.AlertType.ERROR, t("Error", "Gabim"),
-                    t("Password was not changed.", "Fjalekalimi nuk u ndryshua."));
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("user.message.error"),
+                    LanguageManager.get("user.password.notChanged"));
         }
     }
 
     private void confirmDeleteAccount(User user) {
         if (UserService.isOnlyAdmin(user)) {
-            showStyledAlert(Alert.AlertType.WARNING, isAlbanian() ? "Nuk lejohet" : "Not allowed",
-                    isAlbanian()
-                            ? "Ju jeni administratori i vetem. Nuk mund ta fshini llogarine pa pasur te pakten edhe nje administrator tjeter."
-                            : "You are the only administrator. You cannot delete this account until another administrator exists.");
+            showStyledAlert(Alert.AlertType.WARNING, LanguageManager.get("user.message.warning"),
+                    LanguageManager.get("user.delete.onlyAdmin"));
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete Account");
+        alert.setTitle(LanguageManager.get("user.delete.title"));
         alert.setHeaderText(null);
 
-        ButtonType yesType = new ButtonType(isAlbanian() ? "Po, fshije" : "Yes, Delete", ButtonBar.ButtonData.YES);
-        ButtonType noType  = new ButtonType(isAlbanian() ? "Jo" : "No", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType yesType = new ButtonType(LanguageManager.get("user.delete.yes"), ButtonBar.ButtonData.YES);
+        ButtonType noType = new ButtonType(LanguageManager.get("user.delete.no"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(yesType, noType);
 
         StackPane icon = createPopupIcon(ICON_DELETE, "#dc2626");
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni ta fshini llogarine?" : "Are you sure you want to delete your account?");
-        title.setWrapText(true); title.setMaxWidth(370); title.setAlignment(Pos.CENTER);
+
+        Label title = new Label(LanguageManager.get("user.delete.confirmTitle"));
+        title.setWrapText(true);
+        title.setMaxWidth(370);
+        title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;");
-        Label subtitle = new Label(isAlbanian()
-                ? "Ky veprim do te fshije llogarine, punetorin, kontratat, pagat dhe historikun e pagave."
-                : "This will delete your account, employee record, contracts, salaries and salary history.");
-        subtitle.setWrapText(true); subtitle.setMaxWidth(370); subtitle.setMinHeight(Label.USE_PREF_SIZE);
+
+        Label subtitle = new Label(LanguageManager.get("user.delete.confirmSubtitle"));
+        subtitle.setWrapText(true);
+        subtitle.setMaxWidth(370);
+        subtitle.setMinHeight(Label.USE_PREF_SIZE);
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
         VBox content = new VBox(15, icon, title, subtitle);
@@ -499,11 +519,16 @@ public class UserMainController {
 
         Platform.runLater(() -> {
             Button yesButton = (Button) alert.getDialogPane().lookupButton(yesType);
-            Button noButton  = (Button) alert.getDialogPane().lookupButton(noType);
-            yesButton.setMaxWidth(Double.MAX_VALUE); yesButton.setPrefHeight(42);
-            noButton.setMaxWidth(Double.MAX_VALUE);  noButton.setPrefHeight(42);
+            Button noButton = (Button) alert.getDialogPane().lookupButton(noType);
+
+            yesButton.setMaxWidth(Double.MAX_VALUE);
+            yesButton.setPrefHeight(42);
+            noButton.setMaxWidth(Double.MAX_VALUE);
+            noButton.setPrefHeight(42);
+
             yesButton.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
             noButton.setStyle("-fx-background-radius: 10; -fx-cursor: hand;");
+
             VBox buttonBox = new VBox(10, yesButton, noButton);
             buttonBox.setAlignment(Pos.CENTER); buttonBox.setFillWidth(true);
             alert.getDialogPane().setContent(new VBox(20, content, buttonBox));
@@ -512,35 +537,56 @@ public class UserMainController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == yesType) {
             boolean deleted = UserService.deleteAccountAndEmployeeData(user);
-            if (deleted) { Session.clear(); showWelcome(); }
-            else showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Llogaria nuk u fshi. Kontrolloni databazen ose provoni perseri."
-                            : "The account was not deleted. Check the database or try again.");
+            if (deleted) {
+                Session.clear();
+                showWelcome();
+            } else {
+                showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("user.message.error"),
+                        LanguageManager.get("user.delete.failed"));
+            }
         }
     }
 
     private Node buildContractView() {
         User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null)
-            return simplePlaceholder(t("No contract data found.", "Nuk u gjeten te dhena te kontrates."));
+        if (user == null || user.getEmployeeId() == null) {
+            return simplePlaceholder(LanguageManager.get("user.contract.noData"));
+        }
 
         Contract contract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
         VBox root = createPageContainer(t("My Contract", "Kontrata ime"),
                 t("A quick view of your current contract details.", "Pamje e shpejte e detajeve te kontrates tende."));
 
-        if (contract == null) { root.getChildren().add(simpleCard(t("No contract found.", "Nuk u gjet kontrate."))); return wrap(root); }
+        VBox root = createPageContainer(
+                LanguageManager.get("user.contract.title"),
+                LanguageManager.get("user.contract.subtitle")
+        );
+
+        if (contract == null) {
+            root.getChildren().add(simpleCard(LanguageManager.get("user.contract.noRecord")));
+            return wrap(root);
+        }
 
         HBox topRow = new HBox(18);
         topRow.getChildren().addAll(
-                createHighlightCard(t("Contract Type", "Lloji i kontrates"), valueOrDash(contract.getContractType()),
-                        t("Status", "Statusi") + ": " + valueOrDash(contract.getStatus())),
-                createHighlightCard(t("Salary", "Paga"), formatCurrency(contract.getSalary()),
-                        t("Start", "Fillimi") + ": " + formatSqlDate(contract.getStartDate())));
+                createHighlightCard(
+                        LanguageManager.get("user.contract.type"),
+                        valueOrDash(contract.getContractType()),
+                        LanguageManager.get("user.contract.status") + ": " + valueOrDash(contract.getStatus())
+                ),
+                createHighlightCard(
+                        LanguageManager.get("user.contract.salary"),
+                        formatCurrency(contract.getSalary()),
+                        LanguageManager.get("user.contract.start") + ": " + formatSqlDate(contract.getStartDate())
+                )
+        );
 
-        VBox detailsCard = createDetailCard(t("Contract period", "Periudha e kontrates"),
-                createInfoRow(t("Start date", "Data e fillimit"), formatSqlDate(contract.getStartDate())),
-                createInfoRow(t("End date", "Data e mbarimit"), formatSqlDate(contract.getEndDate())),
-                createInfoRow(t("Status", "Statusi"), valueOrDash(contract.getStatus())));
+        VBox detailsCard = createDetailCard(
+                LanguageManager.get("user.contract.period"),
+                createInfoRow(LanguageManager.get("user.contract.startDate"), formatSqlDate(contract.getStartDate())),
+                createInfoRow(LanguageManager.get("user.contract.endDate"), formatSqlDate(contract.getEndDate())),
+                createInfoRow(LanguageManager.get("user.contract.status"), valueOrDash(contract.getStatus()))
+        );
 
         root.getChildren().addAll(topRow, detailsCard);
         return wrap(root);
@@ -548,33 +594,52 @@ public class UserMainController {
 
     private Node buildSalaryView() {
         User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null)
-            return simplePlaceholder(t("No salary data found.", "Nuk u gjeten te dhena te pages."));
+        if (user == null || user.getEmployeeId() == null) {
+            return simplePlaceholder(LanguageManager.get("user.salary.noData"));
+        }
 
         Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
         VBox root = createPageContainer(t("My Salary", "Paga ime"),
                 t("A clear summary of your latest salary and breakdown.", "Permbledhje e qarte e pages suaj me te fundit dhe struktures se saj."));
 
-        if (salary == null) { root.getChildren().add(simpleCard(t("No salary record found.", "Nuk u gjet page."))); return wrap(root); }
+        VBox root = createPageContainer(
+                LanguageManager.get("user.salary.title"),
+                LanguageManager.get("user.salary.subtitle")
+        );
+
+        if (salary == null) {
+            root.getChildren().add(simpleCard(LanguageManager.get("user.salary.noRecord")));
+            return wrap(root);
+        }
 
         HBox topRow = new HBox(18);
         topRow.getChildren().addAll(
-                createAccentCard(t("Net Salary", "Paga neto"), formatCurrency(salary.getNetSalary()),
-                        t("Money you receive after deductions.", "Shuma qe merr pas zbritjeve.")),
-                createAccentCard(t("Gross Salary", "Paga bruto"), formatCurrency(salary.getGrossSalary()),
-                        t("Total salary before deductions.", "Paga totale para zbritjeve.")));
+                createAccentCard(
+                        LanguageManager.get("user.salary.net"),
+                        formatCurrency(salary.getNetSalary()),
+                        LanguageManager.get("user.salary.netSubtitle")
+                ),
+                createAccentCard(
+                        LanguageManager.get("user.salary.gross"),
+                        formatCurrency(salary.getGrossSalary()),
+                        LanguageManager.get("user.salary.grossSubtitle")
+                )
+        );
 
-        VBox breakdownCard = createDetailCard(t("Salary breakdown", "Struktura e pages"),
-                createInfoRow(t("Bonus", "Bonusi"), formatCurrency(salary.getBonus())),
-                createInfoRow(t("Deductions", "Zbritjet"), formatCurrency(salary.getDeductions())),
-                createInfoRow(t("Payment date", "Data e pageses"), formatSqlDate(salary.getPaymentDate())));
+        VBox breakdownCard = createDetailCard(
+                LanguageManager.get("user.salary.breakdown"),
+                createInfoRow(LanguageManager.get("user.salary.bonus"), formatCurrency(salary.getBonus())),
+                createInfoRow(LanguageManager.get("user.salary.deductions"), formatCurrency(salary.getDeductions())),
+                createInfoRow(LanguageManager.get("user.salary.paymentDate"), formatSqlDate(salary.getPaymentDate()))
+        );
 
         HBox bottomRow = new HBox(18);
         bottomRow.getChildren().addAll(
-                createSmallStatCard(t("Work hours", "Orari i punes"), formatHours(salary.getWorkHours())),
-                createSmallStatCard(t("Overtime hours", "Oret shtese"), formatNumber(salary.getOvertimeHours())),
-                createSmallStatCard(t("Daily rate", "Paga ditore"), formatCurrency(salary.getDailyRate())),
-                createSmallStatCard(t("Overtime pay", "Pagesa shtese"), formatCurrency(salary.getOvertimePay())));
+                createSmallStatCard(LanguageManager.get("user.salary.workHours"), formatHours(salary.getWorkHours())),
+                createSmallStatCard(LanguageManager.get("user.salary.overtimeHours"), formatNumber(salary.getOvertimeHours())),
+                createSmallStatCard(LanguageManager.get("user.salary.dailyRate"), formatCurrency(salary.getDailyRate())),
+                createSmallStatCard(LanguageManager.get("user.salary.overtimePay"), formatCurrency(salary.getOvertimePay()))
+        );
 
         root.getChildren().addAll(topRow, breakdownCard, bottomRow);
         return wrap(root);
@@ -582,41 +647,57 @@ public class UserMainController {
 
     private Node buildDepartmentView() {
         User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null)
-            return simplePlaceholder(t("No department data found.", "Nuk u gjeten te dhena te departamentit."));
+        if (user == null || user.getEmployeeId() == null) {
+            return simplePlaceholder(LanguageManager.get("user.department.noData"));
+        }
 
         Employee employee = EmployeeService.getEmployeeById(user.getEmployeeId());
-        if (employee == null) return simplePlaceholder(t("Employee not found.", "Punetori nuk u gjet."));
+        if (employee == null) {
+            return simplePlaceholder(LanguageManager.get("user.department.employeeNotFound"));
+        }
 
         Department department = DepartmentService.getDepartmentById(employee.getDepartmentId());
         List<Employee> colleagues = EmployeeService.getEmployeesByDepartment(employee.getDepartmentId(), employee.getId());
 
-        VBox root = createPageContainer(t("My Department", "Departamenti im"),
-                t("Your department and colleagues in one place.", "Departamenti yt dhe koleget ne nje vend."));
+        VBox root = createPageContainer(
+                LanguageManager.get("user.department.title"),
+                LanguageManager.get("user.department.subtitle")
+        );
 
         HBox topRow = new HBox(18);
         topRow.getChildren().addAll(
-                createAccentCard(t("Department", "Departamenti"), valueOrDash(department == null ? null : department.getName()),
-                        t("Your main department.", "Departamenti yt kryesor.")),
-                createAccentCard(t("Colleagues", "Koleget"), String.valueOf(colleagues.size()),
-                        t("People in the same department.", "Personat ne te njejtin departament.")));
+                createAccentCard(
+                        LanguageManager.get("user.department.department"),
+                        valueOrDash(department == null ? null : department.getName()),
+                        LanguageManager.get("user.department.yourMainDepartment")
+                ),
+                createAccentCard(
+                        LanguageManager.get("user.department.colleagues"),
+                        String.valueOf(colleagues.size()),
+                        LanguageManager.get("user.department.sameDepartment")
+                )
+        );
 
-        VBox overviewCard = createDetailCard(t("Department overview", "Permbledhje e departamentit"),
-                createInfoRow(t("Name", "Emri"), valueOrDash(department == null ? null : department.getName())),
-                createInfoRow(t("Description", "Pershkrimi"), valueOrDash(department == null ? null : department.getDescription())),
-                createInfoRow(t("Your position", "Pozita jote"), valueOrDash(employee.getPosition())));
+        VBox overviewCard = createDetailCard(
+                LanguageManager.get("user.department.overview"),
+                createInfoRow(LanguageManager.get("user.department.name"), valueOrDash(department == null ? null : department.getName())),
+                createInfoRow(LanguageManager.get("user.department.description"), valueOrDash(department == null ? null : department.getDescription())),
+                createInfoRow(LanguageManager.get("user.department.position"), valueOrDash(employee.getPosition()))
+        );
 
         VBox colleaguesBox = new VBox(12);
         colleaguesBox.getStyleClass().add("profile-card");
         colleaguesBox.setPadding(new Insets(18));
-        Label colleaguesTitle = new Label(t("Colleagues", "Koleget"));
+
+        Label colleaguesTitle = new Label(LanguageManager.get("user.department.colleagues"));
         colleaguesTitle.getStyleClass().add("section-title");
         colleaguesBox.getChildren().add(colleaguesTitle);
 
         if (colleagues.isEmpty()) {
             colleaguesBox.getChildren().add(createEmptyStateCard(
-                    t("No colleagues found in this department.", "Nuk u gjeten kolege ne kete departament."),
-                    t("This usually means you are the only employee in this department.", "Kjo zakonisht do te thote qe je i vetmi punetor ne kete departament.")));
+                    LanguageManager.get("user.department.noColleagues"),
+                    LanguageManager.get("user.department.noColleaguesSub")
+            ));
         } else {
             for (Employee colleague : colleagues) colleaguesBox.getChildren().add(createColleagueCard(colleague));
         }
@@ -627,9 +708,14 @@ public class UserMainController {
 
     private Node buildSettingsView() {
         User user = Session.getUser();
-        if (user == null) return simplePlaceholder(t("No user logged in", "Nuk ka user te kycur"));
+        if (user == null) {
+            return simplePlaceholder(LanguageManager.get("user.settings.noUser"));
+        }
 
-        VBox root = createPageContainer(t("Settings", "Cilesimet"), "");
+        VBox root = createPageContainer(
+                LanguageManager.get("user.settings.title"),
+                LanguageManager.get("user.settings.subtitle")
+        );
 
         StackPane userIcon = createSidebarIconBox(ICON_USER, 1.08);
         userIcon.getStyleClass().add("profile-icon");
@@ -641,7 +727,9 @@ public class UserMainController {
 
         VBox userDetails = new VBox(5, usernameLabel,
                 detailLabel(LanguageManager.get("account.role") + roleText),
-                detailLabel(LanguageManager.get("account.createdat") + formatCreatedAt(user.getCreatedAt())));
+                detailLabel(LanguageManager.get("account.createdat") + formatCreatedAt(user.getCreatedAt()))
+        );
+
         HBox userHeader = new HBox(14, userIcon, userDetails);
         userHeader.setAlignment(Pos.CENTER_LEFT);
 
@@ -650,18 +738,28 @@ public class UserMainController {
         userCard.setMaxWidth(900);
 
         ComboBox<String> languageBox = new ComboBox<>();
-        languageBox.getItems().addAll(LanguageManager.get("language.english"), LanguageManager.get("language.albanian"));
-        languageBox.setValue(isAlbanian() ? LanguageManager.get("language.albanian") : LanguageManager.get("language.english"));
+        languageBox.getItems().addAll(
+                LanguageManager.get("language.english"),
+                LanguageManager.get("language.albanian")
+        );
+        languageBox.setValue(isAlbanian()
+                ? LanguageManager.get("language.albanian")
+                : LanguageManager.get("language.english"));
         languageBox.setPrefWidth(210);
 
         Label languageTitle = new Label(LanguageManager.get("account.language") + ":");
         languageTitle.getStyleClass().add("section-title");
-        Label languageMessage = new Label(settingsLanguageChanged ? LanguageManager.get("account.language.success") : "");
+
+        Label languageMessage = new Label(settingsLanguageChanged
+                ? LanguageManager.get("account.language.success")
+                : "");
         languageMessage.getStyleClass().add("success-text");
         settingsLanguageChanged = false;
 
         languageBox.setOnAction(event -> {
-            LanguageManager.setLanguage(LanguageManager.get("language.albanian").equals(languageBox.getValue()) ? "sq" : "en");
+            LanguageManager.setLanguage(
+                    LanguageManager.get("language.albanian").equals(languageBox.getValue()) ? "sq" : "en"
+            );
             settingsLanguageChanged = true;
             updateTexts();
             showSettings();
@@ -671,15 +769,16 @@ public class UserMainController {
         languageCard.getStyleClass().add("profile-card");
         languageCard.setPrefWidth(430); languageCard.setMaxWidth(Double.MAX_VALUE);
 
-        Label passwordTitle = new Label(t("Change password", "Ndrysho fjalekalimin"));
+        Label passwordTitle = new Label(LanguageManager.get("user.settings.passwordTitle"));
         passwordTitle.getStyleClass().add("section-title");
         PasswordField currentPasswordField = new PasswordField();
-        currentPasswordField.setPromptText(t("Current password", "Fjalekalimi aktual"));
+        currentPasswordField.setPromptText(LanguageManager.get("user.settings.currentPassword"));
         currentPasswordField.setMaxWidth(Double.MAX_VALUE);
         PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setPromptText(t("New password", "Fjalekalimi i ri"));
+        newPasswordField.setPromptText(LanguageManager.get("user.settings.newPassword"));
         newPasswordField.setMaxWidth(Double.MAX_VALUE);
-        Button changePasswordButton = new Button(t("Change password", "Ndrysho fjalekalimin"));
+
+        Button changePasswordButton = new Button(LanguageManager.get("user.settings.changePassword"));
         changePasswordButton.getStyleClass().add("primary-button");
         changePasswordButton.setOnAction(e -> changePassword(user, currentPasswordField, newPasswordField));
 
@@ -695,7 +794,8 @@ public class UserMainController {
         Button logoutButton = new Button(LanguageManager.get("account.logout"));
         logoutButton.getStyleClass().add("secondary-button");
         logoutButton.setOnAction(e -> handleLogout());
-        Button deleteAccountButton = new Button(t("Delete account", "Fshi llogarine"));
+
+        Button deleteAccountButton = new Button(LanguageManager.get("user.settings.deleteAccount"));
         deleteAccountButton.getStyleClass().add("danger-text-button");
         deleteAccountButton.setOnAction(e -> confirmDeleteAccount(user));
 
@@ -704,6 +804,25 @@ public class UserMainController {
         actionsCard.setMaxWidth(900);
 
         root.getChildren().addAll(userCard, accountOptions, actionsCard);
+        return wrap(root);
+    }
+
+    private Node buildHelpView() {
+        VBox root = createPageContainer(
+                LanguageManager.get("user.help.title"),
+                LanguageManager.get("user.help.subtitle")
+        );
+
+        root.getChildren().add(simpleCard(
+                LanguageManager.get("user.help.dashboard"),
+                LanguageManager.get("user.help.contract"),
+                LanguageManager.get("user.help.salary"),
+                LanguageManager.get("user.help.department"),
+                LanguageManager.get("user.help.settings"),
+                LanguageManager.get("user.help.language"),
+                LanguageManager.get("user.help.logout")
+        ));
+
         return wrap(root);
     }
 
@@ -799,13 +918,21 @@ public class UserMainController {
         card.setPadding(new Insets(14));
         Label name = new Label(colleague.getFirstName() + " " + colleague.getLastName());
         name.getStyleClass().add("section-title");
-        Label position = new Label(t("Position", "Pozita") + ": " + valueOrDash(colleague.getPosition()));
-        Label email    = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
-        Label status   = new Label(t("Status", "Statusi") + ": " + valueOrDash(colleague.getStatus()));
-        position.getStyleClass().add("body-text"); position.setWrapText(true);
-        email.getStyleClass().add("body-text");    email.setWrapText(true);
-        status.getStyleClass().add("body-text");   status.setWrapText(true);
-        VBox infoBox = new VBox(4, position, email, status);
+
+        VBox infoBox = new VBox(4);
+        Label position = new Label(LanguageManager.get("user.colleague.position") + ": " + valueOrDash(colleague.getPosition()));
+        Label email = new Label(LanguageManager.get("user.colleague.email") + ": " + valueOrDash(colleague.getEmail()));
+        Label status = new Label(LanguageManager.get("user.colleague.status") + ": " + valueOrDash(colleague.getStatus()));
+        position.getStyleClass().add("body-text");
+        email.getStyleClass().add("body-text");
+        status.getStyleClass().add("body-text");
+
+        position.setWrapText(true);
+        email.setWrapText(true);
+        status.setWrapText(true);
+
+        infoBox.getChildren().addAll(position, email, status);
+
         card.getChildren().addAll(name, infoBox);
         return card;
     }
@@ -819,7 +946,7 @@ public class UserMainController {
     }
 
     private Node simplePlaceholder(String text) {
-        VBox box = createPageContainer(t("Placeholder", "Placeholder"), text);
+        VBox box = createPageContainer(LanguageManager.get("user.placeholder"), text);
         box.getChildren().add(simpleCard(text));
         return wrap(box);
     }

@@ -200,13 +200,13 @@ public class MainController {
         contextMenu.setAutoHide(true);
         contextMenu.setHideOnEscape(true);
 
-        MenuItem refreshItem = new MenuItem(isAlbanian() ? "Rifresko" : "Refresh");
+        MenuItem refreshItem = new MenuItem(LanguageManager.get("context.refresh"));
         refreshItem.setOnAction(event -> refreshCurrentView());
 
         MenuItem helpItem = new MenuItem(LanguageManager.get("menu.help"));
         helpItem.setOnAction(event -> showHelp());
 
-        MenuItem exitItem = new MenuItem(isAlbanian() ? "Dil nga programi" : "Exit program");
+        MenuItem exitItem = new MenuItem(LanguageManager.get("context.exitProgram"));
         exitItem.setOnAction(event -> handleExit());
 
         contextMenu.getItems().setAll(refreshItem, helpItem, new SeparatorMenuItem(), exitItem);
@@ -218,9 +218,9 @@ public class MainController {
         }));
 
         mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
-            refreshItem.setText(isAlbanian() ? "Rifresko" : "Refresh");
+            refreshItem.setText(LanguageManager.get("context.refresh"));
             helpItem.setText(LanguageManager.get("menu.help"));
-            exitItem.setText(isAlbanian() ? "Dil nga programi" : "Exit program");
+            exitItem.setText(LanguageManager.get("context.exitProgram"));
             if (contextMenu.isShowing()) contextMenu.hide();
             contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
             event.consume();
@@ -239,25 +239,22 @@ public class MainController {
 
         boolean sq = isAlbanian();
         StringBuilder message = new StringBuilder();
-        message.append(sq
-                ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
-                : "The following contracts will expire within 14 days:\n\n");
+        message.append(LanguageManager.get("contract.expiring.intro"));
 
         for (com.company.system.model.Contract c : expiring) {
-            message.append("• ").append(c.getContractType())
-                    .append(" — ").append(sq ? "Skadon" : "Expires")
-                    .append(": ").append(c.getEndDate()).append("\n");
-        }
+            message.append(LanguageManager.get("contract.expiring.itemPrefix"))
+                    .append(c.getContractType())
+                    .append(LanguageManager.get("contract.expiring.statusSuffix"))
+                    .append(LanguageManager.get("contract.expiring.expires")).append(": ").append(c.getEndDate()).append("\n");}
 
-        message.append(sq
-                ? "\nJu lutem kontaktoni administratorin per rinovim."
-                : "\nPlease contact the administrator for renewal.");
+        message.append(LanguageManager.get("contract.expiring.footer"));
+
 
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             DialogUtils.style(alert);
-            alert.setTitle(sq ? "Paralajmerim — Kontrata" : "Warning — Contract");
-            alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
+            alert.setTitle(LanguageManager.get("contract.expiring.alertTitle"));
+            alert.setHeaderText(LanguageManager.get("contract.expiring.alertHeader"));
             Label content = new Label(message.toString());
             content.setWrapText(true);
             content.setMaxWidth(400);
@@ -349,8 +346,7 @@ public class MainController {
 
     private void updateLoggedInUser() {
         User user = Session.getUser();
-        loggedInLabel.setText("Logged in as: " + UserService.getDisplayName(user));
-    }
+        loggedInLabel.setText(LanguageManager.get("status.loggedInAs") + " " + UserService.getDisplayName(user));    }
 
     private void updateThemeButton() {
         setIconOnlyButton(themeButton, darkMode ? ICON_SUN : ICON_MOON);
@@ -523,12 +519,11 @@ public class MainController {
     private void handleExit() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Dalje" : "Exit");
+        alert.setTitle(LanguageManager.get("exit.title"));
         alert.setHeaderText(null);
-
-        ButtonType mainMenuType = new ButtonType(isAlbanian() ? "Menyja kryesore" : "Main Menu", ButtonBar.ButtonData.OTHER);
-        ButtonType desktopType = new ButtonType(isAlbanian() ? "Dil nga programi" : "Quit to Desktop", ButtonBar.ButtonData.OTHER);
-        ButtonType cancelType = new ButtonType(isAlbanian() ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType mainMenuType = new ButtonType(LanguageManager.get("exit.mainMenu"), ButtonBar.ButtonData.OTHER);
+        ButtonType desktopType = new ButtonType(LanguageManager.get("exit.desktop"), ButtonBar.ButtonData.OTHER);
+        ButtonType cancelType = new ButtonType(LanguageManager.get("exit.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(mainMenuType, desktopType, cancelType);
 
         Label icon = new Label("🚪");
@@ -536,11 +531,11 @@ public class MainController {
         icon.setGraphic(createPopupIcon(ICON_EXIT, "#3b82f6"));
         icon.setStyle("-fx-padding: 10;");
 
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
+        Label title = new Label(LanguageManager.get("exit.confirmTitle"));
         title.setWrapText(true); title.setMaxWidth(360); title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Label subtitle = new Label(isAlbanian() ? "Zgjidhni nje opsion per dalje." : "Choose an exit option.");
+        Label subtitle = new Label(LanguageManager.get("exit.confirmSubtitle"));
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
         VBox content = new VBox(12, icon, title, subtitle);
@@ -631,41 +626,41 @@ public class MainController {
 
         User user = Session.getUser();
         if (user != null && !"ADMIN".equalsIgnoreCase(user.getRole())) {
-            loadView("/views/user-dashboard-view.fxml", dashboardButton, "Failed to load user dashboard.");
+            loadView("/views/user-dashboard-view.fxml", dashboardButton, LanguageManager.get("load.userDashboard"));
             return;
         }
 
-        loadView("/views/dashboard-view.fxml", dashboardButton, "Failed to load dashboard.");
+        loadView("/views/dashboard-view.fxml", dashboardButton, LanguageManager.get("load.dashboard"));
     }
 
     @FXML public void showEmployees() {
         recordNavigation("employees"); currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
-        loadView("/views/employees-view.fxml", employeesButton, "Failed to load employees.");
+        loadView("/views/employees-view.fxml", employeesButton, LanguageManager.get("load.employees"));
     }
 
     @FXML public void showContracts() {
         recordNavigation("contracts"); currentView = "contracts";
         setStatus(LanguageManager.get("status.contracts"));
-        loadView("/views/contracts-view.fxml", contractsButton, "Failed to load contracts.");
+        loadView("/views/contracts-view.fxml", contractsButton, LanguageManager.get("load.contracts"));
     }
 
     @FXML public void showSalaries() {
         recordNavigation("salaries"); currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
-        loadView("/views/salaries-view.fxml", salariesButton, "Failed to load salaries.");
+        loadView("/views/salaries-view.fxml", salariesButton, LanguageManager.get("load.salaries"));
     }
 
     @FXML public void showDepartments() {
         recordNavigation("departments"); currentView = "departments";
         setStatus(LanguageManager.get("status.departments"));
-        loadView("/views/departments-view.fxml", departmentsButton, "Failed to load departments.");
+        loadView("/views/departments-view.fxml", departmentsButton, LanguageManager.get("load.departments"));
     }
 
     @FXML public void showUsers() {
         recordNavigation("users"); currentView = "users";
         setStatus(LanguageManager.get("status.users"));
-        loadView("/views/users-view.fxml", usersButton, "Failed to load users.");
+        loadView("/views/users-view.fxml", usersButton, LanguageManager.get("load.users"));
     }
 
     @FXML
@@ -673,63 +668,57 @@ public class MainController {
         recordNavigation("exports");
         currentView = "exports";
         boolean sq = isAlbanian();
-        setStatus(sq ? "Eksporto te dhenat" : "Export data");
+        setStatus(LanguageManager.get("export.status"));
         setActiveButton(exportButton);
 
         VBox page = new VBox(18);
         page.getStyleClass().add("module-page");
         page.setPadding(new javafx.geometry.Insets(24));
 
-        Label title = new Label(sq ? "Eksporto te Dhenat" : "Export Data");
+        Label title = new Label(LanguageManager.get("export.title"));
         title.getStyleClass().add("page-title");
 
-        Label empTitle = new Label(sq ? "Punetoret" : "Employees");
+        Label empTitle = new Label(LanguageManager.get("export.employees.title"));
         empTitle.getStyleClass().add("section-title");
         HBox empRow = new HBox(10);
-        Button empExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button empPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        empExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        empPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button empExcel = new Button(LanguageManager.get("export.excel"));
+        Button empPdf = new Button(LanguageManager.get("export.pdf"));
         empExcel.getStyleClass().add("primary-button");
         empPdf.getStyleClass().add("primary-button");
         empRow.getChildren().addAll(empExcel, empPdf);
 
-        Label conTitle = new Label(sq ? "Kontratat" : "Contracts");
+        Label conTitle = new Label(LanguageManager.get("export.contracts.title"));
         conTitle.getStyleClass().add("section-title");
         HBox conRow = new HBox(10);
-        Button conExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button conPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        conExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        conPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button conExcel = new Button(LanguageManager.get("export.excel"));
+        Button conPdf = new Button(LanguageManager.get("export.pdf"));
         conExcel.getStyleClass().add("primary-button");
         conPdf.getStyleClass().add("primary-button");
         conRow.getChildren().addAll(conExcel, conPdf);
 
-        Label salTitle = new Label(sq ? "Pagat" : "Salaries");
+        Label salTitle = new Label(LanguageManager.get("export.salaries.title"));
         salTitle.getStyleClass().add("section-title");
         HBox salRow = new HBox(10);
-        Button salExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button salPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        salExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        salPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button salExcel = new Button(LanguageManager.get("export.excel"));
+        Button salPdf = new Button(LanguageManager.get("export.pdf"));
         salExcel.getStyleClass().add("primary-button");
         salPdf.getStyleClass().add("primary-button");
         salRow.getChildren().addAll(salExcel, salPdf);
 
-        Label depTitle = new Label(sq ? "Departamentet" : "Departments");
+        Label depTitle = new Label(LanguageManager.get("export.departments.title"));
         depTitle.getStyleClass().add("section-title");
         HBox depRow = new HBox(10);
-        Button depExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
-        Button depPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        Button depExcel = new Button(LanguageManager.get("export.excel"));
+        Button depPdf = new Button(LanguageManager.get("export.pdf"));
         depExcel.getStyleClass().add("primary-button");
         depPdf.getStyleClass().add("primary-button");
         depRow.getChildren().addAll(depExcel, depPdf);
 
-        Label userTitle = new Label(sq ? "Perdoruesit" : "Users");
+        Label userTitle = new Label(LanguageManager.get("export.users.title"));
         userTitle.getStyleClass().add("section-title");
         HBox userRow = new HBox(10);
-        Button userExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
-        Button userPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        Button userExcel = new Button(LanguageManager.get("export.excel"));
+        Button userPdf = new Button(LanguageManager.get("export.pdf"));
         userExcel.getStyleClass().add("primary-button");
         userPdf.getStyleClass().add("primary-button");
         userRow.getChildren().addAll(userExcel, userPdf);
@@ -769,7 +758,7 @@ public class MainController {
 
     private void handleExport(String type, String format, Label statusLabel, boolean sq) {
         javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
-        chooser.setTitle(sq ? "Ruaj skedarin" : "Save file");
+        chooser.setTitle(LanguageManager.get("export.saveFile"));
         String ext = "excel".equals(format) ? "xlsx" : "pdf";
         chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter(ext.toUpperCase() + " Files", "*." + ext));
         chooser.setInitialFileName(type + "-export." + ext);
@@ -791,10 +780,10 @@ public class MainController {
                 case "users-pdf" -> com.company.system.service.ExportService.exportUsersToPdf(com.company.system.service.UserService.getAllUsers(), file);
             }
             statusLabel.setStyle("-fx-text-fill: green;");
-            statusLabel.setText((sq ? "U eksportua me sukses: " : "Exported successfully: ") + file.getName());
+            statusLabel.setText(LanguageManager.get("export.success") + file.getName());
         } catch (Exception ex) {
             statusLabel.setStyle("-fx-text-fill: red;");
-            statusLabel.setText((sq ? "Gabim gjate eksportimit: " : "Export error: ") + ex.getMessage());
+            statusLabel.setText(LanguageManager.get("export.error") + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -812,20 +801,18 @@ public class MainController {
         Label title = new Label(LanguageManager.get("help.title"));
         title.getStyleClass().add("page-title");
 
-        Label intro = new Label(sq
-                ? "Kjo faqe shpjegon menyren e perdorimit te sistemit, navigimin dhe shkurtesat kryesore."
-                : "This page explains how to use the system, navigate through modules and use keyboard shortcuts.");
+        Label intro = new Label(LanguageManager.get("help.admin.intro"));
         intro.setWrapText(true);
         intro.getStyleClass().add("body-text");
 
         VBox sections = new VBox(14);
         sections.getChildren().addAll(
-                createHelpSection(sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni butonat ne toolbar per te hapur modulet kryesore." : "Use the toolbar buttons to open the main modules.",
-                        sq ? "Menuja ☰ permban daljen, modulet, gjuhen, ndihmen dhe llogarine." : "The ☰ menu contains exit, modules, language, help and account options.",
-                        sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."),
-                createHelpSection(sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
-                        "Ctrl+E - " + LanguageManager.get("menu.employees"),
+                createHelpSection(LanguageManager.get("help.admin.navigation.title"),
+                        LanguageManager.get("help.admin.navigation.line1"),
+                        LanguageManager.get("help.admin.navigation.line2"),
+                        LanguageManager.get("help.admin.navigation.line3")),
+                createHelpSection(LanguageManager.get("help.admin.shortcuts.title"),
+                "Ctrl+E - " + LanguageManager.get("menu.employees"),
                         "Ctrl+K - " + LanguageManager.get("menu.contracts"),
                         "Ctrl+S - " + LanguageManager.get("menu.salaries"),
                         "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
@@ -834,19 +821,19 @@ public class MainController {
                         "Ctrl+P - " + LanguageManager.get("menu.profile"),
                         "Ctrl+L - " + LanguageManager.get("menu.language"),
                         "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
-                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
-                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.admin.shortcuts.back"),
+                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.admin.shortcuts.forward"),
+                        "F5 - " + LanguageManager.get("help.admin.shortcuts.refresh"),
                         "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(sq ? "Menuja me klikim te djathte" : "Right-click menu",
-                        sq ? "Klikoni me te djathten ne nje hapesire te zbrazet per Rifresko, Ndihma dhe Dil nga programi." : "Right-click an empty area for Refresh, Help and Exit program.",
-                        sq ? "Rifresko ngarkon perseri pamjen aktuale pa ndryshuar modulin." : "Refresh reloads the current view without changing modules."),
-                createHelpSection(sq ? "Gjuha" : "Language",
-                        sq ? "Gjuha mund te ndryshohet nga menuja ☰ ose nga faqja e llogarise." : "The language can be changed from the ☰ menu or from the account page.",
-                        sq ? "Pas ndryshimit te gjuhes, tekstet kryesore perditesohen automatikisht." : "After changing the language, the main texts are updated automatically."),
-                createHelpSection(sq ? "Llogaria" : "Account",
-                        sq ? "Nga llogaria mund te shihni perdoruesin aktual dhe te ndryshoni gjuhen." : "From the account page you can view the current user and change the language.",
-                        sq ? "Butoni per dalje e mbyll sesionin dhe ju kthen te faqja e kyçjes." : "The logout button clears the session and returns you to the login page.")
+                createHelpSection(LanguageManager.get("help.admin.context.title"),
+                        LanguageManager.get("help.admin.context.line1"),
+                        LanguageManager.get("help.admin.context.line2")),
+                createHelpSection(LanguageManager.get("help.admin.language.title"),
+                        LanguageManager.get("help.admin.language.line1"),
+                        LanguageManager.get("help.admin.language.line2")),
+                createHelpSection(LanguageManager.get("help.admin.account.title"),
+                        LanguageManager.get("help.admin.account.line1"),
+                        LanguageManager.get("help.admin.account.line2"))
         );
 
         return wrapHelpView(title, intro, sections);
@@ -857,34 +844,30 @@ public class MainController {
         Label title = new Label(LanguageManager.get("help.title"));
         title.getStyleClass().add("page-title");
 
-        Label intro = new Label(sq
-                ? "Kjo faqe shpjegon navigimin e user-it dhe shkurtesat kryesore."
-                : "This page explains user navigation and the main shortcuts.");
+        Label intro = new Label(LanguageManager.get("help.user.intro"));
         intro.setWrapText(true);
         intro.getStyleClass().add("body-text");
 
         VBox sections = new VBox(14);
         sections.getChildren().addAll(
-                createHelpSection(sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni sidebar-in per Dashboard, My Contract, My Salary, My Department dhe Settings."
-                                : "Use the sidebar for Dashboard, My Contract, My Salary, My Department and Settings.",
-                        sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."),
-                createHelpSection(sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
+                createHelpSection(LanguageManager.get("help.user.navigation.title"),
+                        LanguageManager.get("help.user.navigation.line1"),
+                        LanguageManager.get("help.user.navigation.line2")),
+                createHelpSection(LanguageManager.get("help.user.shortcuts.title"),
                         "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "Ctrl+K - My Contract",
-                        "Ctrl+S - My Salary",
-                        "Ctrl+R - My Department",
-                        "Ctrl+P - Settings",
+                        "Ctrl+K - " + LanguageManager.get("help.user.shortcuts.contracts"),
+                        "Ctrl+S - " + LanguageManager.get("help.user.shortcuts.salaries"),
+                        "Ctrl+R - " + LanguageManager.get("help.user.shortcuts.departments"),
+                        "Ctrl+P - " + LanguageManager.get("menu.profile"),
                         "Ctrl+L - " + LanguageManager.get("menu.language"),
                         "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
-                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
-                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.user.shortcuts.back"),
+                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.user.shortcuts.forward"),
+                        "F5 - " + LanguageManager.get("help.user.shortcuts.refresh"),
                         "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(sq ? "Menuja me klikim te djathte" : "Right-click menu",
-                        sq ? "Klikoni me te djathten kudo ne program per Rifresko, Ndihma dhe Dil nga programi."
-                                : "Right-click anywhere in the program for Refresh, Help and Exit program.",
-                        sq ? "Klikimi diku tjeter e mbyll menune." : "Clicking somewhere else closes the menu.")
+                createHelpSection(LanguageManager.get("help.user.context.title"),
+                        LanguageManager.get("help.user.context.line1"),
+                        LanguageManager.get("help.user.context.line2"))
         );
 
         return wrapHelpView(title, intro, sections);
@@ -927,14 +910,15 @@ public class MainController {
         setActiveButton(profileButton);
 
         User user = Session.getUser();
-        if (user == null) { setContent(new Label("No user logged in")); return; }
-
+        if (user == null) {setContent(new Label(LanguageManager.get("profile.noUserLoggedIn")));
+            return;}
         String roleText = "ADMIN".equalsIgnoreCase(user.getRole())
                 ? LanguageManager.get("account.role.admin")
                 : LanguageManager.get("account.role.user");
 
-        Label title = new Label(isAlbanian() ? "Cilesimet" : "Settings");
+        Label title = new Label(LanguageManager.get("profile.title"));
         title.getStyleClass().add("page-title");
+
 
         StackPane userIcon = createSidebarIconBox(ICON_USER, 1.08);
         userIcon.getStyleClass().add("profile-icon");
@@ -988,18 +972,19 @@ public class MainController {
         languageCard.setPrefWidth(430);
         languageCard.setMaxWidth(Double.MAX_VALUE);
 
-        Label passwordTitle = new Label(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        Label passwordTitle = new Label(LanguageManager.get("profile.password.title"));
         passwordTitle.getStyleClass().add("section-title");
 
+
         PasswordField currentPasswordField = new PasswordField();
-        currentPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi aktual" : "Current password");
+        currentPasswordField.setPromptText(LanguageManager.get("profile.password.current"));
         currentPasswordField.setMaxWidth(Double.MAX_VALUE);
 
         PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi i ri" : "New password");
+        newPasswordField.setPromptText(LanguageManager.get("profile.password.new"));
         newPasswordField.setMaxWidth(Double.MAX_VALUE);
 
-        Button changePasswordButton = new Button(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        Button changePasswordButton = new Button(LanguageManager.get("profile.password.change"));
         changePasswordButton.getStyleClass().add("primary-button");
         changePasswordButton.setOnAction(e -> changePassword(user, currentPasswordField, newPasswordField));
 
@@ -1013,7 +998,7 @@ public class MainController {
         HBox.setHgrow(languageCard, Priority.ALWAYS);
         HBox.setHgrow(passwordCard, Priority.ALWAYS);
 
-        Button deleteAccount = new Button(isAlbanian() ? "Fshi llogarine" : "Delete account");
+        Button deleteAccount = new Button(LanguageManager.get("profile.deleteAccount"));
         deleteAccount.getStyleClass().add("danger-text-button");
         deleteAccount.setOnAction(e -> confirmDeleteAccount(user));
 
@@ -1042,27 +1027,27 @@ private String valueOrDash(String value) {
         String storedHash = UserService.getPasswordHashByUsername(user.getUsername());
 
         if (currentPassword == null || currentPassword.isBlank() || newPassword == null || newPassword.isBlank()) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Plotesoni te dy fushat e fjalekalimit." : "Fill both password fields.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.fillBothFields"));
             return;
         }
         if (!PasswordUtils.verifyPassword(currentPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi aktual nuk eshte i sakte." : "Current password is not correct.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.currentIncorrect"));
             return;
         }
         if (PasswordUtils.verifyPassword(newPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi i ri nuk mund te jete i njejte me te vjetrin." : "New password cannot be the same as the old one.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.sameAsOld"));
             return;
         }
         if (UserService.resetPassword(user.getUsername(), newPassword)) {
             currentPasswordField.clear(); newPasswordField.clear();
-            showStyledAlert(Alert.AlertType.INFORMATION, isAlbanian() ? "Sukses" : "Success",
-                    isAlbanian() ? "Fjalekalimi u ndryshua me sukses." : "Password changed successfully.");
+            showStyledAlert(Alert.AlertType.INFORMATION, LanguageManager.get("message.success.title"),
+                    LanguageManager.get("profile.password.changed"));
         } else {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi nuk u ndryshua." : "Password was not changed.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.notChanged"));
         }
     }
 
@@ -1087,20 +1072,18 @@ private String valueOrDash(String value) {
 
     private void confirmDeleteAccount(User user) {
         if (UserService.isOnlyAdmin(user)) {
-            showStyledAlert(Alert.AlertType.WARNING, isAlbanian() ? "Nuk lejohet" : "Not allowed",
-                    isAlbanian()
-                            ? "Ju jeni administratori i vetem. Nuk mund ta fshini llogarine pa pasur te pakten edhe nje administrator tjeter."
-                            : "You are the only administrator. You cannot delete this account until another administrator exists.");
+            showStyledAlert(Alert.AlertType.WARNING, LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("profile.delete.onlyAdmin"));
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete Account");
+        alert.setTitle(LanguageManager.get("profile.delete.title"));
         alert.setHeaderText(null);
 
-        ButtonType yesType = new ButtonType(isAlbanian() ? "Po, fshije" : "Yes, Delete", ButtonBar.ButtonData.YES);
-        ButtonType noType = new ButtonType(isAlbanian() ? "Jo" : "No", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType yesType = new ButtonType(LanguageManager.get("profile.delete.confirmYes"), ButtonBar.ButtonData.YES);
+        ButtonType noType = new ButtonType(LanguageManager.get("profile.delete.confirmNo"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(yesType, noType);
 
         Label icon = new Label("🗑");
@@ -1108,13 +1091,11 @@ private String valueOrDash(String value) {
         icon.setGraphic(createPopupIcon(ICON_DELETE, "#dc2626"));
         icon.setStyle("-fx-padding: 10;");
 
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni ta fshini llogarine?" : "Are you sure you want to delete your account?");
+        Label title = new Label(LanguageManager.get("profile.delete.confirmTitle"));
         title.setWrapText(true); title.setMaxWidth(370); title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;");
 
-        Label subtitle = new Label(isAlbanian()
-                ? "Ky veprim do te fshije llogarine, punetorin, kontratat, pagat dhe historikun e pagave."
-                : "This will delete your account, employee record, contracts, salaries and salary history.");
+        Label subtitle = new Label(LanguageManager.get("profile.delete.confirmSubtitle"));
         subtitle.setWrapText(true); subtitle.setMaxWidth(370); subtitle.setMinHeight(Label.USE_PREF_SIZE);
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
@@ -1140,9 +1121,8 @@ private String valueOrDash(String value) {
         if (result.isPresent() && result.get() == yesType) {
             boolean deleted = UserService.deleteAccountAndEmployeeData(user);
             if (deleted) { Session.clear(); showWelcome(); }
-            else showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Llogaria nuk u fshi. Kontrolloni databazen ose provoni perseri."
-                            : "The account was not deleted. Check the database or try again.");
+            else showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.delete.failed"));
         }
     }
 
