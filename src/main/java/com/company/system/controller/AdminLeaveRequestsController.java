@@ -6,6 +6,7 @@ import com.company.system.service.LeaveRequestService;
 import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,6 +17,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -138,7 +140,6 @@ public class AdminLeaveRequestsController {
         DialogUtils.style(alert);
         alert.setTitle(isAlbanian() ? "Kerkesa per pushim" : "Leave request");
         alert.setHeaderText(null);
-
         ButtonType closeType = new ButtonType(isAlbanian() ? "Mbyll" : "Close", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(closeType);
 
@@ -177,21 +178,43 @@ public class AdminLeaveRequestsController {
 
         Button approveButton = new Button(isAlbanian() ? "Prano" : "Accept");
         approveButton.getStyleClass().add("success-button");
+        approveButton.setPrefWidth(92);
         approveButton.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
         approveButton.setOnAction(event -> handleDecision(alert, request, "Approved", commentArea.getText()));
 
         Button rejectButton = new Button(isAlbanian() ? "Refuzo" : "Deny");
         rejectButton.getStyleClass().add("danger-button");
+        rejectButton.setPrefWidth(92);
         rejectButton.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
         rejectButton.setOnAction(event -> handleDecision(alert, request, "Rejected", commentArea.getText()));
 
-        HBox actions = new HBox(10, approveButton, rejectButton);
+        Button closeButton = new Button(isAlbanian() ? "Mbyll" : "Close");
+        closeButton.getStyleClass().add("secondary-button");
+        closeButton.setPrefWidth(92);
+        closeButton.setOnAction(event -> {
+            alert.setResult(closeType);
+            alert.close();
+        });
+
+        GridPane actions = new GridPane();
+        actions.setHgap(10);
+        actions.setVgap(10);
         actions.setAlignment(Pos.CENTER_RIGHT);
+        actions.add(approveButton, 0, 0);
+        actions.add(rejectButton, 1, 0);
+        actions.add(closeButton, 1, 1);
 
         VBox content = new VBox(12, title, details, messageTitle, message, commentHint, commentArea, actions);
         content.setPadding(new Insets(8));
         content.setPrefWidth(520);
         alert.getDialogPane().setContent(content);
+        Platform.runLater(() -> {
+            Button defaultCloseButton = (Button) alert.getDialogPane().lookupButton(closeType);
+            if (defaultCloseButton != null) {
+                defaultCloseButton.setVisible(false);
+                defaultCloseButton.setManaged(false);
+            }
+        });
         alert.showAndWait();
     }
 

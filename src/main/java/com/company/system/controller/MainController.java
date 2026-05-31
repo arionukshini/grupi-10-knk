@@ -361,10 +361,16 @@ public class MainController {
 
     private void updateNotificationButton() {
         int pendingCount = LeaveRequestService.getPendingCount();
-        notificationButton.setGraphic(createSidebarIconBox(ICON_BELL, FOOTER_ICON_SCALE));
-        notificationButton.setText(String.valueOf(pendingCount));
-        notificationButton.setContentDisplay(ContentDisplay.LEFT);
-        notificationButton.setGraphicTextGap(6);
+        Label countLabel = new Label(String.valueOf(pendingCount));
+        countLabel.getStyleClass().add("notification-count");
+
+        HBox notificationGraphic = new HBox(5, createSidebarIconBox(ICON_BELL, FOOTER_ICON_SCALE), countLabel);
+        notificationGraphic.getStyleClass().add("notification-content");
+        notificationGraphic.setAlignment(Pos.CENTER);
+
+        notificationButton.setText("");
+        notificationButton.setGraphic(notificationGraphic);
+        notificationButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         notificationButton.setTooltip(new Tooltip(isAlbanian()
                 ? pendingCount + " kerkesa per pushime ne pritje"
                 : pendingCount + " pending leave requests"));

@@ -75,35 +75,64 @@
     -fx-border-color: transparent;
     -fx-background-radius: 8;
     -fx-border-radius: 8;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-min-width: 52;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-min-width: 56;
     -fx-min-height: 38;
-    -fx-padding: 0 10 0 10;
+    -fx-pref-height: 38;
+    -fx-padding: 0 8 0 8;
+    -fx-cursor: hand;
 }
 
 .notification-button .sidebar-icon-box {
     -fx-min-width: 24;
     -fx-pref-width: 24;
     -fx-max-width: 24;
+    -fx-min-height: 26;
+    -fx-pref-height: 26;
+    -fx-max-height: 26;
 }
 
 .notification-button .sidebar-svg-icon {
-    -fx-stroke: white;
-    -fx-stroke-width: 2.4;
+    -fx-stroke: #dbeafe;
+    -fx-stroke-width: 2.25;
+}
+
+.notification-content {
+    -fx-alignment: center;
+}
+
+.notification-count {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dbeafe;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-min-width: 14;
+    -fx-pref-width: 14;
+    -fx-max-width: 24;
+    -fx-min-height: 18;
+    -fx-pref-height: 18;
+    -fx-max-height: 18;
 }
 
 .notification-button:hover,
 .notification-button.active {
     -fx-background-color: -side-active;
     -fx-border-color: -side-active;
-    -fx-text-fill: #031b34;
 }
 
 .notification-button:hover .sidebar-svg-icon,
 .notification-button.active .sidebar-svg-icon {
     -fx-stroke: #031b34;
+}
+
+.notification-button:hover .notification-count,
+.notification-button.active .notification-count {
+    -fx-background-color: transparent;
+    -fx-text-fill: #031b34;
 }
 
 .icon-button:hover,
@@ -116,12 +145,17 @@
 .top-bar .notification-button.active {
     -fx-background-color: -side-active;
     -fx-border-color: -side-active;
-    -fx-text-fill: #031b34;
 }
 
 .top-bar .notification-button:hover .sidebar-svg-icon,
 .top-bar .notification-button.active .sidebar-svg-icon {
     -fx-stroke: #031b34;
+}
+
+.top-bar .notification-button:hover .notification-count,
+.top-bar .notification-button.active .notification-count {
+    -fx-background-color: transparent;
+    -fx-text-fill: #031b34;
 }
 
 .sidebar {

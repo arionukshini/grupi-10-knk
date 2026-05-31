@@ -28,7 +28,7 @@
                    styleClass="app-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <Button fx:id="notificationButton"
-                    styleClass="icon-button notification-button"
+                    styleClass="notification-button"
                     onAction="#showLeaveRequests"/>
             <Label text="|"
                    styleClass="top-separator"/>
