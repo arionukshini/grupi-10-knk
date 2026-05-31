@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +102,85 @@ public class LeaveRequestService {
         }
 
         return false;
+    }
+
+    public static List<LeaveRequest> getRequestsByEmployee(int employeeId) {
+        List<LeaveRequest> requests = new ArrayList<>();
+        String sql = """
+                SELECT vr.id,
+                       vr.employee_id,
+                       CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+                       vr.request_type,
+                       vr.start_date,
+                       vr.end_date,
+                       vr.reason,
+                       vr.status,
+                       vr.admin_response,
+                       vr.requested_at,
+                       vr.reviewed_at
+                FROM vacation_requests vr
+                JOIN employees e ON vr.employee_id = e.id
+                WHERE vr.employee_id = ?
+                ORDER BY
+                    CASE vr.status
+                        WHEN 'Pending'  THEN 0
+                        WHEN 'Approved' THEN 1
+                        ELSE 2
+                    END,
+                    vr.requested_at DESC
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) return requests;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, employeeId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) requests.add(mapRequest(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
+    }
+
+    public static boolean submitRequest(int employeeId, String type,
+                                        LocalDate startDate, LocalDate endDate,
+                                        String reason) {
+        String sql = """
+                INSERT INTO vacation_requests
+                    (employee_id, request_type, start_date, end_date, reason, status)
+                VALUES (?, ?, ?, ?, ?, 'Pending')
+                """;
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, employeeId);
+            stmt.setString(2, type);
+            stmt.setDate(3, java.sql.Date.valueOf(startDate));
+            stmt.setDate(4, java.sql.Date.valueOf(endDate));
+            stmt.setString(5, reason.isBlank() ? null : reason);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean cancelRequest(int requestId) {
+        String sql = """
+                DELETE FROM vacation_requests
+                WHERE id = ? AND status = 'Pending'
+                """;
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, requestId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private static LeaveRequest mapRequest(ResultSet rs) throws SQLException {

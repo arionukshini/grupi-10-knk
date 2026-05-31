@@ -44,14 +44,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 import java.util.List;
-import java.util.ArrayList;
 
 import java.io.File;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 import java.util.Optional;
 
 import static com.company.system.MainApp.showWelcome;
