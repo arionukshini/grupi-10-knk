@@ -17,95 +17,96 @@
             </padding>
 
             <VBox spacing="4">
-                <Label text="My Salary" styleClass="page-title"/>
+                <Label fx:id="titleLabel" text="My Salary" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="A clear summary of your latest salary and breakdown." styleClass="body-text"/>
                 <Label fx:id="employeeNameLabel" text="-" styleClass="page-subtitle"/>
             </VBox>
 
             <HBox spacing="20" alignment="TOP_LEFT">
                 <VBox spacing="16" HBox.hgrow="ALWAYS">
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Paga mujore" styleClass="section-title"/>
+                        <Label fx:id="monthlySalaryTitleLabel" text="Paga mujore" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-gross">
-                                <Label text="Paga bruto" styleClass="salary-card-label"/>
+                                <Label fx:id="grossSalaryLabelTitle" text="Paga bruto" styleClass="salary-card-label"/>
                                 <Label fx:id="grossSalaryLabel" text="-" styleClass="salary-card-value"/>
                             </VBox>
                             <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-net">
-                                <Label text="Paga neto" styleClass="salary-card-label"/>
+                                <Label fx:id="netSalaryLabelTitle" text="Paga neto" styleClass="salary-card-label"/>
                                 <Label fx:id="netSalaryLabel" text="-" styleClass="salary-card-value-green"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Bonuset dhe zbritjet" styleClass="section-title"/>
+                        <Label fx:id="bonusDeductionsTitleLabel" text="Bonuset dhe zbritjet" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Bonus" styleClass="info-card-label"/>
+                                <Label fx:id="bonusLabelTitle" text="Bonus" styleClass="info-card-label"/>
                                 <Label fx:id="bonusLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card-danger">
-                                <Label text="Zbritje" styleClass="info-card-label"/>
+                                <Label fx:id="deductionsLabelTitle" text="Zbritje" styleClass="info-card-label"/>
                                 <Label fx:id="deductionsLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Koha e punes" styleClass="section-title"/>
+                        <Label fx:id="workTimeTitleLabel" text="Koha e punes" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
                                 <Label text="Dite pune" styleClass="info-card-label"/>
-                                <Label fx:id="workedDaysLabel" text="-" styleClass="info-card-value"/>
+                                <Label fx:id="workedDaysTitleLabel" text="Dite pune" styleClass="info-card-label"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Dite pushimi" styleClass="info-card-label"/>
+                                <Label fx:id="vacationDaysTitleLabel" text="Dite pushimi" styleClass="info-card-label"/>
                                 <Label fx:id="vacationDaysLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Ore pune" styleClass="info-card-label"/>
+                                <Label fx:id="workHoursTitleLabel" text="Ore pune" styleClass="info-card-label"/>
                                 <Label fx:id="workHoursLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Puna shtese" styleClass="section-title"/>
+                        <Label fx:id="overtimeTitleLabel" text="Puna shtese" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Ore shtese" styleClass="info-card-label"/>
+                                <Label fx:id="overtimeHoursTitleLabel" text="Ore shtese" styleClass="info-card-label"/>
                                 <Label fx:id="overtimeHoursLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Paga ditore" styleClass="info-card-label"/>
+                                <Label fx:id="dailyRateTitleLabel" text="Paga ditore" styleClass="info-card-label"/>
                                 <Label fx:id="dailyRateLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Pagesa shtese" styleClass="info-card-label"/>
+                                <Label fx:id="overtimePayTitleLabel" text="Pagesa shtese" styleClass="info-card-label"/>
                                 <Label fx:id="overtimePayLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Historia e pagave" styleClass="section-title"/>
+                        <Label fx:id="historyTitleLabel" text="Historia e pagave" styleClass="section-title"/>
                         <VBox fx:id="historyContainer" spacing="8"/>
                     </VBox>
                 </VBox>
 
                 <VBox spacing="12" styleClass="content-card" minWidth="240" maxWidth="280">
-                    <Label text="Llogarit paga" styleClass="section-title"/>
+                    <Label fx:id="calculateTitleLabel" text="Llogarit paga" styleClass="section-title"/>
                     <Separator/>
 
-                    <Label text="Ditet e punuara" styleClass="info-card-label"/>
+                    <Label fx:id="workedDaysInputLabel" text="Ditet e punuara" styleClass="info-card-label"/>
                     <TextField fx:id="workedDaysInput" promptText="0 - 22"/>
 
                     <VBox spacing="5" styleClass="salary-card-net">
-                        <Label text="Paga e llogaritur" styleClass="salary-card-label"/>
+                        <Label fx:id="calculatedSalaryTitleLabel" text="Paga e llogaritur" styleClass="salary-card-label"/>
                         <Label fx:id="calculatedSalaryLabel" text="-" styleClass="salary-card-value-green"/>
                     </VBox>
 
-                    <Label text="Ndrysho ditet e punuara per te pare llogaritjen."
+                    <Label fx:id="calculationHintLabel" text="Ndrysho ditet e punuara per te pare llogaritjen."
                            wrapText="true"
                            style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
                 </VBox>
