@@ -153,16 +153,22 @@ public class UserMainController {
         loadView("/views/my-contract-view.fxml", contractButton,
                 t("Failed to load contract.", "Kontrata nuk u hap."));
     }
-
+    @FXML
+    public void showContract() {
+        recordNavigation("contract");
+        currentView = "contract";
+        setStatus(t("My Contract opened", "My Contract u hap"));
+        loadView("/views/my-contract-view.fxml", contractButton,
+                t("Failed to load contract.", "Kontrata nuk u hap."));
+    }
 
     @FXML
     public void showSalary() {
         recordNavigation("salary");
         currentView = "salary";
         setStatus(t("My Salary opened", "My Salary u hap"));
-        setActiveButton(salaryButton);
-        setContent(buildPlaceholderPage(t("My Salary", "My Salary"),
-                t("This page is ready for the user salary module.", "Kjo faqe eshte gati per modulin e pages se user-it.")));
+        loadView("/views/my-salary-view.fxml", salaryButton,
+                t("Failed to load salary.", "Paga nuk u hap."));
     }
 
     @FXML
