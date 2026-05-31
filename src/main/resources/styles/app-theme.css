@@ -9,7 +9,6 @@
 .date-picker:focused,
 .table-view:focused,
 .hyperlink:focused,
-.nav-button:focused,
 .icon-button:focused,
 .footer-icon-button:focused,
 .footer-button:focused,
@@ -45,6 +44,15 @@
     -side: #0b3d78;
     -side-hover: #14589e;
     -side-active: #58a6ff;
+    -info-card-bg: #ffffff;
+    -info-card-danger-bg: #fff1f2;
+    -info-card-danger-border: #fecdd3;
+    -salary-gross-bg: #eff6ff;
+    -salary-gross-border: #bfdbfe;
+    -salary-net-bg: #f0fdf4;
+    -salary-net-border: #bbf7d0;
+    -value-blue: #1e40af;
+    -value-green: #16a34a;
 }
 
 .main-shell.dark {
@@ -60,6 +68,15 @@
     -side: #06264a;
     -side-hover: #103f70;
     -side-active: #7dc7ff;
+    -info-card-bg: #132a46;
+    -info-card-danger-bg: #3a1822;
+    -info-card-danger-border: #7f1d1d;
+    -salary-gross-bg: #102c4c;
+    -salary-gross-border: #1d4f83;
+    -salary-net-bg: #123322;
+    -salary-net-border: #1f6b3a;
+    -value-blue: #93c5fd;
+    -value-green: #86efac;
 }
 
 .top-bar {
@@ -208,6 +225,7 @@
     -fx-pref-height: 42;
     -fx-padding: 0 12 0 12;
     -fx-cursor: hand;
+    -fx-translate-y: 0;
 }
 
 .sidebar-icon-box {
@@ -230,11 +248,19 @@
 
 .nav-button:hover {
     -fx-background-color: -side-hover;
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.42), 14, 0.28, 0, 4);
+    -fx-translate-y: -1;
 }
 
 .nav-button.active {
     -fx-background-color: -side-active;
     -fx-text-fill: #031b34;
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.48), 14, 0.3, 0, 4);
+}
+
+.nav-button:pressed {
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.22), 8, 0.18, 0, 2);
+    -fx-translate-y: 0;
 }
 
 .nav-button.active .sidebar-svg-icon {
@@ -440,6 +466,7 @@
 }
 
 .text-field,
+.password-field,
 .text-area,
 .combo-box,
 .date-picker {
@@ -457,8 +484,11 @@
 }
 
 .combo-box .list-cell,
+.combo-box-popup .list-view,
+.combo-box-popup .list-cell,
 .date-picker .text-field {
     -fx-text-fill: -text-main;
+    -fx-background-color: -surface;
 }
 
 .success-button,
@@ -1086,23 +1116,23 @@
     -fx-border-radius: 6;
 }
 .salary-card-gross {
-    -fx-background-color: #eff6ff;
+    -fx-background-color: -salary-gross-bg;
     -fx-padding: 16;
     -fx-background-radius: 10;
-    -fx-border-color: #bfdbfe;
+    -fx-border-color: -salary-gross-border;
     -fx-border-radius: 10;
 }
 .salary-card-net {
-    -fx-background-color: #f0fdf4;
+    -fx-background-color: -salary-net-bg;
     -fx-padding: 16;
     -fx-background-radius: 10;
-    -fx-border-color: #bbf7d0;
+    -fx-border-color: -salary-net-border;
     -fx-border-radius: 10;
 }
-.salary-card-label { -fx-font-size: 12px; -fx-text-fill: #64748b; }
-.salary-card-value { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e40af; }
-.salary-card-value-green { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #16a34a; }
-.info-card { -fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; }
-.info-card-danger { -fx-background-color: #fff1f2; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: #fecdd3; -fx-border-radius: 8; }
-.info-card-label { -fx-font-size: 11px; -fx-text-fill: #94a3b8; }
-.info-card-value { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b; }
+.salary-card-label { -fx-font-size: 12px; -fx-text-fill: -text-muted; }
+.salary-card-value { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: -value-blue; }
+.salary-card-value-green { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: -value-green; }
+.info-card { -fx-background-color: -info-card-bg; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: -border; -fx-border-radius: 8; }
+.info-card-danger { -fx-background-color: -info-card-danger-bg; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: -info-card-danger-border; -fx-border-radius: 8; }
+.info-card-label { -fx-font-size: 11px; -fx-text-fill: -text-muted; }
+.info-card-value { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -text-main; }

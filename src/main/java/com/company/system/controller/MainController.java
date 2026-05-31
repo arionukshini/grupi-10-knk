@@ -8,10 +8,13 @@ import com.company.system.utils.DialogUtils;
 import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -579,8 +582,40 @@ public class MainController {
     public void setContent(Node node) {
         KeyboardNavigation.install(node);
         updateNotificationButton();
-        contentArea.getChildren().setAll(node);
-        KeyboardNavigation.focusFirst(node);
+        Node currentContent = contentArea.getChildren().isEmpty() ? null : contentArea.getChildren().get(0);
+
+        if (currentContent == null) {
+            contentArea.getChildren().setAll(node);
+            playContentIn(node);
+            KeyboardNavigation.focusFirst(node);
+            return;
+        }
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(70), currentContent);
+        fadeOut.setToValue(0);
+        fadeOut.setInterpolator(Interpolator.EASE_OUT);
+        fadeOut.setOnFinished(event -> {
+            contentArea.getChildren().setAll(node);
+            playContentIn(node);
+            KeyboardNavigation.focusFirst(node);
+        });
+        fadeOut.play();
+    }
+
+    private void playContentIn(Node node) {
+        node.setOpacity(0);
+        node.setTranslateY(8);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(130), node);
+        fadeIn.setToValue(1);
+
+        TranslateTransition slideIn = new TranslateTransition(Duration.millis(130), node);
+        slideIn.setFromY(8);
+        slideIn.setToY(0);
+
+        ParallelTransition transition = new ParallelTransition(fadeIn, slideIn);
+        transition.setInterpolator(Interpolator.EASE_OUT);
+        transition.play();
     }
     public void setStatus(String message) { statusLabel.setText(message); }
 

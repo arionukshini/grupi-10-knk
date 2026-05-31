@@ -42,7 +42,8 @@ public class UserService {
                                 getEmployeeName(employeeId, conn),
                                 storedHash,
                                 rs.getString("role"),
-                                rs.getTimestamp("created_at")
+                                rs.getTimestamp("created_at"),
+                                rs.getBoolean("must_change_password")
                         );
                     }
 
@@ -93,7 +94,8 @@ public class UserService {
                        u.username,
                        u.password_hash,
                        u.role,
-                       u.created_at
+                       u.created_at,
+                       u.must_change_password
                 FROM users u
                 LEFT JOIN employees e ON u.employee_id = e.id
                 ORDER BY u.id
@@ -118,7 +120,8 @@ public class UserService {
                             rs.getString("employee_name"),
                             rs.getString("password_hash"),
                             rs.getString("role"),
-                            rs.getTimestamp("created_at")
+                            rs.getTimestamp("created_at"),
+                            rs.getBoolean("must_change_password")
                     ));
                 }
             }
@@ -171,7 +174,7 @@ public class UserService {
 
     public static boolean resetPassword(String username, String newPassword) {
 
-        String sql = "UPDATE users SET password_hash = ? WHERE username = ?";
+        String sql = "UPDATE users SET password_hash = ?, must_change_password = FALSE WHERE username = ?";
 
         try (Connection conn = DBConnection.connect()) {
 
@@ -238,6 +241,25 @@ public class UserService {
         }
 
         return false;
+    }
+
+    public static boolean changePasswordAndClearRequiredFlag(int userId, String newPassword) {
+        String sql = "UPDATE users SET password_hash = ?, must_change_password = FALSE WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null || userId <= 0 || newPassword == null || newPassword.isBlank()) {
+                return false;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, PasswordUtils.hashPassword(newPassword));
+                stmt.setInt(2, userId);
+                return stmt.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static String getPasswordHashByUsernameAndEmail(String username, String email) {
