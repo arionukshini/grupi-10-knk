@@ -1,102 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.company.system.controller.MySalaryController"
-            fitToWidth="true">
+            fitToWidth="true"
+            styleClass="module-scroll">
 
     <content>
-        <VBox spacing="18" style="-fx-padding: 24; -fx-background-color: #f8fafc;">
+        <VBox spacing="20" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
 
             <VBox spacing="4">
-                <Label text="My Salary" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
-                <Label fx:id="employeeNameLabel" text="-" style="-fx-text-fill: #64748b;"/>
+                <Label text="My Salary" styleClass="page-title"/>
+                <Label fx:id="employeeNameLabel" text="-" styleClass="page-subtitle"/>
             </VBox>
 
-            <HBox spacing="14">
-                <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 16; -fx-background-radius: 8;">
-                    <Label text="Paga bruto"/>
-                    <Label fx:id="grossSalaryLabel" text="-" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
-                </VBox>
+            <HBox spacing="20" alignment="TOP_LEFT">
 
-                <VBox spacing="6" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 16; -fx-background-radius: 8;">
-                    <Label text="Paga neto"/>
-                    <Label fx:id="netSalaryLabel" text="-" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #16a34a;"/>
-                </VBox>
-            </HBox>
+                <!-- E MAJTA: SECTIONS -->
+                <VBox spacing="16" HBox.hgrow="ALWAYS">
 
-            <GridPane hgap="14" vgap="14">
-                <columnConstraints>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                </columnConstraints>
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Paga mujore" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-gross">
+                                <Label text="Paga Bruto" styleClass="salary-card-label"/>
+                                <Label fx:id="grossSalaryLabel" text="-" styleClass="salary-card-value"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-net">
+                                <Label text="Paga Neto" styleClass="salary-card-label"/>
+                                <Label fx:id="netSalaryLabel" text="-" styleClass="salary-card-value-green"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
 
-                <VBox spacing="5" GridPane.columnIndex="0" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Bonus"/>
-                    <Label fx:id="bonusLabel" text="-"/>
-                </VBox>
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Bonuset dhe zbritjet" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Bonus" styleClass="info-card-label"/>
+                                <Label fx:id="bonusLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card-danger">
+                                <Label text="Zbritje" styleClass="info-card-label"/>
+                                <Label fx:id="deductionsLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
 
-                <VBox spacing="5" GridPane.columnIndex="1" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Zbritje"/>
-                    <Label fx:id="deductionsLabel" text="-"/>
-                </VBox>
-
-                <VBox spacing="5" GridPane.columnIndex="2" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Ditë pune"/>
-                    <Label fx:id="workedDaysLabel" text="-"/>
-                </VBox>
-
-                <VBox spacing="5" GridPane.columnIndex="3" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Ditë pushimi"/>
-                    <Label fx:id="vacationDaysLabel" text="-"/>
-                </VBox>
-            </GridPane>
-
-            <GridPane hgap="14" vgap="14">
-                <columnConstraints>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                </columnConstraints>
-
-                <VBox spacing="5" GridPane.columnIndex="0" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Orë pune"/>
-                    <Label fx:id="workHoursLabel" text="-"/>
-                </VBox>
-
-                <VBox spacing="5" GridPane.columnIndex="1" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Orë shtesë"/>
-                    <Label fx:id="overtimeHoursLabel" text="-"/>
-                </VBox>
-
-                <VBox spacing="5" GridPane.columnIndex="2" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Ditorja"/>
-                    <Label fx:id="dailyRateLabel" text="-"/>
-                </VBox>
-
-                <VBox spacing="5" GridPane.columnIndex="3" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8;">
-                    <Label text="Pagesa jashtë orarit"/>
-                    <Label fx:id="overtimePayLabel" text="-"/>
-                </VBox>
-            </GridPane>
-
-            <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 16; -fx-background-radius: 8;">
-                <Label text="Llogaritje sipas ditëve të punës" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <TextField fx:id="workedDaysInput" promptText="Shkruaj ditët e punës"/>
-                <Label fx:id="calculatedSalaryLabel" text="-" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-            </VBox>
-
-            <VBox spacing="10">
-                <Label text="Historiku i pagave" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                <VBox fx:id="historyContainer" spacing="10"/>
-            </VBox>
-
-        </VBox>
-    </content>
-</ScrollPane>
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Ditët e punës" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Ditë pune" styleClass="info-card-label"/>
+                                <Label fx:id="workedDaysLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Ditë pushimi" styleClass="info-card-label"/>
+                                <Label fx:id="vacationDaysLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Orë pune" styleClass="info-card-label"/>
+                                <Label fx:id="workHoursLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
