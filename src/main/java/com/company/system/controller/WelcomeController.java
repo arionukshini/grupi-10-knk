@@ -5,6 +5,7 @@ import com.company.system.i18n.LanguageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 
 public class WelcomeController {
 
@@ -48,44 +49,19 @@ public class WelcomeController {
             -fx-cursor: hand;
             """;
 
-    @FXML
-    private Label appTitleLabel;
-
-    @FXML
-    private Label headerSubtitleLabel;
-
-    @FXML
-    private Label welcomeLabel;
-
-    @FXML
-    private Label subtitleLabel;
-
-    @FXML
-    private Label employeesCardTitle;
-
-    @FXML
-    private Label employeesCardText;
-
-    @FXML
-    private Label contractsCardTitle;
-
-    @FXML
-    private Label contractsCardText;
-
-    @FXML
-    private Label salariesCardTitle;
-
-    @FXML
-    private Label salariesCardText;
-
-    @FXML
-    private Button accessButton;
-
-    @FXML
-    private Button albanianButton;
-
-    @FXML
-    private Button englishButton;
+    @FXML private Label appTitleLabel;
+    @FXML private Label headerSubtitleLabel;
+    @FXML private Label welcomeLabel;
+    @FXML private Label subtitleLabel;
+    @FXML private Label employeesCardTitle;
+    @FXML private Label employeesCardText;
+    @FXML private Label contractsCardTitle;
+    @FXML private Label contractsCardText;
+    @FXML private Label salariesCardTitle;
+    @FXML private Label salariesCardText;
+    @FXML private Button accessButton;
+    @FXML private Button albanianButton;
+    @FXML private Button englishButton;
 
     @FXML
     public void initialize() {
@@ -97,20 +73,15 @@ public class WelcomeController {
     private void updateTexts() {
         appTitleLabel.setText(LanguageManager.get("app.title"));
         welcomeLabel.setText(LanguageManager.get("app.welcome"));
-        accessButton.setText(LanguageManager.get("login.button"));
-
+        accessButton.setText(LanguageManager.get("welcome.enter"));
         headerSubtitleLabel.setText(LanguageManager.get("welcome.headerSubtitle"));
         subtitleLabel.setText(LanguageManager.get("welcome.subtitle"));
-
         employeesCardTitle.setText(LanguageManager.get("menu.employees"));
         employeesCardText.setText(LanguageManager.get("welcome.employeesCard"));
-
         contractsCardTitle.setText(LanguageManager.get("menu.contracts"));
         contractsCardText.setText(LanguageManager.get("welcome.contractsCard"));
-
         salariesCardTitle.setText(LanguageManager.get("menu.salaries"));
         salariesCardText.setText(LanguageManager.get("welcome.salariesCard"));
-
         albanianButton.setText("SQ");
         englishButton.setText("EN");
     }
@@ -120,6 +91,28 @@ public class WelcomeController {
         accessButton.setAccessibleText("Open login page");
         albanianButton.setAccessibleText("Switch language to Albanian");
         englishButton.setAccessibleText("Switch language to English");
+
+        // Tab order: SQ -> EN -> Enter (ciklik)
+        albanianButton.setFocusTraversable(true);
+        englishButton.setFocusTraversable(true);
+        accessButton.setFocusTraversable(true);
+
+        // Enter ose Space aktivizon butonat kur jane ne fokus
+        albanianButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                albanianButton.fire();
+            }
+        });
+        englishButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                englishButton.fire();
+            }
+        });
+        accessButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                accessButton.fire();
+            }
+        });
     }
 
     private void setupHoverEffects() {
@@ -127,20 +120,15 @@ public class WelcomeController {
         englishButton.setStyle(LANGUAGE_BUTTON_STYLE);
         accessButton.setStyle(ACCESS_BUTTON_STYLE);
 
-        albanianButton.setOnMouseEntered(event -> albanianButton.setStyle(LANGUAGE_BUTTON_HOVER_STYLE));
-        albanianButton.setOnMouseExited(event -> albanianButton.setStyle(LANGUAGE_BUTTON_STYLE));
-
-        englishButton.setOnMouseEntered(event -> englishButton.setStyle(LANGUAGE_BUTTON_HOVER_STYLE));
-        englishButton.setOnMouseExited(event -> englishButton.setStyle(LANGUAGE_BUTTON_STYLE));
-
-        accessButton.setOnMouseEntered(event -> accessButton.setStyle(ACCESS_BUTTON_HOVER_STYLE));
-        accessButton.setOnMouseExited(event -> accessButton.setStyle(ACCESS_BUTTON_STYLE));
+        albanianButton.setOnMouseEntered(e -> albanianButton.setStyle(LANGUAGE_BUTTON_HOVER_STYLE));
+        albanianButton.setOnMouseExited(e -> albanianButton.setStyle(LANGUAGE_BUTTON_STYLE));
+        englishButton.setOnMouseEntered(e -> englishButton.setStyle(LANGUAGE_BUTTON_HOVER_STYLE));
+        englishButton.setOnMouseExited(e -> englishButton.setStyle(LANGUAGE_BUTTON_STYLE));
+        accessButton.setOnMouseEntered(e -> accessButton.setStyle(ACCESS_BUTTON_HOVER_STYLE));
+        accessButton.setOnMouseExited(e -> accessButton.setStyle(ACCESS_BUTTON_STYLE));
     }
 
-    @FXML
-    private void openLogin() {
-        MainApp.showLogin();
-    }
+    @FXML private void openLogin() { MainApp.showLogin(); }
 
     @FXML
     private void switchToAlbanian() {

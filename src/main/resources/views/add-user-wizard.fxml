@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.company.system.controller.AddUserWizardController"
+      spacing="0"
+      prefWidth="700"
+      styleClass="wizard-root">
+
+    <!-- Top bar  -->
+    <HBox styleClass="wizard-topbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
+        <Label text="Shto Përdorues të Ri" styleClass="wizard-title" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="exitBtn" text="✕" styleClass="wizard-exit-btn" onAction="#onExit"/>
+    </HBox>
+
+    <!-- Step indicators -->
+    <HBox styleClass="wizard-steps-bar" alignment="CENTER" spacing="0">
+        <padding><Insets top="20" right="30" bottom="20" left="30"/></padding>
+
+        <!-- Step 1 -->
+        <VBox alignment="CENTER" spacing="6">
+            <StackPane fx:id="step1Indicator" styleClass="step-circle step-active" minWidth="36" minHeight="36">
+                <Label text="1" styleClass="step-number"/>
+            </StackPane>
+            <Label fx:id="step1Label" text="Personale" styleClass="step-label step-label-active"/>
+        </VBox>
+
+        <Region fx:id="stepLine1" styleClass="step-line step-line-pending" HBox.hgrow="ALWAYS" maxHeight="3" minHeight="3"/>
+
+        <!-- Step 2 -->
+        <VBox alignment="CENTER" spacing="6">
+            <StackPane fx:id="step2Indicator" styleClass="step-circle step-pending" minWidth="36" minHeight="36">
+                <Label text="2" styleClass="step-number"/>
+            </StackPane>
+            <Label fx:id="step2Label" text="Kontrata" styleClass="step-label step-label-pending"/>
+        </VBox>
+
+        <Region fx:id="stepLine2" styleClass="step-line step-line-pending" HBox.hgrow="ALWAYS" maxHeight="3" minHeight="3"/>
+
+        <!-- Step 3 -->
+        <VBox alignment="CENTER" spacing="6">
+            <StackPane fx:id="step3Indicator" styleClass="step-circle step-pending" minWidth="36" minHeight="36">
+                <Label text="3" styleClass="step-number"/>
+            </StackPane>
+            <Label fx:id="step3Label" text="Paga" styleClass="step-label step-label-pending"/>
+        </VBox>
+
+        <Region fx:id="stepLine3" styleClass="step-line step-line-pending" HBox.hgrow="ALWAYS" maxHeight="3" minHeight="3"/>
+
+        <!-- Step 4 -->
+        <VBox alignment="CENTER" spacing="6">
+            <StackPane fx:id="step4Indicator" styleClass="step-circle step-pending" minWidth="36" minHeight="36">
+                <Label text="4" styleClass="step-number"/>
+            </StackPane>
+            <Label fx:id="step4Label" text="Llogaria" styleClass="step-label step-label-pending"/>
+        </VBox>
+    </HBox>
+
+    <!-- Content area -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="wizard-scroll">
+        <content>
+            <VBox styleClass="wizard-content">
+                <padding><Insets top="24" right="32" bottom="24" left="32"/></padding>
+
+                <!-- Personal Info -->
+                <VBox fx:id="step1Pane" spacing="16">
+                    <Label text="Hapi 1 — Informacionet Personale" styleClass="step-section-title"/>
+
+                    <GridPane hgap="16" vgap="14">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Emri *" styleClass="field-label"/>
+                            <TextField fx:id="firstNameField" promptText="p.sh. Arjanita" styleClass="wizard-field"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Mbiemri *" styleClass="field-label"/>
+                            <TextField fx:id="lastNameField" promptText="p.sh. Lestrani" styleClass="wizard-field"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                            <Label text="Email *" styleClass="field-label"/>
+                            <TextField fx:id="emailField" promptText="arjanita.lestrani@company.com" styleClass="wizard-field"/>
+                            <Label fx:id="emailHintLabel" text="" styleClass="field-hint"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <Label text="Telefoni" styleClass="field-label"/>
+                            <TextField fx:id="phoneField" promptText="+383 44 000 000" styleClass="wizard-field"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <Label text="Pozita" styleClass="field-label"/>
+                            <TextField fx:id="positionField" promptText="p.sh. Developer" styleClass="wizard-field"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                            <Label text="Departamenti *" styleClass="field-label"/>
+                            <ComboBox fx:id="departmentCombo" maxWidth="Infinity" styleClass="wizard-combo"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <Label text="Statusi" styleClass="field-label"/>
+                            <ComboBox fx:id="statusCombo" maxWidth="Infinity" styleClass="wizard-combo"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <!-- Contract Info -->
+                <VBox fx:id="step2Pane" spacing="16" visible="false" managed="false">
+                    <Label text="Hapi 2 — Informacionet e Kontratës" styleClass="step-section-title"/>
+
+                    <GridPane hgap="16" vgap="14">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Lloji i kontratës *" styleClass="field-label"/>
+                            <ComboBox fx:id="contractTypeCombo" maxWidth="Infinity" styleClass="wizard-combo"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Statusi i kontratës" styleClass="field-label"/>
+                            <ComboBox fx:id="contractStatusCombo" maxWidth="Infinity" styleClass="wizard-combo"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="Data e fillimit *" styleClass="field-label"/>
+                            <DatePicker fx:id="startDatePicker" maxWidth="Infinity" styleClass="wizard-datepicker"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Data e përfundimit" styleClass="field-label"/>
+                            <DatePicker fx:id="endDatePicker" maxWidth="Infinity" styleClass="wizard-datepicker"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <!--  Salary Info -->
+                <VBox fx:id="step3Pane" spacing="16" visible="false" managed="false">
+                    <Label text="Hapi 3 — Informacionet e Pagës" styleClass="step-section-title"/>
+
+                    <GridPane hgap="16" vgap="14">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Paga bruto (€) *" styleClass="field-label"/>
+                            <TextField fx:id="grossSalaryField" promptText="p.sh. 800" styleClass="wizard-field"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Bonusi (€)" styleClass="field-label"/>
+                            <TextField fx:id="bonusField" promptText="0" styleClass="wizard-field"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="Zbritjet (€)" styleClass="field-label"/>
+                            <TextField fx:id="deductionsField" promptText="0" styleClass="wizard-field"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Orët e punës" styleClass="field-label"/>
+                            <TextField fx:id="workHoursField" promptText="160" styleClass="wizard-field"/>
+                        </VBox>
+
+                        <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <Label text="Ditët e pushimit" styleClass="field-label"/>
+                            <TextField fx:id="vacationDaysField" promptText="0" styleClass="wizard-field"/>
+                        </VBox>
+                        <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <Label text="Orët shtesë" styleClass="field-label"/>
+                            <TextField fx:id="overtimeHoursField" promptText="0" styleClass="wizard-field"/>
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Auto-calculated summary -->
+                    <VBox styleClass="salary-calc-box" spacing="10">
+                        <padding><Insets top="14" right="16" bottom="14" left="16"/></padding>
+                        <Label text="Llogaritjet automatike" styleClass="calc-title"/>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Pagesa ditore:" styleClass="calc-label" minWidth="160"/>
+                            <Label fx:id="dailyRateLabel" text="0.00 €" styleClass="calc-value"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Pagesa për orë shtesë:" styleClass="calc-label" minWidth="160"/>
+                            <Label fx:id="overtimePayLabel" text="0.00 €" styleClass="calc-value"/>
+                        </HBox>
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Paga neto:" styleClass="calc-label" minWidth="160"/>
+                            <Label fx:id="netSalaryLabel" text="0.00 €" styleClass="calc-value-net"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Account Info  -->
+                <VBox fx:id="step4Pane" spacing="16" visible="false" managed="false">
+                    <Label text="Hapi 4 — Informacionet e Llogarisë" styleClass="step-section-title"/>
+
+                    <VBox styleClass="account-info-box" spacing="14">
+                        <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+
+                        <VBox spacing="4">
+                            <Label text="Username (i ndryshueshëm)" styleClass="field-label"/>
+                            <TextField fx:id="usernameField" styleClass="wizard-field"/>
+                            <Label text="Gjenerohet automatikisht nga emri dhe mbiemri" styleClass="field-hint-muted"/>
+                        </VBox>
+
+                        <HBox spacing="16">
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Fjalëkalim i përkohshëm" styleClass="field-label"/>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label fx:id="tempPasswordLabel" styleClass="temp-password-label"/>
+                                    <Label text="(do të duhet të ndryshohet)" styleClass="field-hint-muted"/>
+                                </HBox>
+                            </VBox>
+                            <VBox spacing="4">
+                                <Label text="Roli" styleClass="field-label"/>
+                                <Label fx:id="roleLabel" text="USER" styleClass="role-badge"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="info-notice" spacing="4">
+                            <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
+                            <Label text="ℹ Informacion" styleClass="notice-title"/>
+                            <Label text="Fjalëkalimi ruhet i hash-uar. Fusha must_reset_password vendoset true automatikisht." styleClass="notice-text" wrapText="true"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </content>
+    </ScrollPane>
+
+    <!--  Bottom navigation -->
+    <HBox styleClass="wizard-footer" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="14" left="24"/></padding>
+        <Button fx:id="backBtn" text="← Prapa" styleClass="wizard-back-btn" onAction="#onBack"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="stepCounter" text="Hapi 1 nga 4" styleClass="step-counter-label"/>
+        <Button fx:id="nextBtn" text="Tjetër →" styleClass="wizard-next-btn" onAction="#onNext"/>
+    </HBox>
+
+</VBox>

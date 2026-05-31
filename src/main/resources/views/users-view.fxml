@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.UsersController"
+            fitToWidth="true"
+            pannable="true"
+            styleClass="module-scroll">
+    <content>
+        <VBox spacing="18" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- Title row -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label fx:id="titleLabel" text="Users" styleClass="page-title" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addUserBtn" text="+ Shto Përdorues"
+                        styleClass="btn-primary"
+                        onAction="#onAddUser"/>
+            </HBox>
+
+            <HBox spacing="18" maxWidth="1220">
+                <!-- Left: table + search -->
+                <VBox spacing="14" prefWidth="720" maxWidth="820" HBox.hgrow="ALWAYS">
+                    <VBox styleClass="content-card">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="searchField"
+                                       promptText="Search by user, employee or role"
+                                       prefWidth="360" HBox.hgrow="ALWAYS"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="editUserBtn" text="✎ Edito"
+                                    styleClass="btn-secondary"
+                                    onAction="#onEditUser"/>
+                            <Button fx:id="deleteUserBtn" text="✕ Fshi"
+                                    styleClass="btn-danger"
+                                    onAction="#onDeleteUser"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox styleClass="content-card">
+                        <TableView fx:id="usersTable" prefHeight="430">
+                            <columns>
+                                <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
+                                <TableColumn fx:id="usernameColumn" text="Username" prefWidth="150"/>
+                                <TableColumn fx:id="employeeColumn" text="Employee" prefWidth="190"/>
+                                <TableColumn fx:id="roleColumn" text="Role" prefWidth="110"/>
+                                <TableColumn fx:id="createdColumn" text="Created" prefWidth="160"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+
+                <!-- Right: details card -->
+                <VBox fx:id="detailsCard"
+                      spacing="14"
+                      alignment="TOP_CENTER"
+                      prefWidth="360"
+                      maxWidth="390"
+                      styleClass="profile-card">
+                    <StackPane fx:id="userIconBox"/>
+                    <Label fx:id="selectedTitleLabel" text="Select a user" styleClass="section-title"/>
+
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label fx:id="usernameDetailLabel" text="Username" styleClass="card-title"/>
+                        <Label fx:id="usernameValueLabel" text="-" styleClass="profile-detail"/>
+                    </VBox>
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label text="Employee ID" styleClass="card-title"/>
+                        <Label fx:id="employeeIdValueLabel" text="-" styleClass="profile-detail"/>
+                    </VBox>
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label fx:id="employeeDetailLabel" text="Employee" styleClass="card-title"/>
+                        <Label fx:id="employeeValueLabel" text="-" styleClass="profile-detail"/>
+                    </VBox>
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label fx:id="passwordHashDetailLabel" text="Password hash" styleClass="card-title"/>
+                        <Label fx:id="passwordHashValueLabel" text="-" wrapText="true" maxWidth="300" styleClass="profile-detail"/>
+                    </VBox>
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label fx:id="roleDetailLabel" text="Role" styleClass="card-title"/>
+                        <Label fx:id="roleValueLabel" text="-" styleClass="profile-detail"/>
+                    </VBox>
+                    <VBox spacing="4" maxWidth="Infinity">
+                        <Label fx:id="createdDetailLabel" text="Created" styleClass="card-title"/>
+                        <Label fx:id="createdValueLabel" text="-" styleClass="profile-detail"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>
