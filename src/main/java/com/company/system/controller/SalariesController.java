@@ -138,9 +138,6 @@ public class SalariesController {
     private DatePicker paymentDatePicker;
 
     @FXML
-    private Button calculateButton;
-
-    @FXML
     private Button saveButton;
 
     @FXML
@@ -237,7 +234,6 @@ public class SalariesController {
             previewNetTitleLabel.setText(LanguageManager.get("salaries.net"));
         }
 
-        calculateButton.setText(LanguageManager.get("salaries.calculate"));
         if (saveButton != null) {
             saveButton.setText(LanguageManager.get("salaries.save"));
         }
@@ -347,38 +343,23 @@ public class SalariesController {
     }
 
     @FXML
-    private void handleCalculateSalary() {
+    private void handleSaveSalary() {
+
+        Salary salaryToSave;
         try {
-            Salary salary = buildSalaryFromForm(0, false);
-
-            if (salary == null) return;
-
-            calculatedSalary = salary;
-            updatePreviewLabels(salary);
-
+            salaryToSave = buildSalaryFromForm(0, true);
+            if (salaryToSave == null) return;
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),
                     LanguageManager.get("salaries.invalid.input"));
-        }
-    }
-    @FXML
-    private void handleSaveSalary() {
-
-        if (calculatedSalary == null) {
-
-            showAlert(Alert.AlertType.WARNING,
-                    LanguageManager.get("message.warning.title"),
-                    LanguageManager.get("salaries.calculate.first"));
-
             return;
         }
 
-        boolean saved = SalaryService.addSalary(calculatedSalary);
+        boolean saved = SalaryService.addSalary(salaryToSave);
 
         if (saved) {
 
-            // 🔥 ADD HISTORY ENTRY ALSO
             loadSalaries();
             clearFields();
             calculatedSalary = null;

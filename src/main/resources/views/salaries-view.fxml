@@ -55,7 +55,6 @@
                 </GridPane>
 
                 <HBox spacing="10">
-                    <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary" styleClass="primary-button"/>
                     <Button fx:id="updateButton" text="Perditeso" onAction="#handleUpdateSalary" styleClass="primary-button"/>
                     <Button fx:id="payButton" text="Paguaj punetorin" onAction="#handlePayEmployee" styleClass="primary-button"/>
                     <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary" styleClass="danger-button"/>
