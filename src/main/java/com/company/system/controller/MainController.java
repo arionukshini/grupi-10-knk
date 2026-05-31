@@ -2,6 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
+import com.company.system.service.LeaveRequestService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
 import com.company.system.utils.PasswordUtils;
@@ -27,6 +28,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -71,6 +73,7 @@ public class MainController {
     private static final String ICON_LANGUAGE = "M4 4 H13 V7 H11 C10.7 8.4 10.12 9.69 9.25 10.83 C10 11.45 10.9 12.04 12 12.56 L11 14.3 C9.9 13.76 8.93 13.13 8.08 12.43 C7.08 13.25 5.83 14.08 4.3 14.9 L3.35 13.22 C4.73 12.52 5.85 11.82 6.74 11.12 C6.14 10.45 5.62 9.72 5.17 8.92 L6.88 8.05 C7.2 8.6 7.57 9.1 8 9.57 C8.55 8.82 8.94 7.97 9.18 7 H4 Z M15 10 H17 L21 20 H18.9 L18.1 18 H13.9 L13.1 20 H11 Z M14.58 16.2 H17.42 L16 12.55 Z";
     private static final String ICON_HELP = "M12 2 C6.48 2 2 6.48 2 12 C2 17.52 6.48 22 12 22 C17.52 22 22 17.52 22 12 C22 6.48 17.52 2 12 2 Z M11 18 H13 V16 H11 Z M12 6 C9.79 6 8 7.79 8 10 H10 C10 8.9 10.9 8 12 8 C13.1 8 14 8.9 14 10 C14 12 11 11.75 11 15 H13 C13 12.75 16 12.5 16 10 C16 7.79 14.21 6 12 6 Z";
     private static final String ICON_EXPORT = "M14 2 H6 C4.9 2 4 2.9 4 4 V20 C4 21.1 4.9 22 6 22 H18 C19.1 22 20 21.1 20 20 V8 Z M16 18 H8 V16 H16 Z M16 14 H8 V12 H16 Z M13 9 V3.5 L18.5 9 Z";
+    private static final String ICON_BELL = "M18 16 V11 C18 7.93 16.36 5.36 13.5 4.68 V4 C13.5 3.17 12.83 2.5 12 2.5 C11.17 2.5 10.5 3.17 10.5 4 V4.68 C7.64 5.36 6 7.93 6 11 V16 L4 18 V19 H20 V18 Z M10 20 C10.35 20.61 11.01 21 12 21 C12.99 21 13.65 20.61 14 20";
     private static final String ICON_EXIT = "M15 3 H5 C3.9 3 3 3.9 3 5 V19 C3 20.1 3.9 21 5 21 H15 M10 12 H21 M17 8 L21 12 L17 16";
     private static final String ICON_DELETE = "M3 6 H21 M8 6 V4 H16 V6 M6 6 L7 21 H17 L18 6 M10 10 V17 M14 10 V17";
     private static final String ICON_SUN = "M12 4 V2 M12 22 V20 M4.93 4.93 L3.52 3.52 M20.48 20.48 L19.07 19.07 M4 12 H2 M22 12 H20 M4.93 19.07 L3.52 20.48 M20.48 3.52 L19.07 4.93 M12 7 C9.24 7 7 9.24 7 12 C7 14.76 9.24 17 12 17 C14.76 17 17 14.76 17 12 C17 9.24 14.76 7 12 7 Z";
@@ -99,6 +102,7 @@ public class MainController {
     @FXML private Button usersButton;
     @FXML private Button exportButton;
     @FXML private Button profileButton;
+    @FXML private Button notificationButton;
     @FXML private Button languageButton;
     @FXML private Button themeButton;
     @FXML private Button helpFooterButton;
@@ -333,6 +337,7 @@ public class MainController {
         setIconOnlyButton(languageButton, ICON_LANGUAGE);
         setIconOnlyButton(helpFooterButton, ICON_HELP);
         setIconOnlyButton(themeButton2, ICON_SETTINGS);
+        updateNotificationButton();
         updateSidebarLabels();
         updateLoggedInUser();
 
@@ -349,6 +354,17 @@ public class MainController {
     private void updateThemeButton() {
         setIconOnlyButton(themeButton, darkMode ? ICON_SUN : ICON_MOON);
         setIconOnlyButton(themeButton2, darkMode ? ICON_SUN : ICON_MOON);
+    }
+
+    private void updateNotificationButton() {
+        int pendingCount = LeaveRequestService.getPendingCount();
+        notificationButton.setGraphic(createSidebarIconBox(ICON_BELL, FOOTER_ICON_SCALE));
+        notificationButton.setText(pendingCount > 0 ? String.valueOf(pendingCount) : "");
+        notificationButton.setContentDisplay(pendingCount > 0 ? ContentDisplay.LEFT : ContentDisplay.GRAPHIC_ONLY);
+        notificationButton.setGraphicTextGap(6);
+        notificationButton.setTooltip(new Tooltip(isAlbanian()
+                ? pendingCount + " kerkesa per pushime ne pritje"
+                : pendingCount + " pending leave requests"));
     }
 
     private void updateSidebarState() {
@@ -459,7 +475,7 @@ public class MainController {
 
     private void setActiveButton(Button activeButton) {
         List<Button> buttons = List.of(dashboardButton, employeesButton, contractsButton,
-                salariesButton, departmentsButton, usersButton, exportButton, profileButton);
+                salariesButton, departmentsButton, usersButton, exportButton, profileButton, notificationButton);
         for (Button button : buttons) button.getStyleClass().remove("active");
         if (!activeButton.getStyleClass().contains("active")) activeButton.getStyleClass().add("active");
         activeButton.requestFocus();
@@ -467,7 +483,7 @@ public class MainController {
 
     private void clearActiveButton() {
         List<Button> buttons = List.of(dashboardButton, employeesButton, contractsButton,
-                salariesButton, departmentsButton, usersButton, exportButton, profileButton);
+                salariesButton, departmentsButton, usersButton, exportButton, profileButton, notificationButton);
         for (Button button : buttons) button.getStyleClass().remove("active");
     }
 
@@ -483,6 +499,7 @@ public class MainController {
             case "departments" -> showDepartments();
             case "users" -> showUsers();
             case "exports" -> showExports();
+            case "leaveRequests" -> showLeaveRequests();
             case "help" -> showHelp();
             case "profile" -> showProfile();
             default -> { setContent(welcomeLabel); setStatus(LanguageManager.get("status.ready")); }
@@ -585,6 +602,7 @@ public class MainController {
             case "departments" -> showDepartments();
             case "users" -> showUsers();
             case "exports" -> showExports();
+            case "leaveRequests" -> showLeaveRequests();
             case "help" -> showHelp();
             case "profile" -> showProfile();
             default -> showDashboard();
@@ -721,6 +739,17 @@ public class MainController {
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("module-scroll");
         contentArea.getChildren().setAll(scroll);
+    }
+
+    @FXML
+    public void showLeaveRequests() {
+        recordNavigation("leaveRequests");
+        currentView = "leaveRequests";
+        setStatus(isAlbanian() ? "Kerkesat per pushime u hapen" : "Leave requests opened");
+        clearActiveButton();
+        updateNotificationButton();
+        loadView("/views/admin-leave-requests-view.fxml", notificationButton, "Failed to load leave requests.");
+        clearActiveButton();
     }
 
     private void handleExport(String type, String format, Label statusLabel, boolean sq) {

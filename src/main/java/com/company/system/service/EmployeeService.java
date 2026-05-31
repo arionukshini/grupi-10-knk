@@ -174,6 +174,7 @@ public class EmployeeService {
 
         String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
         String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
+        String deleteVacationRequestsSql = "DELETE FROM vacation_requests WHERE employee_id = ?";
         String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
 
         try (Connection conn = DBConnection.connect()) {
@@ -187,6 +188,7 @@ public class EmployeeService {
                     PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
                     PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
                     PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
+                    PreparedStatement vacationRequestsStmt = conn.prepareStatement(deleteVacationRequestsSql);
                     PreparedStatement employeeStmt = conn.prepareStatement(deleteEmployeeSql)
             ) {
                 historyStmt.setInt(1, employeeId);
@@ -198,6 +200,9 @@ public class EmployeeService {
 
                 contractsStmt.setInt(1, employeeId);
                 contractsStmt.executeUpdate();
+
+                vacationRequestsStmt.setInt(1, employeeId);
+                vacationRequestsStmt.executeUpdate();
 
                 employeeStmt.setInt(1, employeeId);
                 boolean deleted = employeeStmt.executeUpdate() > 0;
