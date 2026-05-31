@@ -73,14 +73,14 @@
 .notification-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-background-radius: 7;
-    -fx-border-radius: 7;
-    -fx-text-fill: #d9ecff;
-    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-min-width: 40;
+    -fx-min-width: 52;
     -fx-min-height: 38;
-    -fx-padding: 0 8 0 8;
+    -fx-padding: 0 10 0 10;
 }
 
 .notification-button .sidebar-icon-box {
@@ -90,19 +90,38 @@
 }
 
 .notification-button .sidebar-svg-icon {
-    -fx-stroke: #d9ecff;
+    -fx-stroke: white;
+    -fx-stroke-width: 2.4;
 }
 
 .notification-button:hover,
 .notification-button.active {
-    -fx-background-color: rgba(255, 255, 255, 0.16);
-    -fx-border-color: rgba(255, 255, 255, 0.18);
+    -fx-background-color: -side-active;
+    -fx-border-color: -side-active;
+    -fx-text-fill: #031b34;
+}
+
+.notification-button:hover .sidebar-svg-icon,
+.notification-button.active .sidebar-svg-icon {
+    -fx-stroke: #031b34;
 }
 
 .icon-button:hover,
 .footer-icon-button:hover,
 .footer-button:hover {
     -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.top-bar .notification-button:hover,
+.top-bar .notification-button.active {
+    -fx-background-color: -side-active;
+    -fx-border-color: -side-active;
+    -fx-text-fill: #031b34;
+}
+
+.top-bar .notification-button:hover .sidebar-svg-icon,
+.top-bar .notification-button.active .sidebar-svg-icon {
+    -fx-stroke: #031b34;
 }
 
 .sidebar {

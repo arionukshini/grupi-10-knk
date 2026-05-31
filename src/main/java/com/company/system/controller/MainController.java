@@ -362,8 +362,8 @@ public class MainController {
     private void updateNotificationButton() {
         int pendingCount = LeaveRequestService.getPendingCount();
         notificationButton.setGraphic(createSidebarIconBox(ICON_BELL, FOOTER_ICON_SCALE));
-        notificationButton.setText(pendingCount > 0 ? String.valueOf(pendingCount) : "");
-        notificationButton.setContentDisplay(pendingCount > 0 ? ContentDisplay.LEFT : ContentDisplay.GRAPHIC_ONLY);
+        notificationButton.setText(String.valueOf(pendingCount));
+        notificationButton.setContentDisplay(ContentDisplay.LEFT);
         notificationButton.setGraphicTextGap(6);
         notificationButton.setTooltip(new Tooltip(isAlbanian()
                 ? pendingCount + " kerkesa per pushime ne pritje"
