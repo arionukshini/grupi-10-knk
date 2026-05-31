@@ -513,43 +513,59 @@ public class SalariesController {
 
         clearPreviewLabels();
     }
-private Salary buildSalaryFromForm(int id, boolean requirePaymentDate) {
-    int employeeId = Integer.parseInt(employeeIdField.getText().trim());
-    double baseSalary = Double.parseDouble(baseSalaryField.getText().trim());
-    int workedDays = Integer.parseInt(workedDaysField.getText().trim());
-    int vacationDays = Integer.parseInt(vacationDaysField.getText().trim());
-    double workHours = Double.parseDouble(workHoursField.getText().trim());
-    double overtimeHours = Double.parseDouble(overtimeHoursField.getText().trim());
-    double bonus = Double.parseDouble(bonusField.getText().trim());
-    double deductions = Double.parseDouble(deductionsField.getText().trim());
+    private Salary buildSalaryFromForm(int id, boolean requirePaymentDate) {
+        int employeeId = parseInt(employeeIdField.getText());
+        double baseSalary = parseDouble(baseSalaryField.getText());
+        int workedDays = parseInt(workedDaysField.getText());
+        int vacationDays = parseInt(vacationDaysField.getText());
+        double workHours = parseDouble(workHoursField.getText());
+        double overtimeHours = parseDouble(overtimeHoursField.getText());
+        double bonus = parseDouble(bonusField.getText());
+        double deductions = parseDouble(deductionsField.getText());
 
-    LocalDate localDate = paymentDatePicker.getValue();
-    if (localDate == null) {
-        if (requirePaymentDate) {
-            showAlert(Alert.AlertType.ERROR,
-                    LanguageManager.get("message.error.title"),
-                    LanguageManager.get("salaries.paymentDate.required"));
-            return null;
+        LocalDate localDate = paymentDatePicker.getValue();
+        if (localDate == null) {
+            if (requirePaymentDate) {
+                showAlert(Alert.AlertType.ERROR,
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.paymentDate.required"));
+                return null;
+            }
+
+            localDate = LocalDate.now();
         }
 
-        localDate = LocalDate.now();
+        Date paymentDate = Date.valueOf(localDate);
+
+        return SalaryService.calculateSalary(
+                id,
+                employeeId,
+                baseSalary,
+                workedDays,
+                vacationDays,
+                workHours,
+                overtimeHours,
+                bonus,
+                deductions,
+                paymentDate
+        );
     }
 
-    Date paymentDate = Date.valueOf(localDate);
+    private int parseInt(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
 
-    return SalaryService.calculateSalary(
-            id,
-            employeeId,
-            baseSalary,
-            workedDays,
-            vacationDays,
-            workHours,
-            overtimeHours,
-            bonus,
-            deductions,
-            paymentDate
-    );
-}
+        return Integer.parseInt(value.trim());
+    }
+
+    private double parseDouble(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+
+        return Double.parseDouble(value.trim());
+    }
     private void showAlert(Alert.AlertType type, String title, String message) {
 
         Alert alert = new Alert(type);

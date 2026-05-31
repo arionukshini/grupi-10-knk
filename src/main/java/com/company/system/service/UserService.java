@@ -445,4 +445,24 @@ public class UserService {
 
             return null;
         }
+    public static int getEmployeeIdByUserId(int userId) {
+        String sql = "SELECT employee_id FROM users WHERE id = ?";
+
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("employee_id");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }
