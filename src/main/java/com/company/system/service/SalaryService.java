@@ -1,6 +1,9 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.DatabaseOperationException;
+import com.company.system.exceptions.InvalidPaymentException;
+import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Salary;
 
 import java.sql.*;
@@ -9,14 +12,18 @@ import java.util.List;
 
 public class SalaryService {
 
+    private static final double STANDARD_WORK_DAYS = 22.0;
+    private static final double STANDARD_WORK_HOURS = 8.0;
+
     public static List<Salary> getAllSalaries() {
 
         List<Salary> salaries = new ArrayList<>();
 
         String sql = """
-                SELECT *
-                FROM salaries
-                ORDER BY payment_date DESC
+                SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+                FROM salaries s
+                JOIN employees e ON s.employee_id = e.id
+                ORDER BY s.payment_date DESC
                 """;
 
         try (
@@ -30,9 +37,11 @@ public class SalaryService {
                 salaries.add(new Salary(
                         rs.getInt("id"),
                         rs.getInt("employee_id"),
+                        rs.getString("employee_name"),
                         rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),
+                        rs.getInt("worked_days"),
                         rs.getInt("vacation_days"),
                         rs.getDouble("work_hours"),
                         rs.getDouble("overtime_hours"),
@@ -49,7 +58,47 @@ public class SalaryService {
 
         return salaries;
     }
+    public static Salary getLatestSalaryByEmployeeId(int employeeId) {
+        String sql = """
+            SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
+            FROM salaries s
+            JOIN employees e ON s.employee_id = e.id
+            WHERE s.employee_id = ?
+            ORDER BY s.payment_date DESC, s.id DESC
+            LIMIT 1
+            """;
 
+        try (Connection conn = DBConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, employeeId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Salary(
+                            rs.getInt("id"),
+                            rs.getInt("employee_id"),
+                            rs.getString("employee_name"),
+                            rs.getDouble("gross_salary"),
+                            rs.getDouble("bonus"),
+                            rs.getDouble("deductions"),
+                            rs.getInt("worked_days"),
+                            rs.getInt("vacation_days"),
+                            rs.getDouble("work_hours"),
+                            rs.getDouble("overtime_hours"),
+                            rs.getDouble("daily_rate"),
+                            rs.getDouble("overtime_pay"),
+                            rs.getDouble("net_salary"),
+                            rs.getDate("payment_date")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     public static boolean addSalary(Salary salary) {
 
         String sql = """
@@ -59,6 +108,7 @@ public class SalaryService {
                     gross_salary,
                     bonus,
                     deductions,
+                    worked_days,
                     vacation_days,
                     work_hours,
                     overtime_hours,
@@ -67,7 +117,7 @@ public class SalaryService {
                     net_salary,
                     payment_date
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = DBConnection.connect();
@@ -77,33 +127,22 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getVacationDays());
-            stmt.setDouble(6, salary.getWorkHours());
-            stmt.setDouble(7, salary.getOvertimeHours());
-            stmt.setDouble(8, salary.getDailyRate());
-            stmt.setDouble(9, salary.getOvertimePay());
-            stmt.setDouble(10, salary.getNetSalary());
-            stmt.setDate(11, salary.getPaymentDate());
+            stmt.setInt(5, salary.getWorkedDays());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDouble(11, salary.getNetSalary());
+            stmt.setDate(12, salary.getPaymentDate());
 
             int affected = stmt.executeUpdate();
 
-            if (affected > 0) {
-
-                ResultSet keys = stmt.getGeneratedKeys();
-                if (keys.next()) {
-                    int salaryId = keys.getInt(1);
-
-                    insertHistory(conn, salary, salaryId);
-                }
-
-                return true;
-            }
+            return affected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.salary.save.database", e);
         }
-
-        return false;
     }
 
     public static boolean updateSalary(Salary salary) {
@@ -115,6 +154,7 @@ public class SalaryService {
                     gross_salary = ?,
                     bonus = ?,
                     deductions = ?,
+                    worked_days = ?,
                     vacation_days = ?,
                     work_hours = ?,
                     overtime_hours = ?,
@@ -134,27 +174,26 @@ public class SalaryService {
             stmt.setDouble(2, salary.getGrossSalary());
             stmt.setDouble(3, salary.getBonus());
             stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getVacationDays());
-            stmt.setDouble(6, salary.getWorkHours());
-            stmt.setDouble(7, salary.getOvertimeHours());
-            stmt.setDouble(8, salary.getDailyRate());
-            stmt.setDouble(9, salary.getOvertimePay());
-            stmt.setDouble(10, salary.getNetSalary());
-            stmt.setDate(11, salary.getPaymentDate());
-            stmt.setInt(12, salary.getId());
+            stmt.setInt(5, salary.getWorkedDays());
+            stmt.setInt(6, salary.getVacationDays());
+            stmt.setDouble(7, salary.getWorkHours());
+            stmt.setDouble(8, salary.getOvertimeHours());
+            stmt.setDouble(9, salary.getDailyRate());
+            stmt.setDouble(10, salary.getOvertimePay());
+            stmt.setDouble(11, salary.getNetSalary());
+            stmt.setDate(12, salary.getPaymentDate());
+            stmt.setInt(13, salary.getId());
 
             int updated = stmt.executeUpdate();
-
-            if (updated > 0) {
-                insertHistory(conn, salary, salary.getId());
-                return true;
+            if (updated == 0) {
+                throw new DatabaseOperationException("exception.salary.update.notFound");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return true;
 
-        return false;
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("exception.salary.update.database", e);
+        }
     }
 
     public static boolean deleteSalary(int salaryId) {
@@ -193,14 +232,31 @@ public class SalaryService {
             double deductions,
             Date paymentDate
     ) {
+        validatePaymentInput(
+                employeeId,
+                monthlySalary,
+                workedDays,
+                vacationDays,
+                workHours,
+                overtimeHours,
+                bonus,
+                deductions,
+                paymentDate
+        );
 
-        double dailyRate = monthlySalary / 22;
+        double dailyRate = monthlySalary / STANDARD_WORK_DAYS;
 
-        double overtimePay = overtimeHours * (dailyRate / 8) * 1.5;
+        int paidDays = Math.max(0, Math.min((workedDays + vacationDays), (int) STANDARD_WORK_DAYS));
+        double basePay = dailyRate * paidDays;
+        double overtimePay = overtimeHours * (dailyRate / STANDARD_WORK_HOURS) * 1.5;
 
-        double grossSalary = monthlySalary + overtimePay;
+        double grossSalary = basePay + overtimePay;
 
         double netSalary = grossSalary + bonus - deductions;
+
+        if (netSalary < 0) {
+            throw new InvalidPaymentException("exception.payment.netNegative");
+        }
 
         return new Salary(
                 id,
@@ -208,6 +264,7 @@ public class SalaryService {
                 grossSalary,
                 bonus,
                 deductions,
+                workedDays,
                 vacationDays,
                 workHours,
                 overtimeHours,
@@ -218,7 +275,7 @@ public class SalaryService {
         );
     }
 
-    public static void addSalaryHistory(Salary salary) {
+    public static boolean addSalaryHistory(Salary salary) {
 
         String sql = """
                 INSERT INTO salary_history
@@ -245,10 +302,55 @@ public class SalaryService {
             stmt.setDouble(6, salary.getNetSalary());
             stmt.setDate(7, salary.getPaymentDate());
 
-            stmt.executeUpdate();
+            int inserted = stmt.executeUpdate();
+            if (inserted == 0) {
+                throw new DatabaseOperationException("exception.payment.history.notInserted");
+            }
+
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.payment.history.database", e);
+        }
+    }
+
+    private static void validatePaymentInput(
+            int employeeId,
+            double monthlySalary,
+            int workedDays,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double bonus,
+            double deductions,
+            Date paymentDate
+    ) {
+        if (employeeId <= 0) {
+            throw new InvalidPaymentException("exception.payment.employeePositive");
+        }
+        if (monthlySalary <= 0) {
+            throw new InvalidSalaryException(monthlySalary, "salaries.baseSalary");
+        }
+        if (workedDays < 0 || workedDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.workedDaysRange");
+        }
+        if (vacationDays < 0 || vacationDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.vacationDaysRange");
+        }
+        if (workedDays + vacationDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.totalDaysRange");
+        }
+        if (workHours < 0 || overtimeHours < 0) {
+            throw new InvalidPaymentException("exception.payment.hoursNegative");
+        }
+        if (bonus < 0) {
+            throw new InvalidSalaryException(bonus, "salaries.bonus");
+        }
+        if (deductions < 0) {
+            throw new InvalidSalaryException(deductions, "salaries.deductions");
+        }
+        if (paymentDate == null) {
+            throw new InvalidPaymentException("exception.payment.dateRequired");
         }
     }
 
@@ -278,6 +380,7 @@ public class SalaryService {
                         rs.getDouble("gross_salary"),
                         rs.getDouble("bonus"),
                         rs.getDouble("deductions"),
+                        0,
                         0,
                         0,
                         0,

@@ -18,17 +18,19 @@
             </padding>
 
             <VBox spacing="4">
-                <Label text="Pagat" styleClass="page-title"/>
-                <Label text="Menaxhoni pagat dhe historikun e pagesave te punetoreve." styleClass="page-subtitle"/>
+                <Label fx:id="titleLabel" text="Pagat" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="Menaxhoni pagat dhe historikun e pagesave te punetoreve." styleClass="page-subtitle"/>
             </VBox>
 
             <TableView fx:id="salariesTable" prefHeight="280">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
-                    <TableColumn fx:id="employeeColumn" text="Punetori" prefWidth="90"/>
+                    <TableColumn fx:id="employeeColumn" text="Punetori ID" prefWidth="90"/>
+                    <TableColumn fx:id="employeeNameColumn" text="Punetori" prefWidth="150"/>
                     <TableColumn fx:id="grossColumn" text="Bruto" prefWidth="110"/>
                     <TableColumn fx:id="bonusColumn" text="Bonusi" prefWidth="100"/>
                     <TableColumn fx:id="deductionsColumn" text="Zbritje" prefWidth="100"/>
+                    <TableColumn fx:id="workedDaysColumn" text="Dite Pune" prefWidth="95"/>
                     <TableColumn fx:id="vacationColumn" text="Pushime" prefWidth="90"/>
                     <TableColumn fx:id="workHoursColumn" text="Ore Pune" prefWidth="100"/>
                     <TableColumn fx:id="overtimeColumn" text="Jasht Orari" prefWidth="110"/>
@@ -38,7 +40,7 @@
             </TableView>
 
             <VBox spacing="14" styleClass="content-card">
-                <Label text="Forma e pageses" styleClass="section-title"/>
+                <Label fx:id="formTitleLabel" text="Forma e pageses" styleClass="section-title"/>
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
@@ -53,16 +55,27 @@
                 </GridPane>
 
                 <HBox spacing="10">
-                    <Button fx:id="calculateButton" text="Kalkulo" onAction="#handleCalculateSalary" styleClass="primary-button"/>
-                    <Button fx:id="saveButton" text="Ruaj" onAction="#handleSaveSalary" styleClass="success-button"/>
-                    <Button text="Perditeso" onAction="#handleUpdateSalary" styleClass="primary-button"/>
+                    <Button fx:id="updateButton" text="Perditeso" onAction="#handleUpdateSalary" styleClass="primary-button"/>
+                    <Button fx:id="payButton" text="Paguaj punetorin" onAction="#handlePayEmployee" styleClass="primary-button"/>
                     <Button fx:id="deleteButton" text="Fshi" onAction="#handleDeleteSalary" styleClass="danger-button"/>
-                    <Button text="Pastro" onAction="#clearFields" styleClass="secondary-button"/>
+                    <Button fx:id="clearButton" text="Pastro" onAction="#clearFields" styleClass="secondary-button"/>
                 </HBox>
             </VBox>
-
+            <VBox spacing="8" styleClass="content-card">
+                <Label fx:id="previewTitleLabel" text="Pamja e llogaritjes" styleClass="section-title"/>
+                <HBox spacing="28">
+                    <VBox spacing="4">
+                        <Label fx:id="previewGrossTitleLabel" text="Bruto" styleClass="card-title"/>
+                        <Label fx:id="grossPreviewLabel" text="-" styleClass="metric-value"/>
+                    </VBox>
+                    <VBox spacing="4">
+                        <Label fx:id="previewNetTitleLabel" text="Neto" styleClass="card-title"/>
+                        <Label fx:id="netPreviewLabel" text="-" styleClass="metric-value"/>
+                    </VBox>
+                </HBox>
+            </VBox>
             <VBox spacing="12" styleClass="content-card">
-                <Label text="Historiku i pagave" styleClass="section-title"/>
+                <Label fx:id="historyTitleLabel" text="Historiku i pagave" styleClass="section-title"/>
 
                 <TableView fx:id="historyTable" prefHeight="220">
                     <columns>

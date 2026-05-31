@@ -16,14 +16,12 @@
             fx:controller="com.company.system.controller.DepartmentsController"
             fitToWidth="true"
             pannable="true"
-            hbarPolicy="AS_NEEDED"
-            vbarPolicy="AS_NEEDED"
             styleClass="module-scroll">
     <content>
         <VBox spacing="18"
-              styleClass="departments-page">
+              styleClass="module-page">
             <padding>
-                <Insets top="28" right="28" bottom="28" left="28"/>
+                <Insets top="24" right="24" bottom="24" left="24"/>
             </padding>
 
             <VBox spacing="4">
@@ -42,8 +40,7 @@
             </HBox>
 
             <TableView fx:id="departmentsTable"
-                       prefHeight="320"
-                       minHeight="280">
+                       prefHeight="300">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="70"/>
                     <TableColumn fx:id="nameColumn" text="Name" prefWidth="260"/>
@@ -71,10 +68,6 @@
                 </VBox>
 
                 <HBox spacing="10">
-                    <Button fx:id="addButton"
-                            text="Add"
-                            styleClass="success-button"
-                            onAction="#addDepartment"/>
                     <Button fx:id="updateButton"
                             text="Update"
                             styleClass="primary-button"

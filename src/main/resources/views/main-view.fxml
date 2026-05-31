@@ -27,6 +27,11 @@
             <Label text="Contract Manager"
                    styleClass="app-title"/>
             <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="notificationButton"
+                    styleClass="notification-button"
+                    onAction="#showLeaveRequests"/>
+            <Label text="|"
+                   styleClass="top-separator"/>
             <Label fx:id="loggedInLabel"
                    styleClass="logged-in-label"
                    text="Logged in as: -"/>
@@ -61,6 +66,14 @@
                         styleClass="nav-button"
                         maxWidth="Infinity"
                         onAction="#showDepartments"/>
+                <Button fx:id="usersButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showUsers"/>
+                <Button fx:id="exportButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showExports"/>
                 <Button fx:id="profileButton"
                         styleClass="nav-button"
                         maxWidth="Infinity"

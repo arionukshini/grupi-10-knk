@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.MyDepartmentController"
+            fitToWidth="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="20" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="4">
+                <Label fx:id="titleLabel" text="My Department" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="-" styleClass="page-subtitle" wrapText="true"/>
+            </VBox>
+
+            <HBox spacing="20" alignment="TOP_LEFT">
+                <VBox spacing="16" HBox.hgrow="ALWAYS">
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label fx:id="overviewTitleLabel" text="Department overview" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label fx:id="departmentNameTitleLabel" text="Department" styleClass="info-card-label"/>
+                                <Label fx:id="departmentNameLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label fx:id="positionTitleLabel" text="Your position" styleClass="info-card-label"/>
+                                <Label fx:id="positionLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label fx:id="descriptionTitleLabel" text="Description" styleClass="section-title"/>
+                        <Label fx:id="descriptionLabel" text="-" styleClass="body-text" wrapText="true"/>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label fx:id="colleaguesTitleLabel" text="Colleagues" styleClass="section-title"/>
+                        <VBox fx:id="colleaguesContainer" spacing="10"/>
+                    </VBox>
+                </VBox>
+
+                <VBox spacing="12" styleClass="content-card" minWidth="240" maxWidth="280">
+                    <Label fx:id="detailsTitleLabel" text="Details" styleClass="section-title"/>
+                    <Separator/>
+
+                    <VBox spacing="5" styleClass="info-card">
+                        <Label fx:id="departmentIdTitleLabel" text="Department ID" styleClass="info-card-label"/>
+                        <Label fx:id="departmentIdLabel" text="-" styleClass="info-card-value"/>
+                    </VBox>
+
+                    <VBox spacing="5" styleClass="info-card">
+                        <Label fx:id="employeeIdTitleLabel" text="Employee ID" styleClass="info-card-label"/>
+                        <Label fx:id="employeeIdLabel" text="-" styleClass="info-card-value"/>
+                    </VBox>
+
+                    <VBox spacing="5" styleClass="salary-card-net">
+                        <Label fx:id="colleagueCountTitleLabel" text="Colleagues" styleClass="salary-card-label"/>
+                        <Label fx:id="colleagueCountLabel" text="0" styleClass="salary-card-value-green"/>
+                    </VBox>
+
+                    <Label fx:id="sideNoteLabel"
+                           text="-"
+                           wrapText="true"
+                           style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

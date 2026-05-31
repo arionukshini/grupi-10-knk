@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
+<?import java.lang.String?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -18,8 +20,8 @@
             </padding>
 
             <VBox spacing="4">
-                <Label text="Kontratat" styleClass="page-title"/>
-                <Label text="Menaxhoni kontratat dhe lidhjen e tyre me punetoret." styleClass="page-subtitle"/>
+                <Label fx:id="titleLabel" text="Kontratat" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="Menaxhoni kontratat dhe lidhjen e tyre me punetoret." styleClass="page-subtitle"/>
             </VBox>
 
             <HBox spacing="12" styleClass="content-card">
@@ -42,22 +44,38 @@
             </TableView>
 
             <VBox spacing="14" styleClass="content-card">
-                <Label text="Forma e kontrates" styleClass="section-title"/>
+                <Label fx:id="formTitleLabel" text="Forma e kontrates" styleClass="section-title"/>
 
                 <GridPane hgap="12" vgap="12">
                     <TextField fx:id="employeeIdField" promptText="Employee ID" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <TextField fx:id="contractTypeField" promptText="Lloji i kontrates" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="contractTypeField" value="Full-Time" promptText="Lloji i kontrates" prefWidth="180" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Full-Time"/>
+                                <String fx:value="Part-Time"/>
+                                <String fx:value="Temporary"/>
+                                <String fx:value="Internship"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
                     <TextField fx:id="salaryField" promptText="Paga" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
                     <DatePicker fx:id="startDatePicker" promptText="Data e fillimit" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <TextField fx:id="statusField" promptText="Statusi" text="Active" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                    <DatePicker fx:id="endDatePicker" promptText="Data e mbarimit" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="statusField" value="Active" promptText="Statusi" prefWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="2">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Active"/>
+                                <String fx:value="Expired"/>
+                                <String fx:value="Pending"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
                 </GridPane>
 
                 <HBox spacing="10">
-                    <Button text="Shto" onAction="#addContract" styleClass="success-button"/>
-                    <Button text="Perditeso" onAction="#updateContract" styleClass="primary-button"/>
-                    <Button text="Fshi" onAction="#deleteContract" styleClass="danger-button"/>
-                    <Button text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>
+                    <Button fx:id="updateButton" text="Perditeso" onAction="#updateContract" styleClass="primary-button"/>
+                    <Button fx:id="deleteButton" text="Fshi" onAction="#deleteContract" styleClass="danger-button"/>
+                    <Button fx:id="clearButton" text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>
                 </HBox>
             </VBox>
         </VBox>

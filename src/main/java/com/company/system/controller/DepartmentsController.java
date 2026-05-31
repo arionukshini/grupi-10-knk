@@ -1,6 +1,7 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.model.Department;
 import com.company.system.service.DepartmentService;
 import com.company.system.utils.DialogUtils;
@@ -86,7 +87,9 @@ public class DepartmentsController {
         nameColumn.setText(LanguageManager.get("departments.name"));
         descriptionColumn.setText(LanguageManager.get("departments.description"));
 
-        addButton.setText(LanguageManager.get("departments.add"));
+        if (addButton != null) {
+            addButton.setText(LanguageManager.get("departments.add"));
+        }
         updateButton.setText(LanguageManager.get("departments.update"));
         deleteButton.setText(LanguageManager.get("departments.delete"));
         clearButton.setText(LanguageManager.get("departments.clear"));
@@ -174,12 +177,14 @@ public class DepartmentsController {
             return;
         }
 
-        if (DepartmentService.updateDepartment(department)) {
-            loadDepartments();
-            clearForm();
-            showInfo(LanguageManager.get("departments.update.success"));
-        } else {
-            showError(LanguageManager.get("departments.update.error"));
+        try {
+            if (DepartmentService.updateDepartment(department)) {
+                loadDepartments();
+                clearForm();
+                showInfo(LanguageManager.get("departments.update.success"));
+            }
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         }
     }
 

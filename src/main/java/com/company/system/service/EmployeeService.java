@@ -74,10 +74,10 @@ public class EmployeeService {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             if (!emailValidator(employee.getEmail())) {
-                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u shtua.");
+                throw new InvalidEmailException(employee.getEmail(), "exception.employee.add");
             }
             if (!salaryValidator(employee.getBaseSalary())) {
-                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u shtua.");
+                throw new InvalidSalaryException(employee.getBaseSalary(), "employees.baseSalary");
             }
 
             stmt.setString(1, employee.getFirstName());
@@ -95,8 +95,11 @@ public class EmployeeService {
             System.out.println("Employee added successfully!");
             return true;
 
-        } catch (InvalidEmailException | InvalidSalaryException e) {
-
+        } catch (InvalidEmailException e) {
+            e.showAlert();
+            System.out.println(e.getMessage());
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
             System.out.println(e.getMessage());
 
         } catch (SQLException e) {
@@ -129,10 +132,10 @@ public class EmployeeService {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             if (!emailValidator(employee.getEmail())) {
-                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u perditesua.");
+                throw new InvalidEmailException(employee.getEmail(), "exception.employee.update");
             }
             if (!salaryValidator(employee.getBaseSalary())) {
-                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u perditesua.");
+                throw new InvalidSalaryException(employee.getBaseSalary(), "employees.baseSalary");
             }
 
             stmt.setString(1, employee.getFirstName());
@@ -148,8 +151,11 @@ public class EmployeeService {
 
             return stmt.executeUpdate() > 0;
 
-        } catch (InvalidEmailException | InvalidSalaryException e) {
-
+        } catch (InvalidEmailException e) {
+            e.showAlert();
+            System.out.println(e.getMessage());
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
             System.out.println(e.getMessage());
 
         } catch (SQLException e) {
@@ -162,20 +168,155 @@ public class EmployeeService {
 
     public static boolean deleteEmployee(int employeeId) {
 
-        String sql = "DELETE FROM employees WHERE id = ?";
+        String deleteSalaryHistorySql = """
+                DELETE FROM salary_history
+                WHERE employee_id = ?
+                   OR salary_id IN (
+                       SELECT id
+                       FROM salaries
+                       WHERE employee_id = ?
+                   )
+                """;
 
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+        String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
+        String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
+        String deleteVacationRequestsSql = "DELETE FROM vacation_requests WHERE employee_id = ?";
+        String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
 
-            stmt.setInt(1, employeeId);
-            return stmt.executeUpdate() > 0;
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return false;
+            }
+
+            conn.setAutoCommit(false);
+
+            try (
+                    PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
+                    PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
+                    PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
+                    PreparedStatement vacationRequestsStmt = conn.prepareStatement(deleteVacationRequestsSql);
+                    PreparedStatement employeeStmt = conn.prepareStatement(deleteEmployeeSql)
+            ) {
+                historyStmt.setInt(1, employeeId);
+                historyStmt.setInt(2, employeeId);
+                historyStmt.executeUpdate();
+
+                salariesStmt.setInt(1, employeeId);
+                salariesStmt.executeUpdate();
+
+                contractsStmt.setInt(1, employeeId);
+                contractsStmt.executeUpdate();
+
+                vacationRequestsStmt.setInt(1, employeeId);
+                vacationRequestsStmt.executeUpdate();
+
+                employeeStmt.setInt(1, employeeId);
+                boolean deleted = employeeStmt.executeUpdate() > 0;
+
+                if (deleted) {
+                    conn.commit();
+                } else {
+                    conn.rollback();
+                }
+
+                return deleted;
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            } finally {
+                conn.setAutoCommit(true);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return false;
+    }
+    public static Employee getEmployeeById(int employeeId) {
+        String sql = """
+                SELECT *
+                FROM employees
+                WHERE id = ?
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return null;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, employeeId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return new Employee(
+                                rs.getInt("id"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("position"),
+                                rs.getInt("department_id"),
+                                rs.getDate("hire_date"),
+                                rs.getDouble("base_salary"),
+                                rs.getString("status")
+                        );
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static List<Employee> getEmployeesByDepartment(int departmentId, Integer excludeEmployeeId) {
+        List<Employee> employees = new ArrayList<>();
+
+        String sql = """
+                SELECT *
+                FROM employees
+                WHERE department_id = ?
+                ORDER BY last_name, first_name
+                """;
+
+        try (Connection conn = DBConnection.connect()) {
+            if (conn == null) {
+                return employees;
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, departmentId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int employeeId = rs.getInt("id");
+
+                        if (excludeEmployeeId != null && employeeId == excludeEmployeeId) {
+                            continue;
+                        }
+
+                        employees.add(new Employee(
+                                employeeId,
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("position"),
+                                rs.getInt("department_id"),
+                                rs.getDate("hire_date"),
+                                rs.getDouble("base_salary"),
+                                rs.getString("status")
+                        ));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return employees;
     }
 }
