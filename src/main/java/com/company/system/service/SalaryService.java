@@ -79,7 +79,7 @@ public class SalaryService {
                             rs.getDouble("gross_salary"),
                             rs.getDouble("bonus"),
                             rs.getDouble("deductions"),
-                            0,
+                            rs.getInt("worked_days"),
                             rs.getInt("vacation_days"),
                             rs.getDouble("work_hours"),
                             rs.getDouble("overtime_hours"),

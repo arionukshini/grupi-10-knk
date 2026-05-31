@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.AdminLeaveRequestsController"
+            fitToWidth="true"
+            pannable="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="18" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="4">
+                <Label fx:id="titleLabel" text="Leave requests" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel" text="Review employee vacation, medical and holiday requests." styleClass="page-subtitle"/>
+            </VBox>
+
+            <HBox spacing="12" styleClass="content-card">
+                <TextField fx:id="searchField"
+                           promptText="Search by employee, type or status"
+                           prefWidth="420"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="pendingCountLabel" styleClass="notification-summary"/>
+            </HBox>
+
+            <VBox fx:id="requestsBox" spacing="10"/>
+        </VBox>
+    </content>
+</ScrollPane>
