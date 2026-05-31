@@ -357,6 +357,19 @@
     -fx-effect: dropshadow(gaussian, rgba(5, 20, 40, 0.10), 10, 0, 0, 3);
 }
 
+.leave-request-header {
+    -fx-padding: 0 16 8 16;
+    -fx-border-color: transparent transparent -border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.leave-request-header-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-muted;
+    -fx-text-transform: uppercase;
+}
+
 .leave-request-meta {
     -fx-font-size: 13px;
     -fx-text-fill: -text-main;

@@ -31,6 +31,10 @@ public class AdminLeaveRequestsController {
 
     private final ObservableList<LeaveRequest> requests = FXCollections.observableArrayList();
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final double EMPLOYEE_COLUMN_WIDTH = 170;
+    private static final double TYPE_COLUMN_WIDTH = 145;
+    private static final double DATE_COLUMN_WIDTH = 165;
+    private static final double DAYS_COLUMN_WIDTH = 90;
 
     @FXML private Label titleLabel;
     @FXML private Label subtitleLabel;
@@ -99,16 +103,41 @@ public class AdminLeaveRequestsController {
             return;
         }
 
+        requestsBox.getChildren().add(createHeaderRow());
+
         for (LeaveRequest request : visibleRequests) {
             requestsBox.getChildren().add(createRequestRow(request));
         }
     }
 
+    private HBox createHeaderRow() {
+        Label employeeHeader = createHeaderLabel(isAlbanian() ? "Punetori" : "Employee", EMPLOYEE_COLUMN_WIDTH);
+        Label typeHeader = createHeaderLabel(isAlbanian() ? "Lloji" : "Type", TYPE_COLUMN_WIDTH);
+        Label dateHeader = createHeaderLabel(isAlbanian() ? "Datat" : "Dates", DATE_COLUMN_WIDTH);
+        Label daysHeader = createHeaderLabel(isAlbanian() ? "Dite pune" : "Work days", DAYS_COLUMN_WIDTH);
+
+        HBox info = new HBox(18, employeeHeader, typeHeader, dateHeader, daysHeader);
+        info.setAlignment(Pos.CENTER_LEFT);
+        info.setMinWidth(0);
+        HBox.setHgrow(info, Priority.ALWAYS);
+
+        Label statusHeader = createHeaderLabel(isAlbanian() ? "Statusi" : "Status", 82);
+        Button spacer = new Button(isAlbanian() ? "Hap" : "Open");
+        spacer.getStyleClass().add("secondary-button");
+        spacer.setVisible(false);
+        spacer.setManaged(true);
+
+        HBox header = new HBox(14, info, statusHeader, spacer);
+        header.getStyleClass().add("leave-request-header");
+        header.setAlignment(Pos.CENTER_LEFT);
+        return header;
+    }
+
     private HBox createRequestRow(LeaveRequest request) {
-        Label employeeLabel = createMetaLabel(isAlbanian() ? "Punetori" : "Employee", request.getEmployeeName(), 170);
-        Label typeLabel = createMetaLabel(isAlbanian() ? "Lloji" : "Type", displayType(request), 145);
-        Label dateLabel = createMetaLabel(isAlbanian() ? "Datat" : "Dates", formatDateRange(request.getStartDate(), request.getEndDate()), 165);
-        Label daysLabel = createMetaLabel(isAlbanian() ? "Dite pune" : "Work days", String.valueOf(request.getWorkingDays()), 90);
+        Label employeeLabel = createMetaLabel(request.getEmployeeName(), EMPLOYEE_COLUMN_WIDTH);
+        Label typeLabel = createMetaLabel(displayType(request), TYPE_COLUMN_WIDTH);
+        Label dateLabel = createMetaLabel(formatDateRange(request.getStartDate(), request.getEndDate()), DATE_COLUMN_WIDTH);
+        Label daysLabel = createMetaLabel(String.valueOf(request.getWorkingDays()), DAYS_COLUMN_WIDTH);
 
         HBox info = new HBox(18, employeeLabel, typeLabel, dateLabel, daysLabel);
         info.setAlignment(Pos.CENTER_LEFT);
@@ -128,8 +157,17 @@ public class AdminLeaveRequestsController {
         return row;
     }
 
-    private Label createMetaLabel(String label, String value, double width) {
-        Label meta = new Label(label + "\n" + valueOrDash(value));
+    private Label createHeaderLabel(String value, double width) {
+        Label header = new Label(value);
+        header.getStyleClass().add("leave-request-header-label");
+        header.setMinWidth(0);
+        header.setPrefWidth(width);
+        header.setMaxWidth(width);
+        return header;
+    }
+
+    private Label createMetaLabel(String value, double width) {
+        Label meta = new Label(valueOrDash(value));
         meta.getStyleClass().add("leave-request-meta");
         meta.setMinWidth(0);
         meta.setPrefWidth(width);
