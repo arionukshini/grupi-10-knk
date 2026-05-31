@@ -22,19 +22,16 @@
             </VBox>
 
             <HBox spacing="20" alignment="TOP_LEFT">
-
-                <!-- E MAJTA: SECTIONS -->
                 <VBox spacing="16" HBox.hgrow="ALWAYS">
-
                     <VBox spacing="10" styleClass="content-card">
                         <Label text="Paga mujore" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-gross">
-                                <Label text="Paga Bruto" styleClass="salary-card-label"/>
+                                <Label text="Paga bruto" styleClass="salary-card-label"/>
                                 <Label fx:id="grossSalaryLabel" text="-" styleClass="salary-card-value"/>
                             </VBox>
                             <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-net">
-                                <Label text="Paga Neto" styleClass="salary-card-label"/>
+                                <Label text="Paga neto" styleClass="salary-card-label"/>
                                 <Label fx:id="netSalaryLabel" text="-" styleClass="salary-card-value-green"/>
                             </VBox>
                         </HBox>
@@ -55,18 +52,64 @@
                     </VBox>
 
                     <VBox spacing="10" styleClass="content-card">
-                        <Label text="Ditët e punës" styleClass="section-title"/>
+                        <Label text="Koha e punes" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Ditë pune" styleClass="info-card-label"/>
+                                <Label text="Dite pune" styleClass="info-card-label"/>
                                 <Label fx:id="workedDaysLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Ditë pushimi" styleClass="info-card-label"/>
+                                <Label text="Dite pushimi" styleClass="info-card-label"/>
                                 <Label fx:id="vacationDaysLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Orë pune" styleClass="info-card-label"/>
+                                <Label text="Ore pune" styleClass="info-card-label"/>
                                 <Label fx:id="workHoursLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Puna shtese" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Ore shtese" styleClass="info-card-label"/>
+                                <Label fx:id="overtimeHoursLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Paga ditore" styleClass="info-card-label"/>
+                                <Label fx:id="dailyRateLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Pagesa shtese" styleClass="info-card-label"/>
+                                <Label fx:id="overtimePayLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Historia e pagave" styleClass="section-title"/>
+                        <VBox fx:id="historyContainer" spacing="8"/>
+                    </VBox>
+                </VBox>
+
+                <VBox spacing="12" styleClass="content-card" minWidth="240" maxWidth="280">
+                    <Label text="Llogarit paga" styleClass="section-title"/>
+                    <Separator/>
+
+                    <Label text="Ditet e punuara" styleClass="info-card-label"/>
+                    <TextField fx:id="workedDaysInput" promptText="0 - 22"/>
+
+                    <VBox spacing="5" styleClass="salary-card-net">
+                        <Label text="Paga e llogaritur" styleClass="salary-card-label"/>
+                        <Label fx:id="calculatedSalaryLabel" text="-" styleClass="salary-card-value-green"/>
+                    </VBox>
+
+                    <Label text="Ndrysho ditet e punuara per te pare llogaritjen."
+                           wrapText="true"
+                           style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

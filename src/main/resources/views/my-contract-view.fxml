@@ -23,8 +23,8 @@
                     <Label fx:id="statusBadgeLabel" text="-" styleClass="page-subtitle"/>
                 </VBox>
                 <Button fx:id="exportButton"
-                        text="⬇  Export PDF"
-                        onAction="#handleExportPdf"
+                        text="Export TXT"
+                        onAction="#handleExportTxt"
                         styleClass="primary-button"/>
             </HBox>
 
@@ -112,7 +112,7 @@
 
                     <Separator/>
 
-                    <Label text="Kliko 'Export PDF' për të shkarkuar kontratën tënde."
+                    <Label text="Kliko 'Export TXT' për të shkarkuar kontratën tënde."
                            wrapText="true"
                            style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
                 </VBox>

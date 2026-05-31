@@ -1,15 +1,7 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Contract;
-import com.company.system.model.Department;
-import com.company.system.model.Employee;
-import com.company.system.model.Salary;
 import com.company.system.model.User;
-import com.company.system.service.ContractService;
-import com.company.system.service.DepartmentService;
-import com.company.system.service.EmployeeService;
-import com.company.system.service.SalaryService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
 import com.company.system.utils.PasswordUtils;
@@ -51,7 +43,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
@@ -211,7 +202,7 @@ public class UserMainController {
         currentView = "contract";
         setStatus(LanguageManager.get("user.status.contract"));
         setActiveButton(contractButton);
-        setContent(buildContractView());
+        setContent(loadView("/views/my-contract-view.fxml"));
     }
 
     @FXML private void showSalary() {
@@ -219,7 +210,7 @@ public class UserMainController {
         currentView = "salary";
         setStatus(LanguageManager.get("user.status.salary"));
         setActiveButton(salaryButton);
-        setContent(buildSalaryView());
+        setContent(loadView("/views/my-salary-view.fxml"));
     }
 
     @FXML private void showDepartment() {
@@ -227,7 +218,7 @@ public class UserMainController {
         currentView = "department";
         setStatus(LanguageManager.get("user.status.department"));
         setActiveButton(departmentButton);
-        setContent(buildDepartmentView());
+        setContent(loadView("/views/my-department-view.fxml"));
     }
 
     @FXML private void showSettings() {
@@ -543,159 +534,6 @@ public class UserMainController {
         }
     }
 
-    private Node buildContractView() {
-        User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null) {
-            return simplePlaceholder(LanguageManager.get("user.contract.noData"));
-        }
-
-        Contract contract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
-        VBox root = createPageContainer(
-                LanguageManager.get("user.contract.title"),
-                LanguageManager.get("user.contract.subtitle")
-        );
-
-        if (contract == null) {
-            root.getChildren().add(simpleCard(LanguageManager.get("user.contract.noRecord")));
-            return wrap(root);
-        }
-
-        HBox topRow = new HBox(18);
-        topRow.getChildren().addAll(
-                createHighlightCard(
-                        LanguageManager.get("user.contract.type"),
-                        valueOrDash(contract.getContractType()),
-                        LanguageManager.get("user.contract.status") + ": " + valueOrDash(contract.getStatus())
-                ),
-                createHighlightCard(
-                        LanguageManager.get("user.contract.salary"),
-                        formatCurrency(contract.getSalary()),
-                        LanguageManager.get("user.contract.start") + ": " + formatSqlDate(contract.getStartDate())
-                )
-        );
-
-        VBox detailsCard = createDetailCard(
-                LanguageManager.get("user.contract.period"),
-                createInfoRow(LanguageManager.get("user.contract.startDate"), formatSqlDate(contract.getStartDate())),
-                createInfoRow(LanguageManager.get("user.contract.endDate"), formatSqlDate(contract.getEndDate())),
-                createInfoRow(LanguageManager.get("user.contract.status"), valueOrDash(contract.getStatus()))
-        );
-
-        root.getChildren().addAll(topRow, detailsCard);
-        return wrap(root);
-    }
-
-    private Node buildSalaryView() {
-        User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null) {
-            return simplePlaceholder(LanguageManager.get("user.salary.noData"));
-        }
-
-        Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
-        VBox root = createPageContainer(
-                LanguageManager.get("user.salary.title"),
-                LanguageManager.get("user.salary.subtitle")
-        );
-
-        if (salary == null) {
-            root.getChildren().add(simpleCard(LanguageManager.get("user.salary.noRecord")));
-            return wrap(root);
-        }
-
-        HBox topRow = new HBox(18);
-        topRow.getChildren().addAll(
-                createAccentCard(
-                        LanguageManager.get("user.salary.net"),
-                        formatCurrency(salary.getNetSalary()),
-                        LanguageManager.get("user.salary.netSubtitle")
-                ),
-                createAccentCard(
-                        LanguageManager.get("user.salary.gross"),
-                        formatCurrency(salary.getGrossSalary()),
-                        LanguageManager.get("user.salary.grossSubtitle")
-                )
-        );
-
-        VBox breakdownCard = createDetailCard(
-                LanguageManager.get("user.salary.breakdown"),
-                createInfoRow(LanguageManager.get("user.salary.bonus"), formatCurrency(salary.getBonus())),
-                createInfoRow(LanguageManager.get("user.salary.deductions"), formatCurrency(salary.getDeductions())),
-                createInfoRow(LanguageManager.get("user.salary.paymentDate"), formatSqlDate(salary.getPaymentDate()))
-        );
-
-        HBox bottomRow = new HBox(18);
-        bottomRow.getChildren().addAll(
-                createSmallStatCard(LanguageManager.get("user.salary.workHours"), formatHours(salary.getWorkHours())),
-                createSmallStatCard(LanguageManager.get("user.salary.overtimeHours"), formatNumber(salary.getOvertimeHours())),
-                createSmallStatCard(LanguageManager.get("user.salary.dailyRate"), formatCurrency(salary.getDailyRate())),
-                createSmallStatCard(LanguageManager.get("user.salary.overtimePay"), formatCurrency(salary.getOvertimePay()))
-        );
-
-        root.getChildren().addAll(topRow, breakdownCard, bottomRow);
-        return wrap(root);
-    }
-
-    private Node buildDepartmentView() {
-        User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null) {
-            return simplePlaceholder(LanguageManager.get("user.department.noData"));
-        }
-
-        Employee employee = EmployeeService.getEmployeeById(user.getEmployeeId());
-        if (employee == null) {
-            return simplePlaceholder(LanguageManager.get("user.department.employeeNotFound"));
-        }
-
-        Department department = DepartmentService.getDepartmentById(employee.getDepartmentId());
-        List<Employee> colleagues = EmployeeService.getEmployeesByDepartment(employee.getDepartmentId(), employee.getId());
-
-        VBox root = createPageContainer(
-                LanguageManager.get("user.department.title"),
-                LanguageManager.get("user.department.subtitle")
-        );
-
-        HBox topRow = new HBox(18);
-        topRow.getChildren().addAll(
-                createAccentCard(
-                        LanguageManager.get("user.department.department"),
-                        valueOrDash(department == null ? null : department.getName()),
-                        LanguageManager.get("user.department.yourMainDepartment")
-                ),
-                createAccentCard(
-                        LanguageManager.get("user.department.colleagues"),
-                        String.valueOf(colleagues.size()),
-                        LanguageManager.get("user.department.sameDepartment")
-                )
-        );
-
-        VBox overviewCard = createDetailCard(
-                LanguageManager.get("user.department.overview"),
-                createInfoRow(LanguageManager.get("user.department.name"), valueOrDash(department == null ? null : department.getName())),
-                createInfoRow(LanguageManager.get("user.department.description"), valueOrDash(department == null ? null : department.getDescription())),
-                createInfoRow(LanguageManager.get("user.department.position"), valueOrDash(employee.getPosition()))
-        );
-
-        VBox colleaguesBox = new VBox(12);
-        colleaguesBox.getStyleClass().add("profile-card");
-        colleaguesBox.setPadding(new Insets(18));
-
-        Label colleaguesTitle = new Label(LanguageManager.get("user.department.colleagues"));
-        colleaguesTitle.getStyleClass().add("section-title");
-        colleaguesBox.getChildren().add(colleaguesTitle);
-
-        if (colleagues.isEmpty()) {
-            colleaguesBox.getChildren().add(createEmptyStateCard(
-                    LanguageManager.get("user.department.noColleagues"),
-                    LanguageManager.get("user.department.noColleaguesSub")
-            ));
-        } else {
-            for (Employee colleague : colleagues) colleaguesBox.getChildren().add(createColleagueCard(colleague));
-        }
-
-        root.getChildren().addAll(topRow, overviewCard, colleaguesBox);
-        return wrap(root);
-    }
-
     private Node buildSettingsView() {
         User user = Session.getUser();
         if (user == null) {
@@ -834,96 +672,6 @@ public class UserMainController {
         card.getStyleClass().add("profile-card");
         card.setPadding(new Insets(18));
         for (String line : lines) card.getChildren().add(simpleLabel(line));
-        return card;
-    }
-
-    private VBox createEmptyStateCard(String title, String subtitle) {
-        VBox card = new VBox(6);
-        card.getStyleClass().add("content-card");
-        card.setPadding(new Insets(16));
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("section-title");
-        Label subtitleLabel = new Label(subtitle);
-        subtitleLabel.getStyleClass().add("body-text");
-        subtitleLabel.setWrapText(true);
-        card.getChildren().addAll(titleLabel, subtitleLabel);
-        return card;
-    }
-
-    private VBox createHighlightCard(String title, String value, String subtitle) {
-        VBox card = new VBox(10);
-        card.getStyleClass().add("profile-card");
-        card.setPadding(new Insets(18)); card.setPrefWidth(360);
-        Label t = new Label(title); t.getStyleClass().add("section-title");
-        Label v = new Label(value); v.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
-        Label s = new Label(subtitle); s.getStyleClass().add("body-text"); s.setWrapText(true);
-        card.getChildren().addAll(t, v, s);
-        return card;
-    }
-
-    private VBox createAccentCard(String title, String value, String subtitle) {
-        VBox card = new VBox(10);
-        card.getStyleClass().add("profile-card");
-        card.setPadding(new Insets(18)); card.setPrefWidth(360);
-        Label t = new Label(title); t.getStyleClass().add("section-title");
-        Label v = new Label(value); v.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
-        Label s = new Label(subtitle); s.getStyleClass().add("body-text"); s.setWrapText(true);
-        card.getChildren().addAll(t, v, s);
-        return card;
-    }
-
-    private VBox createSmallStatCard(String title, String value) {
-        VBox card = new VBox(8);
-        card.getStyleClass().add("profile-card");
-        card.setPadding(new Insets(16)); card.setPrefWidth(170);
-        Label t = new Label(title); t.getStyleClass().add("section-title");
-        Label v = new Label(value); v.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-        card.getChildren().addAll(t, v);
-        return card;
-    }
-
-    private VBox createDetailCard(String title, Node... rows) {
-        VBox card = new VBox(12);
-        card.getStyleClass().add("profile-card");
-        card.setPadding(new Insets(18));
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("section-title");
-        card.getChildren().add(titleLabel);
-        for (Node row : rows) card.getChildren().add(row);
-        return card;
-    }
-
-    private HBox createInfoRow(String label, String value) {
-        HBox row = new HBox(10);
-        row.setAlignment(Pos.CENTER_LEFT);
-        Label left = new Label(label + ":"); left.setMinWidth(150); left.setStyle("-fx-font-weight: bold;");
-        Label right = new Label(value); right.setWrapText(true); right.getStyleClass().add("body-text");
-        row.getChildren().addAll(left, right);
-        return row;
-    }
-
-    private VBox createColleagueCard(Employee colleague) {
-        VBox card = new VBox(8);
-        card.getStyleClass().add("profile-card");
-        card.setPadding(new Insets(14));
-        Label name = new Label(colleague.getFirstName() + " " + colleague.getLastName());
-        name.getStyleClass().add("section-title");
-
-        VBox infoBox = new VBox(4);
-        Label position = new Label(LanguageManager.get("user.colleague.position") + ": " + valueOrDash(colleague.getPosition()));
-        Label email = new Label(LanguageManager.get("user.colleague.email") + ": " + valueOrDash(colleague.getEmail()));
-        Label status = new Label(LanguageManager.get("user.colleague.status") + ": " + valueOrDash(colleague.getStatus()));
-        position.getStyleClass().add("body-text");
-        email.getStyleClass().add("body-text");
-        status.getStyleClass().add("body-text");
-
-        position.setWrapText(true);
-        email.setWrapText(true);
-        status.setWrapText(true);
-
-        infoBox.getChildren().addAll(position, email, status);
-
-        card.getChildren().addAll(name, infoBox);
         return card;
     }
 
@@ -1066,20 +814,10 @@ public class UserMainController {
         return box;
     }
 
-    private String formatSqlDate(Date date) {
-        if (date == null) return "-";
-        return date.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    }
-
     private String formatCreatedAt(Timestamp createdAt) {
         if (createdAt == null) return "-";
         return createdAt.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
-
-    private String formatCurrency(double value) { return String.format("%.2f EUR", value); }
-    private String formatHours(double value)    { return String.format("%.2f", value); }
-    private String formatNumber(double value)   { return String.format("%.2f", value); }
-    private String valueOrDash(String value)    { return value == null || value.isBlank() ? "-" : value; }
 
     private record NavItem(String iconPath, String label) {}
 }
