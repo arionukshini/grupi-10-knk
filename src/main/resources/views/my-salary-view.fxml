@@ -56,8 +56,8 @@
                         <Label fx:id="workTimeTitleLabel" text="Koha e punes" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Dite pune" styleClass="info-card-label"/>
                                 <Label fx:id="workedDaysTitleLabel" text="Dite pune" styleClass="info-card-label"/>
+                                <Label fx:id="workedDaysLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
                                 <Label fx:id="vacationDaysTitleLabel" text="Dite pushimi" styleClass="info-card-label"/>
