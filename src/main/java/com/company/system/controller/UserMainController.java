@@ -150,10 +150,10 @@ public class UserMainController {
         recordNavigation("contract");
         currentView = "contract";
         setStatus(t("My Contract opened", "My Contract u hap"));
-        setActiveButton(contractButton);
-        setContent(buildPlaceholderPage(t("My Contract", "My Contract"),
-                t("This page is ready for the user contract module.", "Kjo faqe eshte gati per modulin e kontrates se user-it.")));
+        loadView("/views/my-contract-view.fxml", contractButton,
+                t("Failed to load contract.", "Kontrata nuk u hap."));
     }
+
 
     @FXML
     public void showSalary() {
