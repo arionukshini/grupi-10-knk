@@ -1,20 +1,34 @@
 package com.company.system.exceptions;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.utils.DialogUtils;
 import javafx.scene.control.Alert;
 
 public class InvalidEmailException extends RuntimeException {
-    public InvalidEmailException(String email, String message) {
-        super(message + " " + email + " is not a valid email!");
-        showInvalidEmailExceptionAlert(email, message);
+    private final String email;
+    private final String contextKey;
+
+    public InvalidEmailException(String email, String contextKey) {
+        super(contextKey);
+        this.email = email;
+        this.contextKey = contextKey;
     }
 
-    public void showInvalidEmailExceptionAlert(String email, String message) {
+    public void showAlert() {
+        showInvalidEmailExceptionAlert();
+    }
+
+    @Override
+    public String getMessage() {
+        return String.format(LanguageManager.get("exception.invalidEmail"), LanguageManager.get(contextKey), email);
+    }
+
+    private void showInvalidEmailExceptionAlert() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogUtils.style(alert);
         alert.setHeaderText(null);
-        alert.setContentText(message + " " + email + " is not a valid email!");
-        alert.setTitle("Gabim");
+        alert.setContentText(getMessage());
+        alert.setTitle(LanguageManager.get("message.error.title"));
         alert.showAndWait();
     }
 }
