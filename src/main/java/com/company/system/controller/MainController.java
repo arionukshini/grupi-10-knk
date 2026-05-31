@@ -880,14 +880,15 @@ public class MainController {
         setActiveButton(profileButton);
 
         User user = Session.getUser();
-        if (user == null) { setContent(new Label("No user logged in")); return; }
-
+        if (user == null) {setContent(new Label(LanguageManager.get("profile.noUserLoggedIn")));
+            return;}
         String roleText = "ADMIN".equalsIgnoreCase(user.getRole())
                 ? LanguageManager.get("account.role.admin")
                 : LanguageManager.get("account.role.user");
 
-        Label title = new Label(isAlbanian() ? "Cilesimet" : "Settings");
+        Label title = new Label(LanguageManager.get("profile.title"));
         title.getStyleClass().add("page-title");
+
 
         StackPane userIcon = createSidebarIconBox(ICON_USER, 1.08);
         userIcon.getStyleClass().add("profile-icon");
@@ -941,18 +942,19 @@ public class MainController {
         languageCard.setPrefWidth(430);
         languageCard.setMaxWidth(Double.MAX_VALUE);
 
-        Label passwordTitle = new Label(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        Label passwordTitle = new Label(LanguageManager.get("profile.password.title"));
         passwordTitle.getStyleClass().add("section-title");
 
+
         PasswordField currentPasswordField = new PasswordField();
-        currentPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi aktual" : "Current password");
+        currentPasswordField.setPromptText(LanguageManager.get("profile.password.current"));
         currentPasswordField.setMaxWidth(Double.MAX_VALUE);
 
         PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setPromptText(isAlbanian() ? "Fjalekalimi i ri" : "New password");
+        newPasswordField.setPromptText(LanguageManager.get("profile.password.new"));
         newPasswordField.setMaxWidth(Double.MAX_VALUE);
 
-        Button changePasswordButton = new Button(isAlbanian() ? "Ndrysho fjalekalimin" : "Change password");
+        Button changePasswordButton = new Button(LanguageManager.get("profile.password.change"));
         changePasswordButton.getStyleClass().add("primary-button");
         changePasswordButton.setOnAction(e -> changePassword(user, currentPasswordField, newPasswordField));
 
@@ -966,7 +968,7 @@ public class MainController {
         HBox.setHgrow(languageCard, Priority.ALWAYS);
         HBox.setHgrow(passwordCard, Priority.ALWAYS);
 
-        Button deleteAccount = new Button(isAlbanian() ? "Fshi llogarine" : "Delete account");
+        Button deleteAccount = new Button(LanguageManager.get("profile.deleteAccount"));
         deleteAccount.getStyleClass().add("danger-text-button");
         deleteAccount.setOnAction(e -> confirmDeleteAccount(user));
 
@@ -995,27 +997,27 @@ private String valueOrDash(String value) {
         String storedHash = UserService.getPasswordHashByUsername(user.getUsername());
 
         if (currentPassword == null || currentPassword.isBlank() || newPassword == null || newPassword.isBlank()) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Plotesoni te dy fushat e fjalekalimit." : "Fill both password fields.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.fillBothFields"));
             return;
         }
         if (!PasswordUtils.verifyPassword(currentPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi aktual nuk eshte i sakte." : "Current password is not correct.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.currentIncorrect"));
             return;
         }
         if (PasswordUtils.verifyPassword(newPassword, storedHash)) {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi i ri nuk mund te jete i njejte me te vjetrin." : "New password cannot be the same as the old one.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.sameAsOld"));
             return;
         }
         if (UserService.resetPassword(user.getUsername(), newPassword)) {
             currentPasswordField.clear(); newPasswordField.clear();
-            showStyledAlert(Alert.AlertType.INFORMATION, isAlbanian() ? "Sukses" : "Success",
-                    isAlbanian() ? "Fjalekalimi u ndryshua me sukses." : "Password changed successfully.");
+            showStyledAlert(Alert.AlertType.INFORMATION, LanguageManager.get("message.success.title"),
+                    LanguageManager.get("profile.password.changed"));
         } else {
-            showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Fjalekalimi nuk u ndryshua." : "Password was not changed.");
+            showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.password.notChanged"));
         }
     }
 
@@ -1040,20 +1042,18 @@ private String valueOrDash(String value) {
 
     private void confirmDeleteAccount(User user) {
         if (UserService.isOnlyAdmin(user)) {
-            showStyledAlert(Alert.AlertType.WARNING, isAlbanian() ? "Nuk lejohet" : "Not allowed",
-                    isAlbanian()
-                            ? "Ju jeni administratori i vetem. Nuk mund ta fshini llogarine pa pasur te pakten edhe nje administrator tjeter."
-                            : "You are the only administrator. You cannot delete this account until another administrator exists.");
+            showStyledAlert(Alert.AlertType.WARNING, LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("profile.delete.onlyAdmin"));
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Fshi llogarine" : "Delete Account");
+        alert.setTitle(LanguageManager.get("profile.delete.title"));
         alert.setHeaderText(null);
 
-        ButtonType yesType = new ButtonType(isAlbanian() ? "Po, fshije" : "Yes, Delete", ButtonBar.ButtonData.YES);
-        ButtonType noType = new ButtonType(isAlbanian() ? "Jo" : "No", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType yesType = new ButtonType(LanguageManager.get("profile.delete.confirmYes"), ButtonBar.ButtonData.YES);
+        ButtonType noType = new ButtonType(LanguageManager.get("profile.delete.confirmNo"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(yesType, noType);
 
         Label icon = new Label("🗑");
@@ -1061,13 +1061,11 @@ private String valueOrDash(String value) {
         icon.setGraphic(createPopupIcon(ICON_DELETE, "#dc2626"));
         icon.setStyle("-fx-padding: 10;");
 
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni ta fshini llogarine?" : "Are you sure you want to delete your account?");
+        Label title = new Label(LanguageManager.get("profile.delete.confirmTitle"));
         title.setWrapText(true); title.setMaxWidth(370); title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;");
 
-        Label subtitle = new Label(isAlbanian()
-                ? "Ky veprim do te fshije llogarine, punetorin, kontratat, pagat dhe historikun e pagave."
-                : "This will delete your account, employee record, contracts, salaries and salary history.");
+        Label subtitle = new Label(LanguageManager.get("profile.delete.confirmSubtitle"));
         subtitle.setWrapText(true); subtitle.setMaxWidth(370); subtitle.setMinHeight(Label.USE_PREF_SIZE);
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
@@ -1093,9 +1091,8 @@ private String valueOrDash(String value) {
         if (result.isPresent() && result.get() == yesType) {
             boolean deleted = UserService.deleteAccountAndEmployeeData(user);
             if (deleted) { Session.clear(); showWelcome(); }
-            else showStyledAlert(Alert.AlertType.ERROR, isAlbanian() ? "Gabim" : "Error",
-                    isAlbanian() ? "Llogaria nuk u fshi. Kontrolloni databazen ose provoni perseri."
-                            : "The account was not deleted. Check the database or try again.");
+            else showStyledAlert(Alert.AlertType.ERROR, LanguageManager.get("message.error.title"),
+                    LanguageManager.get("profile.delete.failed"));
         }
     }
 
