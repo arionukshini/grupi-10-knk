@@ -195,13 +195,13 @@ public class MainController {
         contextMenu.setAutoHide(true);
         contextMenu.setHideOnEscape(true);
 
-        MenuItem refreshItem = new MenuItem(isAlbanian() ? "Rifresko" : "Refresh");
+        MenuItem refreshItem = new MenuItem(LanguageManager.get("context.refresh"));
         refreshItem.setOnAction(event -> refreshCurrentView());
 
         MenuItem helpItem = new MenuItem(LanguageManager.get("menu.help"));
         helpItem.setOnAction(event -> showHelp());
 
-        MenuItem exitItem = new MenuItem(isAlbanian() ? "Dil nga programi" : "Exit program");
+        MenuItem exitItem = new MenuItem(LanguageManager.get("context.exitProgram"));
         exitItem.setOnAction(event -> handleExit());
 
         contextMenu.getItems().setAll(refreshItem, helpItem, new SeparatorMenuItem(), exitItem);
@@ -213,9 +213,9 @@ public class MainController {
         }));
 
         mainShell.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
-            refreshItem.setText(isAlbanian() ? "Rifresko" : "Refresh");
+            refreshItem.setText(LanguageManager.get("context.refresh"));
             helpItem.setText(LanguageManager.get("menu.help"));
-            exitItem.setText(isAlbanian() ? "Dil nga programi" : "Exit program");
+            exitItem.setText(LanguageManager.get("context.exitProgram"));
             if (contextMenu.isShowing()) contextMenu.hide();
             contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
             event.consume();
@@ -234,25 +234,22 @@ public class MainController {
 
         boolean sq = isAlbanian();
         StringBuilder message = new StringBuilder();
-        message.append(sq
-                ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
-                : "The following contracts will expire within 14 days:\n\n");
+        message.append(LanguageManager.get("contract.expiring.intro"));
 
         for (com.company.system.model.Contract c : expiring) {
-            message.append("• ").append(c.getContractType())
-                    .append(" — ").append(sq ? "Skadon" : "Expires")
-                    .append(": ").append(c.getEndDate()).append("\n");
-        }
+            message.append(LanguageManager.get("contract.expiring.itemPrefix"))
+                    .append(c.getContractType())
+                    .append(LanguageManager.get("contract.expiring.statusSuffix"))
+                    .append(LanguageManager.get("contract.expiring.expires")).append(": ").append(c.getEndDate()).append("\n");}
 
-        message.append(sq
-                ? "\nJu lutem kontaktoni administratorin per rinovim."
-                : "\nPlease contact the administrator for renewal.");
+        message.append(LanguageManager.get("contract.expiring.footer"));
+
 
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             DialogUtils.style(alert);
-            alert.setTitle(sq ? "Paralajmerim — Kontrata" : "Warning — Contract");
-            alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
+            alert.setTitle(LanguageManager.get("contract.expiring.alertTitle"));
+            alert.setHeaderText(LanguageManager.get("contract.expiring.alertHeader"));
             Label content = new Label(message.toString());
             content.setWrapText(true);
             content.setMaxWidth(400);
@@ -492,12 +489,11 @@ public class MainController {
     private void handleExit() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Dalje" : "Exit");
+        alert.setTitle(LanguageManager.get("exit.title"));
         alert.setHeaderText(null);
-
-        ButtonType mainMenuType = new ButtonType(isAlbanian() ? "Menyja kryesore" : "Main Menu", ButtonBar.ButtonData.OTHER);
-        ButtonType desktopType = new ButtonType(isAlbanian() ? "Dil nga programi" : "Quit to Desktop", ButtonBar.ButtonData.OTHER);
-        ButtonType cancelType = new ButtonType(isAlbanian() ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType mainMenuType = new ButtonType(LanguageManager.get("exit.mainMenu"), ButtonBar.ButtonData.OTHER);
+        ButtonType desktopType = new ButtonType(LanguageManager.get("exit.desktop"), ButtonBar.ButtonData.OTHER);
+        ButtonType cancelType = new ButtonType(LanguageManager.get("exit.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(mainMenuType, desktopType, cancelType);
 
         Label icon = new Label("🚪");
@@ -505,11 +501,11 @@ public class MainController {
         icon.setGraphic(createPopupIcon(ICON_EXIT, "#3b82f6"));
         icon.setStyle("-fx-padding: 10;");
 
-        Label title = new Label(isAlbanian() ? "A jeni i sigurt qe doni te dilni?" : "Are you sure you want to exit?");
+        Label title = new Label(LanguageManager.get("exit.confirmTitle"));
         title.setWrapText(true); title.setMaxWidth(360); title.setAlignment(Pos.CENTER);
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Label subtitle = new Label(isAlbanian() ? "Zgjidhni nje opsion per dalje." : "Choose an exit option.");
+        Label subtitle = new Label(LanguageManager.get("exit.confirmSubtitle"));
         subtitle.setStyle("-fx-font-size: 13px; -fx-opacity: 0.8;");
 
         VBox content = new VBox(12, icon, title, subtitle);
@@ -804,34 +800,30 @@ public class MainController {
         Label title = new Label(LanguageManager.get("help.title"));
         title.getStyleClass().add("page-title");
 
-        Label intro = new Label(sq
-                ? "Kjo faqe shpjegon navigimin e user-it dhe shkurtesat kryesore."
-                : "This page explains user navigation and the main shortcuts.");
+        Label intro = new Label(LanguageManager.get("help.user.intro"));
         intro.setWrapText(true);
         intro.getStyleClass().add("body-text");
 
         VBox sections = new VBox(14);
         sections.getChildren().addAll(
-                createHelpSection(sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni sidebar-in per Dashboard, My Contract, My Salary, My Department dhe Settings."
-                                : "Use the sidebar for Dashboard, My Contract, My Salary, My Department and Settings.",
-                        sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."),
-                createHelpSection(sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
+                createHelpSection(LanguageManager.get("help.user.navigation.title"),
+                        LanguageManager.get("help.user.navigation.line1"),
+                        LanguageManager.get("help.user.navigation.line2")),
+                createHelpSection(LanguageManager.get("help.user.shortcuts.title"),
                         "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "Ctrl+K - My Contract",
-                        "Ctrl+S - My Salary",
-                        "Ctrl+R - My Department",
-                        "Ctrl+P - Settings",
+                        "Ctrl+K - " + LanguageManager.get("help.user.shortcuts.contracts"),
+                        "Ctrl+S - " + LanguageManager.get("help.user.shortcuts.salaries"),
+                        "Ctrl+R - " + LanguageManager.get("help.user.shortcuts.departments"),
+                        "Ctrl+P - " + LanguageManager.get("menu.profile"),
                         "Ctrl+L - " + LanguageManager.get("menu.language"),
                         "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
-                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
-                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.user.shortcuts.back"),
+                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.user.shortcuts.forward"),
+                        "F5 - " + LanguageManager.get("help.user.shortcuts.refresh"),
                         "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(sq ? "Menuja me klikim te djathte" : "Right-click menu",
-                        sq ? "Klikoni me te djathten kudo ne program per Rifresko, Ndihma dhe Dil nga programi."
-                                : "Right-click anywhere in the program for Refresh, Help and Exit program.",
-                        sq ? "Klikimi diku tjeter e mbyll menune." : "Clicking somewhere else closes the menu.")
+                createHelpSection(LanguageManager.get("help.user.context.title"),
+                        LanguageManager.get("help.user.context.line1"),
+                        LanguageManager.get("help.user.context.line2"))
         );
 
         return wrapHelpView(title, intro, sections);
