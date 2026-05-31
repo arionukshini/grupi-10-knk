@@ -208,6 +208,7 @@
     -fx-pref-height: 42;
     -fx-padding: 0 12 0 12;
     -fx-cursor: hand;
+    -fx-translate-y: 0;
 }
 
 .sidebar-icon-box {
@@ -230,11 +231,19 @@
 
 .nav-button:hover {
     -fx-background-color: -side-hover;
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.42), 14, 0.28, 0, 4);
+    -fx-translate-y: -1;
 }
 
 .nav-button.active {
     -fx-background-color: -side-active;
     -fx-text-fill: #031b34;
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.48), 14, 0.3, 0, 4);
+}
+
+.nav-button:pressed {
+    -fx-effect: dropshadow(gaussian, rgba(88, 166, 255, 0.22), 8, 0.18, 0, 2);
+    -fx-translate-y: 0;
 }
 
 .nav-button.active .sidebar-svg-icon {
