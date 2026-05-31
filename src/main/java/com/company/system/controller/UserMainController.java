@@ -963,26 +963,22 @@ public class UserMainController {
         Label name = new Label(colleague.getFirstName() + " " + colleague.getLastName());
         name.getStyleClass().add("section-title");
 
-        HBox infoRow = new HBox(18);
-        infoRow.setAlignment(Pos.CENTER_LEFT);
-
-        VBox leftInfo = new VBox(4);
+        VBox infoBox = new VBox(4);
         Label position = new Label(t("Position", "Pozita") + ": " + valueOrDash(colleague.getPosition()));
+        Label email = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
         Label status = new Label(t("Status", "Statusi") + ": " + valueOrDash(colleague.getStatus()));
 
         position.getStyleClass().add("body-text");
+        email.getStyleClass().add("body-text");
         status.getStyleClass().add("body-text");
 
-        leftInfo.getChildren().addAll(position, status);
+        position.setWrapText(true);
+        email.setWrapText(true);
+        status.setWrapText(true);
 
-        VBox rightInfo = new VBox(4);
-        Label email = new Label(t("Email", "Email") + ": " + valueOrDash(colleague.getEmail()));
-        email.getStyleClass().add("body-text");
-        rightInfo.getChildren().add(email);
+        infoBox.getChildren().addAll(position, email, status);
 
-        infoRow.getChildren().addAll(leftInfo, rightInfo);
-
-        card.getChildren().addAll(name, infoRow);
+        card.getChildren().addAll(name, infoBox);
         return card;
     }
 
@@ -1173,7 +1169,7 @@ public class UserMainController {
     }
 
     private String formatHours(double value) {
-        return String.format("%.2f ore", value);
+        return String.format("%.2f", value);
     }
 
     private String formatNumber(double value) {
