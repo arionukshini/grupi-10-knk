@@ -592,41 +592,41 @@ public class MainController {
 
         User user = Session.getUser();
         if (user != null && !"ADMIN".equalsIgnoreCase(user.getRole())) {
-            loadView("/views/user-dashboard-view.fxml", dashboardButton, "Failed to load user dashboard.");
+            loadView("/views/user-dashboard-view.fxml", dashboardButton, LanguageManager.get("load.userDashboard"));
             return;
         }
 
-        loadView("/views/dashboard-view.fxml", dashboardButton, "Failed to load dashboard.");
+        loadView("/views/dashboard-view.fxml", dashboardButton, LanguageManager.get("load.dashboard"));
     }
 
     @FXML public void showEmployees() {
         recordNavigation("employees"); currentView = "employees";
         setStatus(LanguageManager.get("status.employees"));
-        loadView("/views/employees-view.fxml", employeesButton, "Failed to load employees.");
+        loadView("/views/employees-view.fxml", employeesButton, LanguageManager.get("load.employees"));
     }
 
     @FXML public void showContracts() {
         recordNavigation("contracts"); currentView = "contracts";
         setStatus(LanguageManager.get("status.contracts"));
-        loadView("/views/contracts-view.fxml", contractsButton, "Failed to load contracts.");
+        loadView("/views/contracts-view.fxml", contractsButton, LanguageManager.get("load.contracts"));
     }
 
     @FXML public void showSalaries() {
         recordNavigation("salaries"); currentView = "salaries";
         setStatus(LanguageManager.get("status.salaries"));
-        loadView("/views/salaries-view.fxml", salariesButton, "Failed to load salaries.");
+        loadView("/views/salaries-view.fxml", salariesButton, LanguageManager.get("load.salaries"));
     }
 
     @FXML public void showDepartments() {
         recordNavigation("departments"); currentView = "departments";
         setStatus(LanguageManager.get("status.departments"));
-        loadView("/views/departments-view.fxml", departmentsButton, "Failed to load departments.");
+        loadView("/views/departments-view.fxml", departmentsButton, LanguageManager.get("load.departments"));
     }
 
     @FXML public void showUsers() {
         recordNavigation("users"); currentView = "users";
         setStatus(LanguageManager.get("status.users"));
-        loadView("/views/users-view.fxml", usersButton, "Failed to load users.");
+        loadView("/views/users-view.fxml", usersButton, LanguageManager.get("load.users"));
     }
 
     @FXML
