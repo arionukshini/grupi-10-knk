@@ -1,8 +1,10 @@
 package com.company.system.service;
 
 import com.company.system.model.Contract;
+import com.company.system.model.Department;
 import com.company.system.model.Employee;
 import com.company.system.model.Salary;
+import com.company.system.model.User;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.apache.poi.ss.usermodel.*;
@@ -169,6 +171,102 @@ public class ExportService {
                     String.format("%.2f", s.getDeductions()),
                     String.format("%.2f", s.getNetSalary()),
                     s.getPaymentDate() != null ? s.getPaymentDate().toString() : "-");
+            alt = !alt;
+        }
+
+        doc.add(table);
+        doc.close();
+    }
+
+    // DEPARTMENTS
+
+    public static void exportDepartmentsToExcel(List<Department> departments, File file) throws Exception {
+        try (Workbook wb = new XSSFWorkbook()) {
+            Sheet sheet = wb.createSheet("Departments");
+            String[] headers = {"ID", "Name", "Description"};
+            createHeaderRow(wb, sheet, headers);
+
+            int row = 1;
+            for (Department d : departments) {
+                Row r = sheet.createRow(row++);
+                r.createCell(0).setCellValue(d.getId());
+                r.createCell(1).setCellValue(nvl(d.getName()));
+                r.createCell(2).setCellValue(nvl(d.getDescription()));
+            }
+
+            autoSize(sheet, headers.length);
+            try (FileOutputStream fos = new FileOutputStream(file)) { wb.write(fos); }
+        }
+    }
+
+    public static void exportDepartmentsToPdf(List<Department> departments, File file) throws Exception {
+        Document doc = new Document(PageSize.A4);
+        PdfWriter.getInstance(doc, new FileOutputStream(file));
+        doc.open();
+        addTitle(doc, "Departments Report");
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.setWidths(new float[]{1, 3, 5});
+        addPdfHeaders(table, "ID", "Name", "Description");
+
+        boolean alt = false;
+        for (Department d : departments) {
+            BaseColor bg = alt ? new BaseColor(240, 245, 255) : BaseColor.WHITE;
+            addPdfRow(table, bg,
+                    String.valueOf(d.getId()),
+                    nvl(d.getName()),
+                    nvl(d.getDescription()));
+            alt = !alt;
+        }
+
+        doc.add(table);
+        doc.close();
+    }
+
+    // USERS
+
+    public static void exportUsersToExcel(List<User> users, File file) throws Exception {
+        try (Workbook wb = new XSSFWorkbook()) {
+            Sheet sheet = wb.createSheet("Users");
+            String[] headers = {"ID", "Username", "Employee", "Role", "Created At"};
+            createHeaderRow(wb, sheet, headers);
+
+            int row = 1;
+            for (User u : users) {
+                Row r = sheet.createRow(row++);
+                r.createCell(0).setCellValue(u.getId());
+                r.createCell(1).setCellValue(nvl(u.getUsername()));
+                r.createCell(2).setCellValue(nvl(u.getEmployeeName()));
+                r.createCell(3).setCellValue(nvl(u.getRole()));
+                r.createCell(4).setCellValue(u.getCreatedAt() != null ? u.getCreatedAt().toString() : "-");
+            }
+
+            autoSize(sheet, headers.length);
+            try (FileOutputStream fos = new FileOutputStream(file)) { wb.write(fos); }
+        }
+    }
+
+    public static void exportUsersToPdf(List<User> users, File file) throws Exception {
+        Document doc = new Document(PageSize.A4.rotate());
+        PdfWriter.getInstance(doc, new FileOutputStream(file));
+        doc.open();
+        addTitle(doc, "Users Report");
+
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);
+        table.setWidths(new float[]{1, 3, 3, 2, 3});
+        addPdfHeaders(table, "ID", "Username", "Employee", "Role", "Created At");
+
+        boolean alt = false;
+        for (User u : users) {
+            BaseColor bg = alt ? new BaseColor(240, 245, 255) : BaseColor.WHITE;
+            addPdfRow(table, bg,
+                    String.valueOf(u.getId()),
+                    nvl(u.getUsername()),
+                    nvl(u.getEmployeeName()),
+                    nvl(u.getRole()),
+                    u.getCreatedAt() != null ? u.getCreatedAt().toString() : "-");
             alt = !alt;
         }
 

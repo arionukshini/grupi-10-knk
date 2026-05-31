@@ -332,6 +332,7 @@ public class UserService {
                 """;
         String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
         String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
+        String deleteVacationRequestsSql = "DELETE FROM vacation_requests WHERE employee_id = ?";
         String deleteUserSql = "DELETE FROM users WHERE id = ?";
         String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
 
@@ -348,6 +349,7 @@ public class UserService {
                     PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
                     PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
                     PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
+                    PreparedStatement vacationRequestsStmt = conn.prepareStatement(deleteVacationRequestsSql);
                     PreparedStatement deleteUserStmt = conn.prepareStatement(deleteUserSql);
                     PreparedStatement deleteEmployeeStmt = conn.prepareStatement(deleteEmployeeSql)
             ) {
@@ -395,6 +397,9 @@ public class UserService {
 
                     contractsStmt.setInt(1, employeeId);
                     contractsStmt.executeUpdate();
+
+                    vacationRequestsStmt.setInt(1, employeeId);
+                    vacationRequestsStmt.executeUpdate();
 
                     deleteEmployeeStmt.setInt(1, employeeId);
                     deleteEmployeeStmt.executeUpdate();

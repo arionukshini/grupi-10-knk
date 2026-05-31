@@ -73,6 +73,11 @@
                         maxWidth="Infinity"
                         onAction="#showDepartment"/>
 
+                <Button fx:id="leaveButton"
+                        styleClass="nav-button"
+                        maxWidth="Infinity"
+                        onAction="#showLeaveRequests"/>
+
                 <Button fx:id="settingsButton"
                         styleClass="nav-button"
                         maxWidth="Infinity"
