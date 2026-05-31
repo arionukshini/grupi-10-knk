@@ -4,6 +4,7 @@ module com.company.system {
     requires javafx.fxml;
     requires javafx.base;
     requires java.sql;
+    requires java.desktop;
     requires org.apache.poi.ooxml;
     requires itextpdf;
 
@@ -13,4 +14,3 @@ module com.company.system {
 
     exports com.company.system;
 }
-

@@ -22,6 +22,10 @@
                     <Label text="My Contract" styleClass="page-title"/>
                     <Label fx:id="statusBadgeLabel" text="-" styleClass="page-subtitle"/>
                 </VBox>
+                <Button fx:id="exportPdfButton"
+                        text="Eksporto Kontratën PDF"
+                        onAction="#handleExportPdf"
+                        styleClass="primary-button"/>
             </HBox>
 
             <!-- MAIN CONTENT -->
@@ -106,6 +110,11 @@
                         <Label fx:id="statusLabel2" text="-" styleClass="info-card-value"/>
                     </VBox>
 
+                    <Separator/>
+
+                    <Label text="Kliko 'Eksporto Kontratën PDF' për të shkarkuar kontratën tënde."
+                           wrapText="true"
+                           style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
                 </VBox>
 
             </HBox>

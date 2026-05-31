@@ -7,6 +7,7 @@ import com.company.system.model.Employee;
 import com.company.system.model.LeaveRequest;
 import com.company.system.model.Salary;
 import com.company.system.model.User;
+import com.company.system.service.ContractPdfService;
 import com.company.system.service.ContractService;
 import com.company.system.service.DepartmentService;
 import com.company.system.service.EmployeeService;
@@ -18,19 +19,17 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
@@ -46,25 +45,22 @@ public class UserDashboardController {
     @FXML private Label salaryTitleLabel;
     @FXML private Label departmentTitleLabel;
     @FXML private Label colleaguesTitleLabel;
-
     @FXML private VBox employeeDetailsBox;
     @FXML private VBox contractDetailsBox;
     @FXML private VBox salaryDetailsBox;
     @FXML private VBox departmentDetailsBox;
-
     @FXML private TableView<Employee> colleaguesTable;
     @FXML private TableColumn<Employee, String> colleagueNameColumn;
     @FXML private TableColumn<Employee, String> colleaguePositionColumn;
     @FXML private TableColumn<Employee, String> colleagueEmailColumn;
     @FXML private TableColumn<Employee, String> colleagueStatusColumn;
+    @FXML private Label greetingLabel;
+    @FXML private VBox documentsBox;
+    @FXML private VBox notificationsBox;
 
-
-    @FXML private Label greetingLabel;        // "Pershendetje, Arjanita!"
-    @FXML private VBox documentsBox;          // Dokumentet e rendesishme
-    @FXML private VBox notificationsBox;      // Njoftime te fundit (pushimet)
-
-    private static final DateTimeFormatter DATE_FMT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private Employee currentEmployee;
+    private Contract currentContract;
 
     @FXML
     public void initialize() {
@@ -91,7 +87,8 @@ public class UserDashboardController {
         colleaguesTable.setPlaceholder(new Label(LanguageManager.get("profile.noColleagues")));
         colleagueNameColumn.setText(LanguageManager.get("profile.colleagueName"));
         colleagueNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
-                valueOrDash(cellData.getValue().getFirstName()) + " " + valueOrDash(cellData.getValue().getLastName())));
+                valueOrDash(cellData.getValue().getFirstName()) + " " +
+                        valueOrDash(cellData.getValue().getLastName())));
         colleaguePositionColumn.setText(LanguageManager.get("profile.colleaguePosition"));
         colleaguePositionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         colleagueEmailColumn.setText(LanguageManager.get("profile.colleagueEmail"));
@@ -102,7 +99,6 @@ public class UserDashboardController {
 
     private void loadUserDashboard() {
         User user = Session.getUser();
-
 
         if (greetingLabel != null) {
             String name = user != null ? user.getUsername() : "-";
@@ -115,28 +111,28 @@ public class UserDashboardController {
             loadSalaryDetails(null);
             departmentDetailsBox.getChildren().setAll(createDetail(LanguageManager.get("profile.noDepartment")));
             colleaguesTable.setItems(FXCollections.observableArrayList());
-            loadDocuments(null);
+            loadDocuments(null, null);
             loadNotifications(null);
             return;
         }
 
-        Employee employee   = EmployeeService.getEmployeeById(user.getEmployeeId());
-        Department department = employee == null ? null : DepartmentService.getDepartmentById(employee.getDepartmentId());
-        Contract contract   = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
-        Salary salary       = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
+        currentEmployee = EmployeeService.getEmployeeById(user.getEmployeeId());
+        Department department = currentEmployee == null ? null :
+                DepartmentService.getDepartmentById(currentEmployee.getDepartmentId());
+        currentContract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
+        Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
 
         List<Employee> colleagues = new ArrayList<>();
-        if (department != null && employee != null)
-            colleagues = EmployeeService.getEmployeesByDepartment(department.getId(), employee.getId());
+        if (department != null && currentEmployee != null)
+            colleagues = EmployeeService.getEmployeesByDepartment(
+                    department.getId(), currentEmployee.getId());
 
-        loadEmployeeDetails(employee, department);
-        loadContractDetails(contract);
+        loadEmployeeDetails(currentEmployee, department);
+        loadContractDetails(currentContract);
         loadSalaryDetails(salary);
         loadDepartmentDetails(department);
         colleaguesTable.setItems(FXCollections.observableArrayList(colleagues));
-
-
-        loadDocuments(employee);
+        loadDocuments(currentEmployee, currentContract);
         loadNotifications(user);
     }
 
@@ -191,19 +187,15 @@ public class UserDashboardController {
         );
     }
 
-    private void loadDocuments(Employee employee) {
+    private void loadDocuments(Employee employee, Contract contract) {
         if (documentsBox == null) return;
         documentsBox.getChildren().clear();
 
         String[][] docs = {
-                {isAlbanian() ? "Kontrata e punes"              : "Work Contract",            "contract"},
-                {isAlbanian() ? "Marreveshja e konfidencialitetit" : "Confidentiality Agreement","confidentiality"},
-                {isAlbanian() ? "Rregullorja e punes"           : "Work Regulations",          "regulations"},
-                {isAlbanian() ? "Politikat e sigurise se informacionit" : "Information Security Policy", "security"},
-                {isAlbanian() ? "Mbrojtja e te dhenave personale" : "Personal Data Protection", "data"},
-                {isAlbanian() ? "Politikat e tavolines se paster" : "Clean Desk Policy",        "cleandesk"},
+                {"Kontrata e punes", "contract"},
+                {"Rregullorja e punes", "regulations"},
+                {"Mbrojtja e te dhenave personale", "data"},
         };
-
 
         HBox row = null;
         for (int i = 0; i < docs.length; i++) {
@@ -212,14 +204,13 @@ public class UserDashboardController {
                 row.setMaxWidth(Double.MAX_VALUE);
                 documentsBox.getChildren().add(row);
             }
-            HBox.setHgrow(createDocCard(docs[i][0], docs[i][1]), Priority.ALWAYS);
-            row.getChildren().add(createDocCard(docs[i][0], docs[i][1]));
-            HBox.setHgrow(row.getChildren().get(row.getChildren().size() - 1), Priority.ALWAYS);
+            HBox card = createDocCard(docs[i][0], docs[i][1], employee, contract);
+            HBox.setHgrow(card, Priority.ALWAYS);
+            row.getChildren().add(card);
         }
     }
 
-
-    private HBox createDocCard(String title, String type) {
+    private HBox createDocCard(String title, String type, Employee employee, Contract contract) {
         Label name = new Label(title);
         name.setWrapText(true);
         name.getStyleClass().add("body-text");
@@ -227,7 +218,12 @@ public class UserDashboardController {
 
         Button readBtn = new Button(isAlbanian() ? "Lexo" : "Read");
         readBtn.getStyleClass().add("btn-secondary");
-        readBtn.setOnAction(e -> showDocumentInfo(title));
+
+        switch (type) {
+            case "contract"     -> readBtn.setOnAction(e -> openContractPdf(title, employee, contract));
+            case "regulations"  -> readBtn.setOnAction(e -> openDocumentDialog(title, buildRegulationsText(employee)));
+            case "data"         -> readBtn.setOnAction(e -> openDocumentDialog(title, buildDataProtectionText(employee)));
+        }
 
         HBox card = new HBox(12, name, readBtn);
         card.getStyleClass().add("content-card");
@@ -237,16 +233,146 @@ public class UserDashboardController {
         return card;
     }
 
+    private void openContractPdf(String title, Employee employee, Contract contract) {
+        if (employee == null || contract == null) {
+            showInfo(isAlbanian() ? "Nuk ka kontrate aktive per te shfaqur." : "No active contract found.");
+            return;
+        }
+        try {
+            byte[] pdfBytes = ContractPdfService.generateContractPdf(employee, contract);
+            File tempFile = File.createTempFile("kontrata_", ".pdf");
+            tempFile.deleteOnExit();
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(pdfBytes);
+            }
+            java.awt.Desktop.getDesktop().open(tempFile);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showError(isAlbanian() ? "Gabim gjate gjenerimit te PDF-se." : "Error generating PDF.");
+        }
+    }
 
-    private void showDocumentInfo(String title) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                javafx.scene.control.Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(isAlbanian()
-                ? "Dokumenti \"" + title + "\" eshte ne dispozicion. Kontaktoni HR per me shume informacion."
-                : "Document \"" + title + "\" is available. Contact HR for more information.");
-        alert.showAndWait();
+    private void openDocumentDialog(String title, String content) {
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        Label titleLbl = new Label(title);
+        titleLbl.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f2850;");
+        titleLbl.setWrapText(true);
+
+        TextArea textArea = new TextArea(content);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setStyle("-fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-background-color: white;");
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+
+        Button closeBtn = new Button(isAlbanian() ? "Mbyll" : "Close");
+        closeBtn.getStyleClass().add("btn-secondary");
+        closeBtn.setOnAction(e -> stage.close());
+
+        VBox root = new VBox(16, titleLbl, textArea, closeBtn);
+        root.setPadding(new Insets(24));
+        root.setStyle("-fx-background-color: white;");
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+
+        stage.setScene(new Scene(root, 760, 640));
+        stage.show();
+    }
+
+    private String buildRegulationsText(Employee employee) {
+        String name = employee != null ? employee.getFirstName() + " " + employee.getLastName() : "-";
+        return """
+RREGULLORJA E BRENDSHME E PUNËS
+Centrix Solutions SH.P.K
+
+PËRMBAJTJA
+
+KREU I – DISPOZITAT E PËRGJITHSHME
+
+Neni 1 – QËLLIMI
+Kjo Rregullore e Brendshme e Punës rregullon të drejtat dhe detyrimet e punëdhënësit dhe punonjësve gjatë marrëdhënies së punës.
+
+Neni 2 – FUSHËVEPRIMI
+Kjo rregullore zbatohet për të gjithë punonjësit e Centrix Solutions SH.P.K, duke përfshirë:
+  - Punonjës me kohë të plotë
+  - Punonjës me kohë të pjesshme
+  - Punonjës me kontratë të afatizuar
+
+Neni 3 – PËRKUFIZIMET
+"Kompania" nënkupton Centrix Solutions SH.P.K.
+"Punonjësi" nënkupton çdo person i angazhuar me kontratë pune.
+"Menaxheri" nënkupton mbikëqyrësin direkt të punonjësit.
+
+KREU II – RREGULLAT E SJELLJES
+
+Neni 4 – ETIKA DHE KOMUNIKIMI
+Çdo punonjës është i detyruar të:
+  - Silleni me respekt ndaj kolegëve dhe klientëve
+  - Komunikoni në mënyrë profesionale
+  - Ruani konfidencialitetin e informacioneve të kompanisë
+
+Neni 5 – ORARI I PUNËS
+  - Orari standard: 08:00 - 16:00, e Hënë deri të Premte
+  - Çdo ndryshim i orarit duhet miratuar nga menaxheri
+
+Neni 6 – PUSHIMET DHE LEJET
+  - Pushimi vjetor: sipas legjislacionit në fuqi
+  - Leja mjekësore: me vërtetim mjekësor
+  - Leja për raste familjare: sipas Ligjit të Punës
+
+KREU III – DISPOZITAT FINALE
+
+Neni 7
+Kjo rregullore hyn në fuqi nga data e nënshkrimit dhe zbatohet për të gjithë punonjësit.
+
+─────────────────────────────────────
+Centrix Solutions SH.P.K
+Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
+""";
+    }
+
+    private String buildDataProtectionText(Employee employee) {
+        String name = employee != null ? employee.getFirstName() + " " + employee.getLastName() : "-";
+        return """
+POLITIKA E MBROJTJES SË TË DHËNAVE PERSONALE
+Centrix Solutions SH.P.K
+
+1. HYRJE
+Centrix Solutions SH.P.K është e angazhuar për mbrojtjen e të dhënave personale të punonjësve, klientëve dhe partnerëve, në përputhje me legjislacionin në fuqi.
+
+2. TË DHËNAT QË MBLIDHEN
+Kompania mbledh dhe përpunon:
+  - Të dhëna identifikuese (emri, mbiemri, numri personal)
+  - Të dhëna kontaktuese (adresa, telefoni, email-i)
+  - Të dhëna të punësimit (pozita, paga, kontrata)
+  - Të dhëna financiare (llogaria bankare për pagesë të pagës)
+
+3. QËLLIMI I PËRPUNIMIT
+Të dhënat përpunohen vetëm për:
+  - Ekzekutimin e kontratës së punës
+  - Detyrimet ligjore dhe tatimore
+  - Administrimin e burimeve njerëzore
+
+4. RUAJTJA E TË DHËNAVE
+  - Të dhënat ruhen vetëm për periudhën e nevojshme
+  - Pas mbarimit të marrëdhënies së punës, të dhënat ruhen sipas afateve ligjore
+  - Aksesi në të dhëna është i kufizuar vetëm për personelin e autorizuar
+
+5. TË DREJTAT E PUNONJËSIT
+Çdo punonjës ka të drejtë të:
+  - Kërkojë qasje në të dhënat e tij personale
+  - Kërkojë korrigjimin e të dhënave të pasakta
+  - Kundërshtojë përpunimin e të dhënave
+
+6. KONTAKTI
+Për çdo pyetje lidhur me të dhënat personale, kontaktoni:
+  hr@centrixsolutions.com
+
+─────────────────────────────────────
+Centrix Solutions SH.P.K
+Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
+""";
     }
 
     private void loadNotifications(User user) {
@@ -259,12 +385,10 @@ public class UserDashboardController {
         }
 
         List<LeaveRequest> requests = LeaveRequestService.getRequestsByEmployee(user.getEmployeeId());
-
         if (requests.isEmpty()) {
             notificationsBox.getChildren().add(createEmptyNotif());
             return;
         }
-
 
         int count = Math.min(requests.size(), 8);
         for (int i = 0; i < count; i++) {
@@ -272,45 +396,38 @@ public class UserDashboardController {
         }
     }
 
-
     private VBox createNotifRow(LeaveRequest r) {
-        String status   = r.getStatus() == null ? "Pending" : r.getStatus();
+        String status = r.getStatus() == null ? "Pending" : r.getStatus();
         String dotColor = switch (status) {
             case "Approved" -> "#22c55e";
             case "Rejected" -> "#ef4444";
-            default          -> "#f97316";
+            default -> "#f97316";
         };
-
 
         StackPane dot = new StackPane();
         dot.setMinSize(10, 10);
         dot.setMaxSize(10, 10);
         dot.setStyle("-fx-background-color: " + dotColor + "; -fx-background-radius: 5;");
 
-
         String statusText = switch (status) {
             case "Approved" -> isAlbanian() ? "Kerkesa juaj per pushim eshte aprovuar" : "Your leave request was approved";
             case "Rejected" -> isAlbanian() ? "Kerkesa juaj per pushim eshte refuzuar" : "Your leave request was rejected";
-            default          -> isAlbanian() ? "Kerkesa juaj per pushim eshte ne pritje" : "Your leave request is pending";
+            default -> isAlbanian() ? "Kerkesa juaj per pushim eshte procesuar" : "Your leave request is pending";
         };
 
         Label titleLbl = new Label(statusText);
-        titleLbl.getStyleClass().add("notification-title");
         titleLbl.setWrapText(true);
         titleLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
-
-        String dateRange = formatDate(r.getStartDate()) + " - " + formatDate(r.getEndDate());
-        String type      = displayType(r);
-        String detail    = isAlbanian()
-                ? "Pushimi " + dateRange + " (" + type + ") eshte " + statusText.toLowerCase() + "."
-                : "Leave " + dateRange + " (" + type + ") status: " + status + ".";
+        String dateRange = formatDate(r.getStartDate()) + " deri " + formatDate(r.getEndDate());
+        String detail = isAlbanian()
+                ? "Pushimi juaj per datat " + dateRange + " eshte " +
+                (status.equals("Approved") ? "aprovuar" : status.equals("Rejected") ? "refuzuar" : "ne pritje") + "."
+                : "Your leave request for " + dateRange + " is " + status.toLowerCase() + ".";
 
         Label detailLbl = new Label(detail);
-        detailLbl.getStyleClass().add("body-text");
         detailLbl.setWrapText(true);
         detailLbl.setStyle("-fx-font-size: 11.5px; -fx-opacity: 0.75;");
-
 
         Label timeLbl = new Label(formatTimestamp(r.getRequestedAt()));
         timeLbl.setStyle("-fx-font-size: 11px; -fx-opacity: 0.5;");
@@ -319,32 +436,17 @@ public class UserDashboardController {
         header.setAlignment(Pos.CENTER_LEFT);
 
         VBox row = new VBox(4, header, detailLbl, timeLbl);
-        row.getStyleClass().add("notification-row");
         row.setPadding(new Insets(10, 14, 10, 14));
         row.setStyle("-fx-border-color: -border; -fx-border-width: 0 0 1 0;");
-
         return row;
     }
 
     private VBox createEmptyNotif() {
-        Label lbl = new Label(isAlbanian()
-                ? "Nuk keni njoftime aktualisht."
-                : "No notifications at this time.");
+        Label lbl = new Label(isAlbanian() ? "Nuk keni njoftime aktualisht." : "No notifications at this time.");
         lbl.getStyleClass().add("body-text");
         VBox box = new VBox(lbl);
         box.setPadding(new Insets(16));
         return box;
-    }
-
-
-
-    private String displayType(LeaveRequest r) {
-        return switch (r.getRequestType() == null ? "" : r.getRequestType()) {
-            case "Annual Leave"  -> isAlbanian() ? "Pushim vjetor"   : "Annual Leave";
-            case "Medical Leave" -> isAlbanian() ? "Pushim mjekesor" : "Medical Leave";
-            case "Holiday"       -> isAlbanian() ? "Feste"           : "Holiday";
-            default              -> r.getRequestType();
-        };
     }
 
     private String formatDate(java.sql.Date date) {
@@ -354,8 +456,7 @@ public class UserDashboardController {
 
     private String formatTimestamp(Timestamp ts) {
         if (ts == null) return "";
-        long diff = System.currentTimeMillis() - ts.getTime();
-        long days = diff / (1000 * 60 * 60 * 24);
+        long days = (System.currentTimeMillis() - ts.getTime()) / (1000 * 60 * 60 * 24);
         if (days == 0) return isAlbanian() ? "sot" : "today";
         if (days == 1) return isAlbanian() ? "dje" : "yesterday";
         return days + (isAlbanian() ? " dite me pare" : " days ago");
@@ -379,6 +480,20 @@ public class UserDashboardController {
 
     private String valueOrDash(String value) {
         return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private void showInfo(String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.showAndWait();
+    }
+
+    private void showError(String msg) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.showAndWait();
     }
 
     private boolean isAlbanian() {
