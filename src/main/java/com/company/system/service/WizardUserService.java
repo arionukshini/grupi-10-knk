@@ -40,7 +40,7 @@ public class WizardUserService {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         String insertUser = """
-                INSERT INTO users (username, password_hash, role, employee_id, must_reset_password)
+                INSERT INTO users (username, password_hash, role, employee_id, must_change_password)
                 VALUES (?, ?, 'USER', ?, TRUE)
                 """;
 

@@ -230,7 +230,7 @@
                         <VBox styleClass="info-notice" spacing="4">
                             <padding><Insets top="10" right="12" bottom="10" left="12"/></padding>
                             <Label text="ℹ Informacion" styleClass="notice-title"/>
-                            <Label text="Fjalëkalimi ruhet i hash-uar. Fusha must_reset_password vendoset true automatikisht." styleClass="notice-text" wrapText="true"/>
+                            <Label text="Fjalekalimi ruhet i hash-uar. Fusha must_change_password vendoset true automatikisht." styleClass="notice-text" wrapText="true"/>
                         </VBox>
                     </VBox>
                 </VBox>
