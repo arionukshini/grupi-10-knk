@@ -4,12 +4,14 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.Session;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -137,7 +139,10 @@ public class LoginController {
                     getClass().getResource("/views/reset-password-view.fxml")
             );
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(loader.load());
+            Parent root = loader.load();
+            stage.getScene().setRoot(root);
+            KeyboardNavigation.install(stage.getScene());
+            KeyboardNavigation.focusFirst(root);
         } catch (Exception e) {
             e.printStackTrace();
         }

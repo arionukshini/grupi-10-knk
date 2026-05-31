@@ -1,6 +1,7 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.model.Department;
 
 import java.sql.Connection;
@@ -56,13 +57,16 @@ public class DepartmentService {
             stmt.setString(1, department.getName());
             stmt.setString(2, department.getDescription());
 
-            return stmt.executeUpdate() > 0;
+            int updated = stmt.executeUpdate();
+            if (updated == 0) {
+                throw new DatabaseOperationException("exception.department.update.notFound");
+            }
+
+            return true;
 
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            throw new DatabaseOperationException("exception.department.update.database", e);
         }
-
-        return false;
     }
 
     public static boolean updateDepartment(Department department) {

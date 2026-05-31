@@ -1,6 +1,9 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.exceptions.DatabaseOperationException;
+import com.company.system.exceptions.InvalidPaymentException;
+import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Salary;
 import com.company.system.model.Employee;
 import com.company.system.service.EmployeeService;
@@ -349,6 +352,12 @@ public class SalariesController {
         try {
             salaryToSave = buildSalaryFromForm(0, true);
             if (salaryToSave == null) return;
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
+            return;
+        } catch (InvalidPaymentException e) {
+            e.showAlert();
+            return;
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),
@@ -356,24 +365,24 @@ public class SalariesController {
             return;
         }
 
-        boolean saved = SalaryService.addSalary(salaryToSave);
+        try {
+            boolean saved = SalaryService.addSalary(salaryToSave);
 
-        if (saved) {
+            if (saved) {
 
-            loadSalaries();
-            clearFields();
-            calculatedSalary = null;
+                loadSalaries();
+                clearFields();
+                calculatedSalary = null;
 
 
-            showAlert(Alert.AlertType.INFORMATION,
-                    LanguageManager.get("message.success.title"),
-                    LanguageManager.get("salaries.save.success"));
-        } else {
-
-            showAlert(Alert.AlertType.ERROR,
-                    LanguageManager.get("message.error.title"),
-                    LanguageManager.get("salaries.save.error"));
+                showAlert(Alert.AlertType.INFORMATION,
+                        LanguageManager.get("message.success.title"),
+                        LanguageManager.get("salaries.save.success"));
+            }
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         }
+
     }
 
     @FXML
@@ -429,6 +438,12 @@ public class SalariesController {
                         LanguageManager.get("salaries.update.error"));
             }
 
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
+        } catch (InvalidPaymentException e) {
+            e.showAlert();
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),
@@ -472,6 +487,12 @@ public class SalariesController {
                         LanguageManager.get("message.error.title"),
                         LanguageManager.get("salaries.pay.error"));
             }
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
+        } catch (InvalidPaymentException e) {
+            e.showAlert();
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),

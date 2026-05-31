@@ -2,11 +2,13 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.service.UserService;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.PasswordUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -165,7 +167,10 @@ public class ResetPasswordController {
                     .getScene()
                     .getWindow();
 
-            stage.getScene().setRoot(loader.load());
+            Parent root = loader.load();
+            stage.getScene().setRoot(root);
+            KeyboardNavigation.install(stage.getScene());
+            KeyboardNavigation.focusFirst(root);
 
         } catch (Exception e) {
             e.printStackTrace();

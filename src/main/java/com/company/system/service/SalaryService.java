@@ -1,6 +1,9 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.DatabaseOperationException;
+import com.company.system.exceptions.InvalidPaymentException;
+import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Salary;
 
 import java.sql.*;
@@ -138,10 +141,8 @@ public class SalaryService {
             return affected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.salary.save.database", e);
         }
-
-        return false;
     }
 
     public static boolean updateSalary(Salary salary) {
@@ -184,14 +185,15 @@ public class SalaryService {
             stmt.setInt(13, salary.getId());
 
             int updated = stmt.executeUpdate();
+            if (updated == 0) {
+                throw new DatabaseOperationException("exception.salary.update.notFound");
+            }
 
-            return updated > 0;
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.salary.update.database", e);
         }
-
-        return false;
     }
 
     public static boolean deleteSalary(int salaryId) {
@@ -230,6 +232,17 @@ public class SalaryService {
             double deductions,
             Date paymentDate
     ) {
+        validatePaymentInput(
+                employeeId,
+                monthlySalary,
+                workedDays,
+                vacationDays,
+                workHours,
+                overtimeHours,
+                bonus,
+                deductions,
+                paymentDate
+        );
 
         double dailyRate = monthlySalary / STANDARD_WORK_DAYS;
 
@@ -240,6 +253,10 @@ public class SalaryService {
         double grossSalary = basePay + overtimePay;
 
         double netSalary = grossSalary + bonus - deductions;
+
+        if (netSalary < 0) {
+            throw new InvalidPaymentException("exception.payment.netNegative");
+        }
 
         return new Salary(
                 id,
@@ -285,13 +302,56 @@ public class SalaryService {
             stmt.setDouble(6, salary.getNetSalary());
             stmt.setDate(7, salary.getPaymentDate());
 
-            return stmt.executeUpdate() > 0;
+            int inserted = stmt.executeUpdate();
+            if (inserted == 0) {
+                throw new DatabaseOperationException("exception.payment.history.notInserted");
+            }
+
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.payment.history.database", e);
         }
+    }
 
-        return false;
+    private static void validatePaymentInput(
+            int employeeId,
+            double monthlySalary,
+            int workedDays,
+            int vacationDays,
+            double workHours,
+            double overtimeHours,
+            double bonus,
+            double deductions,
+            Date paymentDate
+    ) {
+        if (employeeId <= 0) {
+            throw new InvalidPaymentException("exception.payment.employeePositive");
+        }
+        if (monthlySalary <= 0) {
+            throw new InvalidSalaryException(monthlySalary, "salaries.baseSalary");
+        }
+        if (workedDays < 0 || workedDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.workedDaysRange");
+        }
+        if (vacationDays < 0 || vacationDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.vacationDaysRange");
+        }
+        if (workedDays + vacationDays > STANDARD_WORK_DAYS) {
+            throw new InvalidPaymentException("exception.payment.totalDaysRange");
+        }
+        if (workHours < 0 || overtimeHours < 0) {
+            throw new InvalidPaymentException("exception.payment.hoursNegative");
+        }
+        if (bonus < 0) {
+            throw new InvalidSalaryException(bonus, "salaries.bonus");
+        }
+        if (deductions < 0) {
+            throw new InvalidSalaryException(deductions, "salaries.deductions");
+        }
+        if (paymentDate == null) {
+            throw new InvalidPaymentException("exception.payment.dateRequired");
+        }
     }
 
     public static List<Salary> getSalaryHistory(int employeeId) {
