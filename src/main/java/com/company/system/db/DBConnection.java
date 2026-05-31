@@ -178,6 +178,28 @@ public class DBConnection {
                     """);
 
             stmt.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS vacation_requests (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+
+                        employee_id INT NOT NULL,
+
+                        start_date DATE NOT NULL,
+                        end_date DATE NOT NULL,
+
+                        reason VARCHAR(500),
+
+                        status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
+
+                        admin_response VARCHAR(500),
+
+                        requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        reviewed_at TIMESTAMP NULL,
+
+                        FOREIGN KEY (employee_id) REFERENCES employees(id)
+                    );
+                    """);
+
+            stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(100) NOT NULL,
@@ -217,68 +239,68 @@ public class DBConnection {
                         INSERT INTO employees\s
                          (first_name, last_name, email, phone, position, department_id, hire_date, base_salary, status)
                          VALUES
-                         ('Arion', 'Ukshini', 'arion.ukshini@company.com', '+38344111222', 'Software Engineer', 3, '2024-01-15', 1200.00, 'Active'),
+                         ('Arion', 'Ukshini', 'arion.ukshini@company.com', '+38344111222', 'Software Engineer', 3, '2026-01-15', 1200.00, 'Active'),
                         
-                         ('Arjanita', 'Lestrani', 'arjanita.lestrani@company.com', '+38344111333', 'HR Manager', 1, '2023-06-10', 1100.00, 'Active'),
+                         ('Arjanita', 'Lestrani', 'arjanita.lestrani@company.com', '+38344111333', 'HR Manager', 1, '2025-11-10', 1100.00, 'Active'),
                         
-                         ('Florentina', 'Dervishaj', 'florentina.dervishaj@company.com', '+38344111444', 'Accountant', 2, '2022-09-01', 1000.00, 'Active'),
+                         ('Florentina', 'Dervishaj', 'florentina.dervishaj@company.com', '+38344111444', 'Accountant', 2, '2025-09-01', 1000.00, 'Active'),
                         
-                         ('Edison', 'Ukshini', 'edison.ukshini@company.com', '+38344111555', 'Marketing Specialist', 4, '2024-03-20', 950.00, 'Active'),
+                         ('Edison', 'Ukshini', 'edison.ukshini@company.com', '+38344111555', 'Marketing Specialist', 4, '2026-03-20', 950.00, 'Active'),
                         
-                         ('Arijola', 'Krasniqi', 'arijola.krasniqi@company.com', '+38344111666', 'Sales Representative', 5, '2023-11-05', 900.00, 'Inactive'),
+                         ('Arijola', 'Krasniqi', 'arijola.krasniqi@company.com', '+38344111666', 'Sales Representative', 5, '2025-11-05', 900.00, 'Inactive'),
                         
-                         ('Alekta', 'Thaqi', 'alekta.thaqi@company.com', '+38344111777', 'System Administrator', 3, '2021-12-12', 1300.00, 'Active');
+                         ('Alekta', 'Thaqi', 'alekta.thaqi@company.com', '+38344111777', 'System Administrator', 3, '2025-12-12', 1300.00, 'Active');
                         """);
 
                 stmt.executeUpdate("""
                         INSERT INTO contracts
                          (employee_id, contract_type, start_date, end_date, salary, status)
                          VALUES
-                         (1, 'Full-Time', '2024-01-15', '2026-01-15', 1200.00, 'Active'),
+                         (1, 'Full-Time', '2026-01-15', '2028-01-15', 1200.00, 'Active'),
                         
-                         (2, 'Full-Time', '2023-06-10', '2025-06-10', 1100.00, 'Active'),
+                         (2, 'Full-Time', '2025-11-10', '2027-11-10', 1100.00, 'Active'),
                         
-                         (3, 'Full-Time', '2022-09-01', '2025-09-01', 1000.00, 'Active'),
+                         (3, 'Full-Time', '2025-09-01', '2027-09-01', 1000.00, 'Active'),
                         
-                         (4, 'Part-Time', '2024-03-20', '2025-03-20', 950.00, 'Active'),
+                         (4, 'Part-Time', '2026-03-20', '2027-03-20', 950.00, 'Active'),
                         
-                         (5, 'Internship', '2023-11-05', '2024-11-05', 900.00, 'Expired'),
+                         (5, 'Internship', '2025-11-05', '2026-05-15', 900.00, 'Expired'),
                         
-                         (6, 'Full-Time', '2021-12-12', '2026-12-12', 1300.00, 'Active');
+                         (6, 'Full-Time', '2025-12-12', '2027-12-12', 1300.00, 'Active');
                         """);
 
                 stmt.executeUpdate("""
                         INSERT INTO salaries
                        (employee_id,gross_salary,bonus,deductions,worked_days,vacation_days,work_hours,overtime_hours,net_salary,payment_date)
                         VALUES
-                        (1, 1200.00, 100.00, 50.00, 20, 2, 160, 10, 1250.00, '2026-05-01'),
+                        (1, 1200.00, 100.00, 50.00, 20, 2, 160, 10, 1250.00, '2026-05-31'),
                     
-                        (2, 1100.00, 50.00, 20.00, 21, 1, 155, 5, 1130.00, '2026-05-01'),
+                        (2, 1100.00, 50.00, 20.00, 21, 1, 155, 5, 1130.00, '2026-05-31'),
                        
-                        (3, 1000.00, 0.00, 30.00, 22, 0, 150, 0, 970.00, '2026-05-01'),
+                        (3, 1000.00, 0.00, 30.00, 22, 0, 150, 0, 970.00, '2026-05-31'),
                        
-                        (4, 950.00, 25.00, 15.00, 19, 3, 145, 2, 960.00, '2026-05-01'),
+                        (4, 950.00, 25.00, 15.00, 19, 3, 145, 2, 960.00, '2026-05-31'),
                        
-                        (5, 900.00, 0.00, 10.00, 18, 0, 140, 0, 890.00, '2026-05-01'),
+                        (5, 900.00, 0.00, 10.00, 18, 0, 140, 0, 890.00, '2026-05-31'),
                        
-                        (6, 1300.00, 150.00, 60.00, 22, 1, 170, 12, 1390.00, '2026-05-01');
+                        (6, 1300.00, 150.00, 60.00, 22, 1, 170, 12, 1390.00, '2026-05-31');
                        """);
 
                 stmt.executeUpdate("""
                             INSERT INTO salary_history
                             (salary_id,employee_id,gross_salary,bonus,deductions,net_salary,payment_date)
                             VALUES
-                            (1, 1, 1200.00, 100.00, 50.00, 1250.00, '2026-05-01'),
+                            (1, 1, 1200.00, 100.00, 50.00, 1250.00, '2026-05-31'),
                         
-                            (2, 2, 1100.00, 50.00, 20.00, 1130.00, '2026-05-01'),
+                            (2, 2, 1100.00, 50.00, 20.00, 1130.00, '2026-05-31'),
                         
-                            (3, 3, 1000.00, 0.00, 30.00, 970.00, '2026-05-01'),
+                            (3, 3, 1000.00, 0.00, 30.00, 970.00, '2026-05-31'),
                         
-                            (4, 4, 950.00, 25.00, 15.00, 960.00, '2026-05-01'),
+                            (4, 4, 950.00, 25.00, 15.00, 960.00, '2026-05-31'),
                         
-                            (5, 5, 900.00, 0.00, 10.00, 890.00, '2026-05-01'),
+                            (5, 5, 900.00, 0.00, 10.00, 890.00, '2026-05-31'),
                         
-                            (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-01');
+                            (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-31');
                         """);
 
                 System.out.println("Demo data inserted!");
