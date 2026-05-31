@@ -201,18 +201,6 @@ public class DBConnection {
                     );
                     """);
 
-            try (ResultSet vacationColumns = stmt.executeQuery("""
-                    SHOW COLUMNS FROM vacation_requests LIKE 'request_type'
-                    """)) {
-                if (!vacationColumns.next()) {
-                    stmt.executeUpdate("""
-                            ALTER TABLE vacation_requests
-                            ADD COLUMN request_type VARCHAR(60) NOT NULL DEFAULT 'Annual Leave'
-                            AFTER employee_id
-                            """);
-                }
-            }
-
             stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
