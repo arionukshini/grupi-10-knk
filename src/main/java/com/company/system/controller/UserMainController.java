@@ -153,14 +153,6 @@ public class UserMainController {
         loadView("/views/my-contract-view.fxml", contractButton,
                 t("Failed to load contract.", "Kontrata nuk u hap."));
     }
-    @FXML
-    public void showContract() {
-        recordNavigation("contract");
-        currentView = "contract";
-        setStatus(t("My Contract opened", "My Contract u hap"));
-        loadView("/views/my-contract-view.fxml", contractButton,
-                t("Failed to load contract.", "Kontrata nuk u hap."));
-    }
 
     @FXML
     public void showSalary() {
