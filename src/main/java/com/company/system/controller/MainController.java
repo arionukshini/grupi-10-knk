@@ -89,6 +89,7 @@ public class MainController {
     private boolean profileLanguageChanged = false;
     private boolean navigatingHistory = false;
     private Timeline sidebarAnimation;
+    private static MainController activeController;
 
     @FXML private BorderPane mainShell;
     @FXML private VBox sidebar;
@@ -114,6 +115,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        activeController = this;
         mainShell.getStyleClass().add("light");
         updateTexts();
         updateLoggedInUser();
@@ -140,6 +142,7 @@ public class MainController {
         mainShell.getStyleClass().removeAll(themeClasses);
         mainShell.getStyleClass().add(darkMode ? "dark" : "light");
         updateThemeButton();
+        updateNotificationButton();
     }
 
     @FXML
@@ -367,6 +370,12 @@ public class MainController {
                 : pendingCount + " pending leave requests"));
     }
 
+    public static void refreshOpenShellNotifications() {
+        if (activeController != null) {
+            activeController.updateNotificationButton();
+        }
+    }
+
     private void updateSidebarState() {
         if (sidebarAnimation != null) sidebarAnimation.stop();
 
@@ -567,7 +576,10 @@ public class MainController {
         showWelcome();
     }
 
-    public void setContent(Node node) { contentArea.getChildren().setAll(node); }
+    public void setContent(Node node) {
+        updateNotificationButton();
+        contentArea.getChildren().setAll(node);
+    }
     public void setStatus(String message) { statusLabel.setText(message); }
 
     private void recordNavigation(String targetView) {
@@ -739,6 +751,7 @@ public class MainController {
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("module-scroll");
         contentArea.getChildren().setAll(scroll);
+        updateNotificationButton();
     }
 
     @FXML
@@ -746,10 +759,8 @@ public class MainController {
         recordNavigation("leaveRequests");
         currentView = "leaveRequests";
         setStatus(isAlbanian() ? "Kerkesat per pushime u hapen" : "Leave requests opened");
-        clearActiveButton();
-        updateNotificationButton();
         loadView("/views/admin-leave-requests-view.fxml", notificationButton, "Failed to load leave requests.");
-        clearActiveButton();
+        updateNotificationButton();
     }
 
     private void handleExport(String type, String format, Label statusLabel, boolean sq) {

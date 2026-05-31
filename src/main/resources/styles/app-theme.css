@@ -71,10 +71,32 @@
 }
 
 .notification-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 7;
+    -fx-border-radius: 7;
+    -fx-text-fill: #d9ecff;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-min-width: 44;
-    -fx-padding: 0 10 0 10;
+    -fx-min-width: 40;
+    -fx-min-height: 38;
+    -fx-padding: 0 8 0 8;
+}
+
+.notification-button .sidebar-icon-box {
+    -fx-min-width: 24;
+    -fx-pref-width: 24;
+    -fx-max-width: 24;
+}
+
+.notification-button .sidebar-svg-icon {
+    -fx-stroke: #d9ecff;
+}
+
+.notification-button:hover,
+.notification-button.active {
+    -fx-background-color: rgba(255, 255, 255, 0.16);
+    -fx-border-color: rgba(255, 255, 255, 0.18);
 }
 
 .icon-button:hover,
@@ -547,6 +569,14 @@
 }
 
 .dialog-pane.app-dialog {
+    -surface: #ffffff;
+    -surface-soft: #edf6ff;
+    -text-main: #0d1b2a;
+    -text-muted: #5c6f86;
+    -border: #c8dff5;
+    -accent: #2f80ed;
+    -accent-dark: #0b3d78;
+    -side-active: #58a6ff;
     -fx-background-color: #f6fbff;
     -fx-background-radius: 12;
     -fx-border-color: #b9d7ef;
@@ -590,6 +620,26 @@
 
 .dialog-pane.app-dialog .button:hover {
     -fx-background-color: #14589e;
+}
+
+.dialog-pane.app-dialog .success-button {
+    -fx-background-color: #16a34a;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.dialog-pane.app-dialog .success-button:hover {
+    -fx-background-color: #15803d;
+}
+
+.dialog-pane.app-dialog .danger-button {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.dialog-pane.app-dialog .danger-button:hover {
+    -fx-background-color: #b91c1c;
 }
 
 .dialog-pane.app-dialog .button:cancel {

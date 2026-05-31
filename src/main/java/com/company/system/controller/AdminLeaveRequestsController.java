@@ -17,7 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -25,7 +24,6 @@ import java.sql.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public class AdminLeaveRequestsController {
 
@@ -164,10 +162,18 @@ public class AdminLeaveRequestsController {
         message.setMinHeight(Label.USE_PREF_SIZE);
 
         TextArea commentArea = new TextArea();
-        commentArea.setPromptText(isAlbanian() ? "Komenti i adminit" : "Admin comment");
+        commentArea.setPromptText(isAlbanian()
+                ? "Komenti i adminit, minimumi 10 karaktere"
+                : "Admin comment, minimum 10 characters");
         commentArea.setText(request.getAdminResponse() == null ? "" : request.getAdminResponse());
         commentArea.setWrapText(true);
         commentArea.setPrefRowCount(3);
+
+        Label commentHint = new Label(isAlbanian()
+                ? "Komenti i adminit eshte i detyrueshem dhe duhet te kete te pakten 10 karaktere."
+                : "Admin comment is required and must be at least 10 characters.");
+        commentHint.getStyleClass().add("field-label");
+        commentHint.setWrapText(true);
 
         Button approveButton = new Button(isAlbanian() ? "Prano" : "Accept");
         approveButton.getStyleClass().add("success-button");
@@ -182,7 +188,7 @@ public class AdminLeaveRequestsController {
         HBox actions = new HBox(10, approveButton, rejectButton);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox content = new VBox(12, title, details, messageTitle, message, commentArea, actions);
+        VBox content = new VBox(12, title, details, messageTitle, message, commentHint, commentArea, actions);
         content.setPadding(new Insets(8));
         content.setPrefWidth(520);
         alert.getDialogPane().setContent(content);
@@ -190,10 +196,18 @@ public class AdminLeaveRequestsController {
     }
 
     private void handleDecision(Alert parentAlert, LeaveRequest request, String status, String comment) {
+        if (comment == null || comment.trim().length() < 10) {
+            showError(isAlbanian()
+                    ? "Komenti i adminit duhet te kete te pakten 10 karaktere."
+                    : "Admin comment must be at least 10 characters.");
+            return;
+        }
+
         boolean success = LeaveRequestService.updateStatus(request.getId(), status, comment);
         if (success) {
             parentAlert.close();
             loadRequests();
+            MainController.refreshOpenShellNotifications();
             showInfo(isAlbanian()
                     ? "Kerkesa u perditesua me sukses."
                     : "Request updated successfully.");
