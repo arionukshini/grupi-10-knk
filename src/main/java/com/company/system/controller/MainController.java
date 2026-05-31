@@ -654,6 +654,8 @@ public class MainController {
         HBox empRow = new HBox(10);
         Button empExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
         Button empPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
+        empExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
+        empPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
         empExcel.getStyleClass().add("primary-button");
         empPdf.getStyleClass().add("primary-button");
         empRow.getChildren().addAll(empExcel, empPdf);
@@ -663,6 +665,8 @@ public class MainController {
         HBox conRow = new HBox(10);
         Button conExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
         Button conPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
+        conExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
+        conPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
         conExcel.getStyleClass().add("primary-button");
         conPdf.getStyleClass().add("primary-button");
         conRow.getChildren().addAll(conExcel, conPdf);
@@ -672,9 +676,29 @@ public class MainController {
         HBox salRow = new HBox(10);
         Button salExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
         Button salPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
+        salExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
+        salPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
         salExcel.getStyleClass().add("primary-button");
         salPdf.getStyleClass().add("primary-button");
         salRow.getChildren().addAll(salExcel, salPdf);
+
+        Label depTitle = new Label(sq ? "Departamentet" : "Departments");
+        depTitle.getStyleClass().add("section-title");
+        HBox depRow = new HBox(10);
+        Button depExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
+        Button depPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        depExcel.getStyleClass().add("primary-button");
+        depPdf.getStyleClass().add("primary-button");
+        depRow.getChildren().addAll(depExcel, depPdf);
+
+        Label userTitle = new Label(sq ? "Perdoruesit" : "Users");
+        userTitle.getStyleClass().add("section-title");
+        HBox userRow = new HBox(10);
+        Button userExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
+        Button userPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        userExcel.getStyleClass().add("primary-button");
+        userPdf.getStyleClass().add("primary-button");
+        userRow.getChildren().addAll(userExcel, userPdf);
 
         Label statusMsg = new Label("");
         statusMsg.setWrapText(true);
@@ -685,8 +709,13 @@ public class MainController {
         conPdf.setOnAction(e -> handleExport("contracts", "pdf", statusMsg, sq));
         salExcel.setOnAction(e -> handleExport("salaries", "excel", statusMsg, sq));
         salPdf.setOnAction(e -> handleExport("salaries", "pdf", statusMsg, sq));
+        depExcel.setOnAction(e -> handleExport("departments", "excel", statusMsg, sq));
+        depPdf.setOnAction(e -> handleExport("departments", "pdf", statusMsg, sq));
+        userExcel.setOnAction(e -> handleExport("users", "excel", statusMsg, sq));
+        userPdf.setOnAction(e -> handleExport("users", "pdf", statusMsg, sq));
 
-        page.getChildren().addAll(title, empTitle, empRow, conTitle, conRow, salTitle, salRow, statusMsg);
+        page.getChildren().addAll(title, empTitle, empRow, conTitle, conRow, salTitle, salRow,
+                depTitle, depRow, userTitle, userRow, statusMsg);
 
         ScrollPane scroll = new ScrollPane(page);
         scroll.setFitToWidth(true);
@@ -712,6 +741,10 @@ public class MainController {
                 case "contracts-pdf" -> com.company.system.service.ExportService.exportContractsToPdf(com.company.system.service.ContractService.getAllContracts(), file);
                 case "salaries-excel" -> com.company.system.service.ExportService.exportSalariesToExcel(com.company.system.service.SalaryService.getAllSalaries(), file);
                 case "salaries-pdf" -> com.company.system.service.ExportService.exportSalariesToPdf(com.company.system.service.SalaryService.getAllSalaries(), file);
+                case "departments-excel" -> com.company.system.service.ExportService.exportDepartmentsToExcel(com.company.system.service.DepartmentService.getAllDepartments(), file);
+                case "departments-pdf" -> com.company.system.service.ExportService.exportDepartmentsToPdf(com.company.system.service.DepartmentService.getAllDepartments(), file);
+                case "users-excel" -> com.company.system.service.ExportService.exportUsersToExcel(com.company.system.service.UserService.getAllUsers(), file);
+                case "users-pdf" -> com.company.system.service.ExportService.exportUsersToPdf(com.company.system.service.UserService.getAllUsers(), file);
             }
             statusLabel.setStyle("-fx-text-fill: green;");
             statusLabel.setText((sq ? "U eksportua me sukses: " : "Exported successfully: ") + file.getName());
