@@ -343,8 +343,7 @@ public class MainController {
 
     private void updateLoggedInUser() {
         User user = Session.getUser();
-        loggedInLabel.setText("Logged in as: " + UserService.getDisplayName(user));
-    }
+        loggedInLabel.setText(LanguageManager.get("status.loggedInAs") + " " + UserService.getDisplayName(user));    }
 
     private void updateThemeButton() {
         setIconOnlyButton(themeButton, darkMode ? ICON_SUN : ICON_MOON);
@@ -768,20 +767,18 @@ public class MainController {
         Label title = new Label(LanguageManager.get("help.title"));
         title.getStyleClass().add("page-title");
 
-        Label intro = new Label(sq
-                ? "Kjo faqe shpjegon menyren e perdorimit te sistemit, navigimin dhe shkurtesat kryesore."
-                : "This page explains how to use the system, navigate through modules and use keyboard shortcuts.");
+        Label intro = new Label(LanguageManager.get("help.admin.intro"));
         intro.setWrapText(true);
         intro.getStyleClass().add("body-text");
 
         VBox sections = new VBox(14);
         sections.getChildren().addAll(
-                createHelpSection(sq ? "Navigimi kryesor" : "Main navigation",
-                        sq ? "Perdorni butonat ne toolbar per te hapur modulet kryesore." : "Use the toolbar buttons to open the main modules.",
-                        sq ? "Menuja ☰ permban daljen, modulet, gjuhen, ndihmen dhe llogarine." : "The ☰ menu contains exit, modules, language, help and account options.",
-                        sq ? "Status bar poshte tregon pamjen aktuale te hapur." : "The bottom status bar shows the currently opened view."),
-                createHelpSection(sq ? "Shkurtesat nga tastiera" : "Keyboard shortcuts",
-                        "Ctrl+E - " + LanguageManager.get("menu.employees"),
+                createHelpSection(LanguageManager.get("help.admin.navigation.title"),
+                        LanguageManager.get("help.admin.navigation.line1"),
+                        LanguageManager.get("help.admin.navigation.line2"),
+                        LanguageManager.get("help.admin.navigation.line3")),
+                createHelpSection(LanguageManager.get("help.admin.shortcuts.title"),
+                "Ctrl+E - " + LanguageManager.get("menu.employees"),
                         "Ctrl+K - " + LanguageManager.get("menu.contracts"),
                         "Ctrl+S - " + LanguageManager.get("menu.salaries"),
                         "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
@@ -790,19 +787,19 @@ public class MainController {
                         "Ctrl+P - " + LanguageManager.get("menu.profile"),
                         "Ctrl+L - " + LanguageManager.get("menu.language"),
                         "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + (sq ? "Kthehu prapa" : "Go back"),
-                        "Alt+Right / Mouse Forward - " + (sq ? "Shko perpara" : "Go forward"),
-                        "F5 - " + (sq ? "Rifresko pamjen aktuale" : "Refresh current view"),
+                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.admin.shortcuts.back"),
+                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.admin.shortcuts.forward"),
+                        "F5 - " + LanguageManager.get("help.admin.shortcuts.refresh"),
                         "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(sq ? "Menuja me klikim te djathte" : "Right-click menu",
-                        sq ? "Klikoni me te djathten ne nje hapesire te zbrazet per Rifresko, Ndihma dhe Dil nga programi." : "Right-click an empty area for Refresh, Help and Exit program.",
-                        sq ? "Rifresko ngarkon perseri pamjen aktuale pa ndryshuar modulin." : "Refresh reloads the current view without changing modules."),
-                createHelpSection(sq ? "Gjuha" : "Language",
-                        sq ? "Gjuha mund te ndryshohet nga menuja ☰ ose nga faqja e llogarise." : "The language can be changed from the ☰ menu or from the account page.",
-                        sq ? "Pas ndryshimit te gjuhes, tekstet kryesore perditesohen automatikisht." : "After changing the language, the main texts are updated automatically."),
-                createHelpSection(sq ? "Llogaria" : "Account",
-                        sq ? "Nga llogaria mund te shihni perdoruesin aktual dhe te ndryshoni gjuhen." : "From the account page you can view the current user and change the language.",
-                        sq ? "Butoni per dalje e mbyll sesionin dhe ju kthen te faqja e kyçjes." : "The logout button clears the session and returns you to the login page.")
+                createHelpSection(LanguageManager.get("help.admin.context.title"),
+                        LanguageManager.get("help.admin.context.line1"),
+                        LanguageManager.get("help.admin.context.line2")),
+                createHelpSection(LanguageManager.get("help.admin.language.title"),
+                        LanguageManager.get("help.admin.language.line1"),
+                        LanguageManager.get("help.admin.language.line2")),
+                createHelpSection(LanguageManager.get("help.admin.account.title"),
+                        LanguageManager.get("help.admin.account.line1"),
+                        LanguageManager.get("help.admin.account.line2"))
         );
 
         return wrapHelpView(title, intro, sections);
