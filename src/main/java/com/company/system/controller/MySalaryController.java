@@ -110,7 +110,7 @@ public class MySalaryController {
                             + " | Neto: " + formatMoney(salary.getNetSalary())
             );
 
-            card.setStyle("-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: #d9e2ec; -fx-border-radius: 8;");
+            card.getStyleClass().addAll("info-card", "body-text");
             historyContainer.getChildren().add(card);
         }
     }
