@@ -1,8 +1,11 @@
 package com.company.system.controller;
 
 import com.company.system.model.Contract;
+import com.company.system.model.Employee;
 import com.company.system.model.User;
+import com.company.system.service.ContractPdfService;
 import com.company.system.service.ContractService;
+import com.company.system.service.EmployeeService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
 import com.company.system.utils.Session;
@@ -30,8 +33,10 @@ public class MyContractController {
     @FXML private Label statusLabel2;
     @FXML private Label statusBadgeLabel;
     @FXML private Button exportButton;
+    @FXML private Button exportPdfButton;
 
     private Contract contract;
+    private Employee employee;
 
     @FXML
     public void initialize() {
@@ -50,10 +55,12 @@ public class MyContractController {
         }
 
         contract = ContractService.getLatestContractByEmployeeId(employeeId);
+        employee = EmployeeService.getEmployeeById(employeeId);
 
         if (contract == null) {
             showEmpty("Nuk ka kontratë të regjistruar.");
             if (exportButton != null) exportButton.setDisable(true);
+            if (exportPdfButton != null) exportPdfButton.setDisable(true);
             return;
         }
 
@@ -92,7 +99,6 @@ public class MyContractController {
         );
 
         File file = fileChooser.showSaveDialog(exportButton.getScene().getWindow());
-
         if (file == null) return;
 
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
@@ -123,6 +129,42 @@ public class MyContractController {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Gabim",
                     "Kontrata nuk u eksportua. Provoni perseri.");
+        }
+    }
+
+    @FXML
+    private void handleExportPdf() {
+        if (contract == null || employee == null) {
+            showAlert(Alert.AlertType.WARNING, "Paralajmërim", "Nuk ka kontratë për të eksportuar.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Ruaj kontratën si PDF");
+        fileChooser.setInitialFileName("kontrata_" +
+                contract.getEmployeeName().replace(" ", "_") + ".pdf");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("PDF File", "*.pdf")
+        );
+
+        Button btn = exportPdfButton != null ? exportPdfButton : exportButton;
+        File file = fileChooser.showSaveDialog(btn.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            byte[] pdfBytes = ContractPdfService.generateContractPdf(employee, contract);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(pdfBytes);
+            }
+            showAlert(Alert.AlertType.INFORMATION, "Sukses",
+                    "Kontrata PDF u ruajt me sukses:\n" + file.getAbsolutePath());
+
+            java.awt.Desktop.getDesktop().open(file);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Gabim",
+                    "Gabim gjate gjenerimit te PDF-se. Provoni perseri.");
         }
     }
 
