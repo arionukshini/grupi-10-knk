@@ -178,6 +178,28 @@ public class DBConnection {
                     """);
 
             stmt.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS vacation_requests (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+
+                        employee_id INT NOT NULL,
+
+                        start_date DATE NOT NULL,
+                        end_date DATE NOT NULL,
+
+                        reason VARCHAR(500),
+
+                        status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
+
+                        admin_response VARCHAR(500),
+
+                        requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        reviewed_at TIMESTAMP NULL,
+
+                        FOREIGN KEY (employee_id) REFERENCES employees(id)
+                    );
+                    """);
+
+            stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(100) NOT NULL,
