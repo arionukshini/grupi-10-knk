@@ -183,6 +183,8 @@ public class DBConnection {
 
                         employee_id INT NOT NULL,
 
+                        request_type VARCHAR(60) NOT NULL DEFAULT 'Annual Leave',
+
                         start_date DATE NOT NULL,
                         end_date DATE NOT NULL,
 
@@ -199,6 +201,18 @@ public class DBConnection {
                     );
                     """);
 
+            try (ResultSet vacationColumns = stmt.executeQuery("""
+                    SHOW COLUMNS FROM vacation_requests LIKE 'request_type'
+                    """)) {
+                if (!vacationColumns.next()) {
+                    stmt.executeUpdate("""
+                            ALTER TABLE vacation_requests
+                            ADD COLUMN request_type VARCHAR(60) NOT NULL DEFAULT 'Annual Leave'
+                            AFTER employee_id
+                            """);
+                }
+            }
+
             stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -210,6 +224,17 @@ public class DBConnection {
                         must_change_password BOOLEAN NOT NULL DEFAULT FALSE
                     )
                     """);
+
+            try (ResultSet userColumns = stmt.executeQuery("""
+                    SHOW COLUMNS FROM users LIKE 'must_change_password'
+                    """)) {
+                if (!userColumns.next()) {
+                    stmt.executeUpdate("""
+                            ALTER TABLE users
+                            ADD COLUMN must_change_password BOOLEAN NOT NULL DEFAULT FALSE
+                            """);
+                }
+            }
 
             ResultSet rs =
                     stmt.executeQuery(
@@ -303,6 +328,15 @@ public class DBConnection {
                             (6, 6, 1300.00, 150.00, 60.00, 1390.00, '2026-05-31');
                         """);
 
+                stmt.executeUpdate("""
+                        INSERT INTO vacation_requests
+                        (employee_id, request_type, start_date, end_date, reason, status)
+                        VALUES
+                        (1, 'Annual Leave', '2026-06-08', '2026-06-12', 'Family travel planned for the week.', 'Pending'),
+                        (3, 'Medical Leave', '2026-06-02', '2026-06-04', 'Medical appointment and recovery days.', 'Pending'),
+                        (5, 'Holiday', '2026-06-15', '2026-06-16', 'Personal holiday request.', 'Approved');
+                        """);
+
                 System.out.println("Demo data inserted!");
             }
 
@@ -323,7 +357,7 @@ public class DBConnection {
 
     private static void seedDefaultAdmin(Connection conn) throws SQLException {
         String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_reset_password) VALUES (NULL, ?, ?, ?, FALSE)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (NULL, ?, ?, ?, FALSE)";
 
         try (Statement countStmt = conn.createStatement();
              ResultSet rs = countStmt.executeQuery(countSql)) {
@@ -355,7 +389,7 @@ public class DBConnection {
 
         String findEmployeeSql = "SELECT id FROM employees WHERE first_name = ? AND last_name = ?";
         String userExistsSql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_reset_password) VALUES (?, ?, ?, 'USER', TRUE)";
+        String insertSql = "INSERT INTO users (employee_id, username, password_hash, role, must_change_password) VALUES (?, ?, ?, 'USER', TRUE)";
 
         try (PreparedStatement findEmployeeStmt = conn.prepareStatement(findEmployeeSql);
              PreparedStatement userExistsStmt = conn.prepareStatement(userExistsSql);
