@@ -147,6 +147,9 @@ public class SalariesController {
     private Button updateButton;
 
     @FXML
+    private Button payButton;
+
+    @FXML
     private Button deleteButton;
 
     @FXML
@@ -239,6 +242,9 @@ public class SalariesController {
             saveButton.setText(LanguageManager.get("salaries.save"));
         }
         updateButton.setText(LanguageManager.get("salaries.update"));
+        if (payButton != null) {
+            payButton.setText(LanguageManager.get("salaries.payEmployee"));
+        }
         deleteButton.setText(LanguageManager.get("salaries.delete"));
         clearButton.setText(LanguageManager.get("salaries.clear"));
     }
@@ -350,10 +356,6 @@ public class SalariesController {
             calculatedSalary = salary;
             updatePreviewLabels(salary);
 
-            showAlert(Alert.AlertType.INFORMATION,
-                    LanguageManager.get("message.success.title"),
-                    LanguageManager.get("salaries.calculate.success"));
-
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),
@@ -377,8 +379,6 @@ public class SalariesController {
         if (saved) {
 
             // 🔥 ADD HISTORY ENTRY ALSO
-            SalaryService.addSalaryHistory(calculatedSalary);
-
             loadSalaries();
             clearFields();
             calculatedSalary = null;
@@ -430,51 +430,13 @@ public class SalariesController {
 
         try {
 
-            int employeeId = Integer.parseInt(employeeIdField.getText());
-            double grossSalary = Double.parseDouble(baseSalaryField.getText());
-
-            int workedDays = Integer.parseInt(workedDaysField.getText());
-            int vacationDays = Integer.parseInt(vacationDaysField.getText());
-            double workHours = Double.parseDouble(workHoursField.getText());
-            double overtimeHours = Double.parseDouble(overtimeHoursField.getText());
-
-            double bonus = Double.parseDouble(bonusField.getText());
-            double deductions = Double.parseDouble(deductionsField.getText());
-
-            LocalDate localDate = paymentDatePicker.getValue();
-
-            if (localDate == null) {
-                showAlert(Alert.AlertType.ERROR,
-                        LanguageManager.get("message.error.title"),
-                        LanguageManager.get("salaries.paymentDate.required"));
-                return;
-            }
-
-            Date paymentDate = Date.valueOf(localDate);
-
-            double dailyRate = grossSalary / 22;
-            double overtimePay = overtimeHours * (dailyRate / 8) * 1.5;
-            double netSalary = grossSalary + bonus - deductions;
-
-            Salary updatedSalary = new Salary(
-                    selected.getId(),
-                    employeeId,
-                    grossSalary,
-                    bonus,
-                    deductions,
-                    workedDays,
-                    vacationDays,
-                    workHours,
-                    overtimeHours,
-                    dailyRate,
-                    overtimePay,
-                    netSalary,
-                    paymentDate
-            );
+            Salary updatedSalary = buildSalaryFromForm(selected.getId(), true);
+            if (updatedSalary == null) return;
 
             if (SalaryService.updateSalary(updatedSalary)) {
 
                 loadSalaries();
+                loadSalaryHistory(updatedSalary.getEmployeeId());
                 clearFields();
 
                 showAlert(Alert.AlertType.INFORMATION,
@@ -486,6 +448,49 @@ public class SalariesController {
                         LanguageManager.get("salaries.update.error"));
             }
 
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR,
+                    LanguageManager.get("message.error.title"),
+                    LanguageManager.get("salaries.invalid.input"));
+        }
+    }
+
+    @FXML
+    private void handlePayEmployee() {
+
+        Salary selected = salariesTable.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING,
+                    LanguageManager.get("message.warning.title"),
+                    LanguageManager.get("salaries.select.first"));
+            return;
+        }
+
+        try {
+            Salary salaryToPay = buildSalaryFromForm(selected.getId(), true);
+            if (salaryToPay == null) return;
+
+            if (!SalaryService.updateSalary(salaryToPay)) {
+                showAlert(Alert.AlertType.ERROR,
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.update.error"));
+                return;
+            }
+
+            if (SalaryService.addSalaryHistory(salaryToPay)) {
+                loadSalaries();
+                loadSalaryHistory(salaryToPay.getEmployeeId());
+                clearFields();
+
+                showAlert(Alert.AlertType.INFORMATION,
+                        LanguageManager.get("message.success.title"),
+                        LanguageManager.get("salaries.pay.success"));
+            } else {
+                showAlert(Alert.AlertType.ERROR,
+                        LanguageManager.get("message.error.title"),
+                        LanguageManager.get("salaries.pay.error"));
+            }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR,
                     LanguageManager.get("message.error.title"),

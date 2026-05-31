@@ -135,17 +135,7 @@ public class SalaryService {
 
             int affected = stmt.executeUpdate();
 
-            if (affected > 0) {
-
-                ResultSet keys = stmt.getGeneratedKeys();
-                if (keys.next()) {
-                    int salaryId = keys.getInt(1);
-
-                    insertHistory(conn, salary, salaryId);
-                }
-
-                return true;
-            }
+            return affected > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -195,10 +185,7 @@ public class SalaryService {
 
             int updated = stmt.executeUpdate();
 
-            if (updated > 0) {
-                insertHistory(conn, salary, salary.getId());
-                return true;
-            }
+            return updated > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -271,7 +258,7 @@ public class SalaryService {
         );
     }
 
-    public static void addSalaryHistory(Salary salary) {
+    public static boolean addSalaryHistory(Salary salary) {
 
         String sql = """
                 INSERT INTO salary_history
@@ -298,11 +285,13 @@ public class SalaryService {
             stmt.setDouble(6, salary.getNetSalary());
             stmt.setDate(7, salary.getPaymentDate());
 
-            stmt.executeUpdate();
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
     public static List<Salary> getSalaryHistory(int employeeId) {
