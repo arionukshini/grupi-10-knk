@@ -10,12 +10,12 @@ import javafx.scene.input.KeyCode;
 public class WelcomeController {
 
     private static final String LANGUAGE_BUTTON_STYLE = """
-            -fx-background-color: rgba(255, 255, 255, 0.88);
-            -fx-text-fill: #102a43;
+            -fx-background-color: rgba(255, 255, 255, 0.16);
             -fx-font-weight: bold;
             -fx-background-radius: 8;
             -fx-border-radius: 8;
-            -fx-border-color: rgba(255, 255, 255, 0.65);
+            -fx-border-color: rgba(255, 255, 255, 0.42);
+            -fx-text-fill: white;
             -fx-cursor: hand;
             """;
 
@@ -26,7 +26,8 @@ public class WelcomeController {
             -fx-background-radius: 8;
             -fx-border-radius: 8;
             -fx-border-color: white;
-            -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 10, 0.2, 0, 2);
+            -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.26), 12, 0.2, 0, 4);
+            -fx-translate-y: -1;
             -fx-cursor: hand;
             """;
 
@@ -38,39 +39,44 @@ public class WelcomeController {
             -fx-border-radius: 8;
             -fx-border-color: #60a5fa;
             -fx-border-width: 1.2;
-            -fx-effect: dropshadow(gaussian, rgba(96, 165, 250, 0.22), 5, 0.18, 0, 0);
+            -fx-effect: dropshadow(gaussian, rgba(96, 165, 250, 0.42), 10, 0.22, 0, 0);
             -fx-cursor: hand;
             """;
 
     private static final String ACCESS_BUTTON_STYLE = """
-            -fx-background-color: linear-gradient(to right, #19316c, #01b3c9);
-            -fx-text-fill: white;
-            -fx-font-size: 16px;
-            -fx-font-weight: bold;
-            -fx-background-radius: 8;
-            -fx-cursor: hand;
-            """;
-
-    private static final String ACCESS_BUTTON_HOVER_STYLE = """
-            -fx-background-color: linear-gradient(to right, #102a6b, #0097aa);
-            -fx-text-fill: white;
-            -fx-font-size: 16px;
-            -fx-font-weight: bold;
-            -fx-background-radius: 8;
-            -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 14, 0.2, 0, 3);
-            -fx-cursor: hand;
-            """;
-
-    private static final String ACCESS_BUTTON_FOCUS_STYLE = """
-            -fx-background-color: linear-gradient(to right, #102a6b, #0097aa);
-            -fx-text-fill: white;
+            -fx-background-color: linear-gradient(to right, #ffffff, #dff8ff);
+            -fx-text-fill: #0b3d78;
             -fx-font-size: 16px;
             -fx-font-weight: bold;
             -fx-background-radius: 8;
             -fx-border-radius: 8;
-            -fx-border-color: #60a5fa;
-            -fx-border-width: 1.2;
-            -fx-effect: dropshadow(gaussian, rgba(96, 165, 250, 0.22), 5, 0.18, 0, 0);
+            -fx-border-color: rgba(255, 255, 255, 0.7);
+            -fx-cursor: hand;
+            """;
+
+    private static final String ACCESS_BUTTON_HOVER_STYLE = """
+            -fx-background-color: linear-gradient(to right, #ffffff, #bdefff);
+            -fx-text-fill: #082a56;
+            -fx-font-size: 16px;
+            -fx-font-weight: bold;
+            -fx-background-radius: 8;
+            -fx-border-radius: 8;
+            -fx-border-color: white;
+            -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.32), 18, 0.22, 0, 5);
+            -fx-translate-y: -1;
+            -fx-cursor: hand;
+            """;
+
+    private static final String ACCESS_BUTTON_FOCUS_STYLE = """
+            -fx-background-color: linear-gradient(to right, #ffffff, #bdefff);
+            -fx-text-fill: #082a56;
+            -fx-font-size: 16px;
+            -fx-font-weight: bold;
+            -fx-background-radius: 8;
+            -fx-border-radius: 8;
+            -fx-border-color: white;
+            -fx-border-width: 1.4;
+            -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.34), 14, 0.28, 0, 0);
             -fx-cursor: hand;
             """;
 
