@@ -1,6 +1,8 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
+import com.company.system.exceptions.DatabaseOperationException;
+import com.company.system.exceptions.InvalidSalaryException;
 import com.company.system.model.Contract;
 import com.company.system.service.ContractService;
 import com.company.system.utils.DialogUtils;
@@ -179,12 +181,14 @@ public class ContractController {
 
         if (contract == null) return;
 
-        if (ContractService.updateContract(contract)) {
-            loadContracts();
-            clearForm();
-            showInfo(LanguageManager.get("contracts.update.success"));
-        } else {
-            showError(LanguageManager.get("contracts.update.error"));
+        try {
+            if (ContractService.updateContract(contract)) {
+                loadContracts();
+                clearForm();
+                showInfo(LanguageManager.get("contracts.update.success"));
+            }
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         }
     }
 
@@ -230,6 +234,9 @@ public class ContractController {
                 showError(LanguageManager.get("message.fillRequiredFields"));
                 return null;
             }
+            if (salary < 0) {
+                throw new InvalidSalaryException(salary, "contracts.salary");
+            }
 
             return new Contract(
                     id,
@@ -244,6 +251,9 @@ public class ContractController {
 
         } catch (NumberFormatException e) {
             showError(LanguageManager.get("contracts.number.error"));
+            return null;
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
             return null;
         }
     }

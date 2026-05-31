@@ -1,6 +1,7 @@
 package com.company.system.service;
 
 import com.company.system.db.DBConnection;
+import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.model.Contract;
 
 import java.sql.*;
@@ -98,13 +99,16 @@ public class ContractService {
             stmt.setDouble(5, contract.getSalary());
             stmt.setString(6, contract.getStatus());
 
-            return stmt.executeUpdate() > 0;
+            int updated = stmt.executeUpdate();
+            if (updated == 0) {
+                throw new DatabaseOperationException("exception.contract.update.notFound");
+            }
+
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseOperationException("exception.contract.update.database", e);
         }
-
-        return false;
     }
 
     public static boolean updateContract(Contract contract) {

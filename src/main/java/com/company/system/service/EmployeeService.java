@@ -74,10 +74,10 @@ public class EmployeeService {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             if (!emailValidator(employee.getEmail())) {
-                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u shtua.");
+                throw new InvalidEmailException(employee.getEmail(), "exception.employee.add");
             }
             if (!salaryValidator(employee.getBaseSalary())) {
-                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u shtua.");
+                throw new InvalidSalaryException(employee.getBaseSalary(), "employees.baseSalary");
             }
 
             stmt.setString(1, employee.getFirstName());
@@ -95,8 +95,11 @@ public class EmployeeService {
             System.out.println("Employee added successfully!");
             return true;
 
-        } catch (InvalidEmailException | InvalidSalaryException e) {
-
+        } catch (InvalidEmailException e) {
+            e.showAlert();
+            System.out.println(e.getMessage());
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
             System.out.println(e.getMessage());
 
         } catch (SQLException e) {
@@ -129,10 +132,10 @@ public class EmployeeService {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             if (!emailValidator(employee.getEmail())) {
-                throw new InvalidEmailException(employee.getEmail(), "Punetori nuk u perditesua.");
+                throw new InvalidEmailException(employee.getEmail(), "exception.employee.update");
             }
             if (!salaryValidator(employee.getBaseSalary())) {
-                throw new InvalidSalaryException(employee.getBaseSalary(), "Punetori nuk u perditesua.");
+                throw new InvalidSalaryException(employee.getBaseSalary(), "employees.baseSalary");
             }
 
             stmt.setString(1, employee.getFirstName());
@@ -148,8 +151,11 @@ public class EmployeeService {
 
             return stmt.executeUpdate() > 0;
 
-        } catch (InvalidEmailException | InvalidSalaryException e) {
-
+        } catch (InvalidEmailException e) {
+            e.showAlert();
+            System.out.println(e.getMessage());
+        } catch (InvalidSalaryException e) {
+            e.showAlert();
             System.out.println(e.getMessage());
 
         } catch (SQLException e) {
