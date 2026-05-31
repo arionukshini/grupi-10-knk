@@ -134,10 +134,6 @@ public class UserMainController {
         return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
     }
 
-    private String t(String en, String sq) {
-        return isAlbanian() ? sq : en;
-    }
-
     private void updateTexts() {
         if (appTitleLabel != null) {
             appTitleLabel.setText(LanguageManager.get("user.appTitle"));
@@ -149,7 +145,7 @@ public class UserMainController {
         departmentButton.setUserData(new NavItem(ICON_DEPARTMENTS, LanguageManager.get("user.department")));
         settingsButton.setUserData(new NavItem(ICON_SETTINGS, LanguageManager.get("user.settings")));
         if (leaveButton != null) {
-            leaveButton.setUserData(new NavItem(ICON_LEAVES, t("My Leaves", "Pushimet e mia")));
+            leaveButton.setUserData(new NavItem(ICON_LEAVES, LanguageManager.get("user.leaves")));
         }
 
 
@@ -172,7 +168,7 @@ public class UserMainController {
             case "department" -> setStatus(LanguageManager.get("user.status.department"));
             case "settings" -> setStatus(LanguageManager.get("user.status.settings"));
             case "help" -> setStatus(LanguageManager.get("user.status.help"));
-            case "leave"     -> setStatus(t("Leave requests opened", "Kerkesat per pushime u hapen"));
+            case "leave"     -> setStatus(LanguageManager.get("user.status.leave"));
             default -> setStatus(LanguageManager.get("user.status.ready"));
         }
     }
@@ -254,7 +250,7 @@ public class UserMainController {
     @FXML private void showLeaveRequests() {
         recordNavigation("leave");
         currentView = "leave";
-        setStatus(t("Leave requests opened", "Kerkesat per pushime u hapen"));
+        setStatus(LanguageManager.get("user.status.leave"));
         setActiveButton(leaveButton);
         setContent(loadView("/views/user-leave-requests-view.fxml"));
     }
@@ -554,9 +550,6 @@ public class UserMainController {
         }
 
         Contract contract = ContractService.getLatestContractByEmployeeId(user.getEmployeeId());
-        VBox root = createPageContainer(t("My Contract", "Kontrata ime"),
-                t("A quick view of your current contract details.", "Pamje e shpejte e detajeve te kontrates tende."));
-
         VBox root = createPageContainer(
                 LanguageManager.get("user.contract.title"),
                 LanguageManager.get("user.contract.subtitle")
@@ -599,9 +592,6 @@ public class UserMainController {
         }
 
         Salary salary = SalaryService.getLatestSalaryByEmployeeId(user.getEmployeeId());
-        VBox root = createPageContainer(t("My Salary", "Paga ime"),
-                t("A clear summary of your latest salary and breakdown.", "Permbledhje e qarte e pages suaj me te fundit dhe struktures se saj."));
-
         VBox root = createPageContainer(
                 LanguageManager.get("user.salary.title"),
                 LanguageManager.get("user.salary.subtitle")
