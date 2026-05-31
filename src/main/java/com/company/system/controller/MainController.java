@@ -638,63 +638,57 @@ public class MainController {
         recordNavigation("exports");
         currentView = "exports";
         boolean sq = isAlbanian();
-        setStatus(sq ? "Eksporto te dhenat" : "Export data");
+        setStatus(LanguageManager.get("export.status"));
         setActiveButton(exportButton);
 
         VBox page = new VBox(18);
         page.getStyleClass().add("module-page");
         page.setPadding(new javafx.geometry.Insets(24));
 
-        Label title = new Label(sq ? "Eksporto te Dhenat" : "Export Data");
+        Label title = new Label(LanguageManager.get("export.title"));
         title.getStyleClass().add("page-title");
 
-        Label empTitle = new Label(sq ? "Punetoret" : "Employees");
+        Label empTitle = new Label(LanguageManager.get("export.employees.title"));
         empTitle.getStyleClass().add("section-title");
         HBox empRow = new HBox(10);
-        Button empExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button empPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        empExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        empPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button empExcel = new Button(LanguageManager.get("export.excel"));
+        Button empPdf = new Button(LanguageManager.get("export.pdf"));
         empExcel.getStyleClass().add("primary-button");
         empPdf.getStyleClass().add("primary-button");
         empRow.getChildren().addAll(empExcel, empPdf);
 
-        Label conTitle = new Label(sq ? "Kontratat" : "Contracts");
+        Label conTitle = new Label(LanguageManager.get("export.contracts.title"));
         conTitle.getStyleClass().add("section-title");
         HBox conRow = new HBox(10);
-        Button conExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button conPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        conExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        conPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button conExcel = new Button(LanguageManager.get("export.excel"));
+        Button conPdf = new Button(LanguageManager.get("export.pdf"));
         conExcel.getStyleClass().add("primary-button");
         conPdf.getStyleClass().add("primary-button");
         conRow.getChildren().addAll(conExcel, conPdf);
 
-        Label salTitle = new Label(sq ? "Pagat" : "Salaries");
+        Label salTitle = new Label(LanguageManager.get("export.salaries.title"));
         salTitle.getStyleClass().add("section-title");
         HBox salRow = new HBox(10);
-        Button salExcel = new Button(sq ? "📊 Eksporto Excel" : "📊 Export Excel");
-        Button salPdf = new Button(sq ? "📄 Eksporto PDF" : "📄 Export PDF");
-        salExcel.setText(sq ? "Eksporto Excel" : "Export Excel");
-        salPdf.setText(sq ? "Eksporto PDF" : "Export PDF");
+        Button salExcel = new Button(LanguageManager.get("export.excel"));
+        Button salPdf = new Button(LanguageManager.get("export.pdf"));
         salExcel.getStyleClass().add("primary-button");
         salPdf.getStyleClass().add("primary-button");
         salRow.getChildren().addAll(salExcel, salPdf);
 
-        Label depTitle = new Label(sq ? "Departamentet" : "Departments");
+        Label depTitle = new Label(LanguageManager.get("export.departments.title"));
         depTitle.getStyleClass().add("section-title");
         HBox depRow = new HBox(10);
-        Button depExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
-        Button depPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        Button depExcel = new Button(LanguageManager.get("export.excel"));
+        Button depPdf = new Button(LanguageManager.get("export.pdf"));
         depExcel.getStyleClass().add("primary-button");
         depPdf.getStyleClass().add("primary-button");
         depRow.getChildren().addAll(depExcel, depPdf);
 
-        Label userTitle = new Label(sq ? "Perdoruesit" : "Users");
+        Label userTitle = new Label(LanguageManager.get("export.users.title"));
         userTitle.getStyleClass().add("section-title");
         HBox userRow = new HBox(10);
-        Button userExcel = new Button(sq ? "Eksporto Excel" : "Export Excel");
-        Button userPdf = new Button(sq ? "Eksporto PDF" : "Export PDF");
+        Button userExcel = new Button(LanguageManager.get("export.excel"));
+        Button userPdf = new Button(LanguageManager.get("export.pdf"));
         userExcel.getStyleClass().add("primary-button");
         userPdf.getStyleClass().add("primary-button");
         userRow.getChildren().addAll(userExcel, userPdf);
@@ -724,7 +718,7 @@ public class MainController {
 
     private void handleExport(String type, String format, Label statusLabel, boolean sq) {
         javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
-        chooser.setTitle(sq ? "Ruaj skedarin" : "Save file");
+        chooser.setTitle(LanguageManager.get("export.saveFile"));
         String ext = "excel".equals(format) ? "xlsx" : "pdf";
         chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter(ext.toUpperCase() + " Files", "*." + ext));
         chooser.setInitialFileName(type + "-export." + ext);
@@ -746,10 +740,10 @@ public class MainController {
                 case "users-pdf" -> com.company.system.service.ExportService.exportUsersToPdf(com.company.system.service.UserService.getAllUsers(), file);
             }
             statusLabel.setStyle("-fx-text-fill: green;");
-            statusLabel.setText((sq ? "U eksportua me sukses: " : "Exported successfully: ") + file.getName());
+            statusLabel.setText(LanguageManager.get("export.success") + file.getName());
         } catch (Exception ex) {
             statusLabel.setStyle("-fx-text-fill: red;");
-            statusLabel.setText((sq ? "Gabim gjate eksportimit: " : "Export error: ") + ex.getMessage());
+            statusLabel.setText(LanguageManager.get("export.error") + ex.getMessage());
             ex.printStackTrace();
         }
     }
