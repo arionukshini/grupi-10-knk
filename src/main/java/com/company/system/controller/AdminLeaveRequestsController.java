@@ -105,10 +105,10 @@ public class AdminLeaveRequestsController {
     }
 
     private HBox createRequestRow(LeaveRequest request) {
-        Label employeeLabel = createMetaLabel(isAlbanian() ? "Punetori" : "Employee", request.getEmployeeName());
-        Label typeLabel = createMetaLabel(isAlbanian() ? "Lloji" : "Type", displayType(request));
-        Label dateLabel = createMetaLabel(isAlbanian() ? "Datat" : "Dates", formatDateRange(request.getStartDate(), request.getEndDate()));
-        Label daysLabel = createMetaLabel(isAlbanian() ? "Dite pune" : "Work days", String.valueOf(request.getWorkingDays()));
+        Label employeeLabel = createMetaLabel(isAlbanian() ? "Punetori" : "Employee", request.getEmployeeName(), 170);
+        Label typeLabel = createMetaLabel(isAlbanian() ? "Lloji" : "Type", displayType(request), 145);
+        Label dateLabel = createMetaLabel(isAlbanian() ? "Datat" : "Dates", formatDateRange(request.getStartDate(), request.getEndDate()), 165);
+        Label daysLabel = createMetaLabel(isAlbanian() ? "Dite pune" : "Work days", String.valueOf(request.getWorkingDays()), 90);
 
         HBox info = new HBox(18, employeeLabel, typeLabel, dateLabel, daysLabel);
         info.setAlignment(Pos.CENTER_LEFT);
@@ -128,10 +128,12 @@ public class AdminLeaveRequestsController {
         return row;
     }
 
-    private Label createMetaLabel(String label, String value) {
+    private Label createMetaLabel(String label, String value, double width) {
         Label meta = new Label(label + "\n" + valueOrDash(value));
         meta.getStyleClass().add("leave-request-meta");
         meta.setMinWidth(0);
+        meta.setPrefWidth(width);
+        meta.setMaxWidth(width);
         return meta;
     }
 
@@ -169,6 +171,8 @@ public class AdminLeaveRequestsController {
         commentArea.setText(request.getAdminResponse() == null ? "" : request.getAdminResponse());
         commentArea.setWrapText(true);
         commentArea.setPrefRowCount(3);
+        commentArea.setEditable("Pending".equalsIgnoreCase(request.getStatus()));
+        commentArea.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
 
         Label commentHint = new Label(isAlbanian()
                 ? "Komenti i adminit eshte i detyrueshem dhe duhet te kete te pakten 10 karaktere."
