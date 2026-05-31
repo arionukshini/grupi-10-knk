@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml"
@@ -18,24 +14,50 @@
             styleClass="module-scroll">
     <content>
         <VBox spacing="18" styleClass="profile-page">
-            <padding>
-                <Insets top="28" right="28" bottom="28" left="28"/>
-            </padding>
+            <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
 
             <VBox spacing="4">
                 <Label fx:id="titleLabel" text="Dashboard" styleClass="page-title"/>
+                <Label fx:id="greetingLabel" text="Pershendetje!" styleClass="page-subtitle"/>
                 <Label fx:id="subtitleLabel"
-                       text="Personal overview of your work, contract, salary and department."
-                       wrapText="true"
-                       styleClass="page-subtitle"/>
+                       text="Permbledhje personale e punes, kontrates, pages dhe departamentit."
+                       wrapText="true" styleClass="page-subtitle"/>
             </VBox>
+
+
+            <HBox spacing="18" VBox.vgrow="ALWAYS">
+
+
+                <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="580">
+                    <VBox styleClass="profile-card" spacing="12">
+                        <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Dokumente te rendesishme:" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                            <Label text="*Pinned" styleClass="body-text" style="-fx-opacity:0.5;"/>
+                        </HBox>
+                        <VBox fx:id="documentsBox" spacing="8"/>
+                    </VBox>
+                </VBox>
+
+
+                <VBox spacing="12" prefWidth="380" minWidth="320">
+                    <VBox styleClass="profile-card" spacing="0" VBox.vgrow="ALWAYS">
+                        <padding><Insets top="18" right="0" bottom="0" left="0"/></padding>
+                        <Label text="Njoftimet e fundit"
+                               styleClass="section-title"
+                               style="-fx-padding: 0 18 12 18;"/>
+                        <VBox fx:id="notificationsBox" spacing="0"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+
 
             <HBox spacing="18" maxWidth="900">
                 <VBox fx:id="employeeCard" spacing="8" prefWidth="430" maxWidth="Infinity" styleClass="profile-card">
                     <Label fx:id="employeeTitleLabel" text="Personal details" styleClass="section-title"/>
                     <VBox fx:id="employeeDetailsBox" spacing="6"/>
                 </VBox>
-
                 <VBox fx:id="contractCard" spacing="8" prefWidth="430" maxWidth="Infinity" styleClass="profile-card">
                     <Label fx:id="contractTitleLabel" text="Contract information" styleClass="section-title"/>
                     <VBox fx:id="contractDetailsBox" spacing="6"/>
@@ -47,24 +69,25 @@
                     <Label fx:id="salaryTitleLabel" text="Salary information" styleClass="section-title"/>
                     <VBox fx:id="salaryDetailsBox" spacing="6"/>
                 </VBox>
-
                 <VBox fx:id="departmentCard" spacing="8" prefWidth="430" maxWidth="Infinity" styleClass="profile-card">
                     <Label fx:id="departmentTitleLabel" text="Department information" styleClass="section-title"/>
                     <VBox fx:id="departmentDetailsBox" spacing="6"/>
                 </VBox>
             </HBox>
 
+            <!-- Tabela e kolegeve -->
             <VBox fx:id="departmentColleaguesCard" spacing="8" maxWidth="900" styleClass="profile-card">
                 <Label fx:id="colleaguesTitleLabel" text="Colleagues" styleClass="section-title"/>
                 <TableView fx:id="colleaguesTable" prefHeight="220">
                     <columns>
-                        <TableColumn fx:id="colleagueNameColumn" text="Name"/>
+                        <TableColumn fx:id="colleagueNameColumn"     text="Name"/>
                         <TableColumn fx:id="colleaguePositionColumn" text="Position"/>
-                        <TableColumn fx:id="colleagueEmailColumn" text="Email"/>
-                        <TableColumn fx:id="colleagueStatusColumn" text="Status"/>
+                        <TableColumn fx:id="colleagueEmailColumn"    text="Email"/>
+                        <TableColumn fx:id="colleagueStatusColumn"   text="Status"/>
                     </columns>
                 </TableView>
             </VBox>
+
         </VBox>
     </content>
 </ScrollPane>
