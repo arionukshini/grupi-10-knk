@@ -1055,3 +1055,24 @@
     -fx-border-color: rgba(231,76,60,0.25);
     -fx-border-radius: 6;
 }
+.salary-card-gross {
+    -fx-background-color: #eff6ff;
+    -fx-padding: 16;
+    -fx-background-radius: 10;
+    -fx-border-color: #bfdbfe;
+    -fx-border-radius: 10;
+}
+.salary-card-net {
+    -fx-background-color: #f0fdf4;
+    -fx-padding: 16;
+    -fx-background-radius: 10;
+    -fx-border-color: #bbf7d0;
+    -fx-border-radius: 10;
+}
+.salary-card-label { -fx-font-size: 12px; -fx-text-fill: #64748b; }
+.salary-card-value { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e40af; }
+.salary-card-value-green { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #16a34a; }
+.info-card { -fx-background-color: white; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; }
+.info-card-danger { -fx-background-color: #fff1f2; -fx-padding: 14; -fx-background-radius: 8; -fx-border-color: #fecdd3; -fx-border-radius: 8; }
+.info-card-label { -fx-font-size: 11px; -fx-text-fill: #94a3b8; }
+.info-card-value { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b; }

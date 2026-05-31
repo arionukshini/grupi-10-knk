@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.MySalaryController"
+            fitToWidth="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="20" styleClass="module-page">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="4">
+                <Label text="My Salary" styleClass="page-title"/>
+                <Label fx:id="employeeNameLabel" text="-" styleClass="page-subtitle"/>
+            </VBox>
+
+            <HBox spacing="20" alignment="TOP_LEFT">
+
+                <!-- E MAJTA: SECTIONS -->
+                <VBox spacing="16" HBox.hgrow="ALWAYS">
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Paga mujore" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-gross">
+                                <Label text="Paga Bruto" styleClass="salary-card-label"/>
+                                <Label fx:id="grossSalaryLabel" text="-" styleClass="salary-card-value"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="salary-card-net">
+                                <Label text="Paga Neto" styleClass="salary-card-label"/>
+                                <Label fx:id="netSalaryLabel" text="-" styleClass="salary-card-value-green"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Bonuset dhe zbritjet" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Bonus" styleClass="info-card-label"/>
+                                <Label fx:id="bonusLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card-danger">
+                                <Label text="Zbritje" styleClass="info-card-label"/>
+                                <Label fx:id="deductionsLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="10" styleClass="content-card">
+                        <Label text="Ditët e punës" styleClass="section-title"/>
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Ditë pune" styleClass="info-card-label"/>
+                                <Label fx:id="workedDaysLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Ditë pushimi" styleClass="info-card-label"/>
+                                <Label fx:id="vacationDaysLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
+                                <Label text="Orë pune" styleClass="info-card-label"/>
+                                <Label fx:id="workHoursLabel" text="-" styleClass="info-card-value"/>
+                            </VBox>
+                        </HBox>
