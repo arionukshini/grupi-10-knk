@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Faqja "Pushimet e mia" për përdoruesin e zakonshëm.
+    Vendose në: src/main/resources/views/user-leave-requests-view.fxml
+-->
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.company.system.controller.UserLeaveRequestsController"
+            fitToWidth="true"
+            pannable="true"
+            styleClass="module-scroll">
+
+    <content>
+        <VBox spacing="18" styleClass="module-page">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+            <!-- Titulli dhe subtitulli -->
+            <VBox spacing="4">
+                <Label fx:id="titleLabel" text="Pushimet e mia" styleClass="page-title"/>
+                <Label fx:id="subtitleLabel"
+                       text="Shikoni dhe menaxhoni kerkesat tuaja per pushim."
+                       styleClass="page-subtitle" wrapText="true"/>
+            </VBox>
+
+            <!-- Statistikat + butoni -->
+            <HBox spacing="12" alignment="CENTER_LEFT" styleClass="content-card">
+                <!-- Ditët e aprovuara -->
+                <VBox spacing="2" alignment="CENTER_LEFT">
+                    <Label fx:id="approvedDaysLabel" text="0 dite te aprovuara"
+                           styleClass="notification-summary"/>
+                </VBox>
+
+                <!-- Në pritje -->
+                <VBox spacing="2" alignment="CENTER_LEFT">
+                    <Label fx:id="pendingCountLabel" text="0 ne pritje"
+                           styleClass="notification-summary"/>
+                </VBox>
+
+                <!-- Spacer -->
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <!-- Butoni kryesor -->
+                <Button fx:id="newRequestBtn"
+                        text="+ Kerko Pushim"
+                        styleClass="btn-primary"
+                        onAction="#onNewRequest"/>
+            </HBox>
+
+            <!-- Lista e kërkesave -->
+            <VBox fx:id="requestsBox" spacing="10"/>
+
+        </VBox>
+    </content>
+</ScrollPane>
