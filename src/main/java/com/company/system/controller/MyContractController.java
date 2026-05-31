@@ -1,5 +1,6 @@
 package com.company.system.controller;
 
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.model.Employee;
 import com.company.system.model.User;
@@ -7,17 +8,9 @@ import com.company.system.service.ContractPdfService;
 import com.company.system.service.ContractService;
 import com.company.system.service.EmployeeService;
 import com.company.system.service.UserService;
-import com.company.system.utils.DialogUtils;
 import com.company.system.utils.Session;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.FileChooser;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 
 public class MyContractController {
 
@@ -43,14 +36,14 @@ public class MyContractController {
         User user = Session.getUser();
 
         if (user == null) {
-            showEmpty("Nuk ka user të kyçur.");
+            showEmpty(LanguageManager.get("user.contract.noData"));
             return;
         }
 
         int employeeId = UserService.getEmployeeIdByUserId(user.getId());
 
         if (employeeId <= 0) {
-            showEmpty("Useri nuk është i lidhur me punëtor.");
+            showEmpty(LanguageManager.get("user.contract.noData"));
             return;
         }
 
@@ -75,7 +68,7 @@ public class MyContractController {
         contractTypeLabel2.setText(c.getContractType() != null ? c.getContractType() : "-");
         startDateLabel.setText(c.getStartDate() != null ? c.getStartDate().toString() : "-");
         endDateLabel.setText(c.getEndDate() != null ? c.getEndDate().toString() : "Pa afat");
-        salaryLabel.setText(String.format("%.2f €", c.getSalary()));
+        salaryLabel.setText(String.format("%.2f EUR", c.getSalary()));
 
         String status = c.getStatus() != null ? c.getStatus() : "-";
         statusLabel.setText(status);
@@ -170,14 +163,5 @@ public class MyContractController {
 
     private void showEmpty(String message) {
         if (statusBadgeLabel != null) statusBadgeLabel.setText(message);
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        DialogUtils.style(alert);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

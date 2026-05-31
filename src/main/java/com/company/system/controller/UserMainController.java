@@ -4,12 +4,16 @@ import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -367,7 +371,43 @@ public class UserMainController {
         }
     }
 
-    private void setContent(Node node) { contentArea.getChildren().setAll(node); }
+    private void setContent(Node node) {
+        KeyboardNavigation.install(node);
+        Node currentContent = contentArea.getChildren().isEmpty() ? null : contentArea.getChildren().get(0);
+
+        if (currentContent == null) {
+            contentArea.getChildren().setAll(node);
+            playContentIn(node);
+            KeyboardNavigation.focusFirst(node);
+            return;
+        }
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(70), currentContent);
+        fadeOut.setToValue(0);
+        fadeOut.setInterpolator(Interpolator.EASE_OUT);
+        fadeOut.setOnFinished(event -> {
+            contentArea.getChildren().setAll(node);
+            playContentIn(node);
+            KeyboardNavigation.focusFirst(node);
+        });
+        fadeOut.play();
+    }
+
+    private void playContentIn(Node node) {
+        node.setOpacity(0);
+        node.setTranslateY(8);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(130), node);
+        fadeIn.setToValue(1);
+
+        TranslateTransition slideIn = new TranslateTransition(Duration.millis(130), node);
+        slideIn.setFromY(8);
+        slideIn.setToY(0);
+
+        ParallelTransition transition = new ParallelTransition(fadeIn, slideIn);
+        transition.setInterpolator(Interpolator.EASE_OUT);
+        transition.play();
+    }
 
     private Node loadView(String fxmlPath) {
         try {
@@ -627,12 +667,47 @@ public class UserMainController {
         deleteAccountButton.getStyleClass().add("danger-text-button");
         deleteAccountButton.setOnAction(e -> confirmDeleteAccount(user));
 
+        configureSettingsNavigation(
+                languageBox,
+                currentPasswordField,
+                newPasswordField,
+                changePasswordButton,
+                logoutButton,
+                deleteAccountButton
+        );
+
         VBox actionsCard = new VBox(14, logoutButton, deleteAccountButton);
         actionsCard.getStyleClass().add("profile-card");
         actionsCard.setMaxWidth(900);
 
         root.getChildren().addAll(userCard, accountOptions, actionsCard);
         return wrap(root);
+    }
+
+    private void configureSettingsNavigation(
+            ComboBox<String> languageBox,
+            PasswordField currentPasswordField,
+            PasswordField newPasswordField,
+            Button changePasswordButton,
+            Button logoutButton,
+            Button deleteAccountButton
+    ) {
+        languageBox.setFocusTraversable(true);
+        currentPasswordField.setFocusTraversable(true);
+        newPasswordField.setFocusTraversable(true);
+        changePasswordButton.setFocusTraversable(true);
+        logoutButton.setFocusTraversable(true);
+        deleteAccountButton.setFocusTraversable(true);
+
+        languageBox.setAccessibleText(LanguageManager.get("account.language"));
+        currentPasswordField.setAccessibleText(LanguageManager.get("user.settings.currentPassword"));
+        newPasswordField.setAccessibleText(LanguageManager.get("user.settings.newPassword"));
+        changePasswordButton.setAccessibleText(LanguageManager.get("user.settings.changePassword"));
+        logoutButton.setAccessibleText(LanguageManager.get("account.logout"));
+        deleteAccountButton.setAccessibleText(LanguageManager.get("user.settings.deleteAccount"));
+
+        currentPasswordField.setOnAction(event -> newPasswordField.requestFocus());
+        newPasswordField.setOnAction(event -> changePasswordButton.fire());
     }
 
     private Node buildHelpView() {

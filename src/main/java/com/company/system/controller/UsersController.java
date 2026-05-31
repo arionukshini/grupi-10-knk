@@ -3,6 +3,7 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.KeyboardNavigation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -210,7 +211,10 @@ public class UsersController {
             Stage stage = new Stage();
             stage.setTitle(isAlbanian() ? "Shto Perdorues te Ri" : "Add New User");
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            KeyboardNavigation.install(scene);
+            KeyboardNavigation.focusFirst(root);
+            stage.setScene(scene);
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -237,7 +241,10 @@ public class UsersController {
             Stage stage = new Stage();
             stage.setTitle(isAlbanian() ? "Edito Perdoruesin" : "Edit User");
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root, 420, 420));
+            Scene scene = new Scene(root, 420, 420);
+            KeyboardNavigation.install(scene);
+            KeyboardNavigation.focusFirst(root);
+            stage.setScene(scene);
             stage.setResizable(false);
             stage.showAndWait();
 

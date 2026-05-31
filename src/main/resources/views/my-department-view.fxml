@@ -70,7 +70,7 @@
                     <Label fx:id="sideNoteLabel"
                            text="-"
                            wrapText="true"
-                           style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                           styleClass="info-card-label"/>
                 </VBox>
             </HBox>
         </VBox>
