@@ -125,7 +125,12 @@ public class LoginController {
         DialogUtils.style(dialog);
         dialog.setTitle(LanguageManager.get("login.changeRequired.title"));
         dialog.setHeaderText(LanguageManager.get("login.changeRequired.header"));
-        dialog.setOnCloseRequest(event -> event.consume());
+        boolean[] passwordChanged = {false};
+        dialog.setOnCloseRequest(event -> {
+            if (!passwordChanged[0]) {
+                event.consume();
+            }
+        });
 
         PasswordField newPasswordField = new PasswordField();
         newPasswordField.setPromptText(LanguageManager.get("login.changeRequired.newPassword"));
@@ -179,6 +184,7 @@ public class LoginController {
                 return;
             }
 
+            passwordChanged[0] = true;
             Session.setUser(new User(
                     user.getId(),
                     user.getUsername(),
@@ -190,6 +196,7 @@ public class LoginController {
                     false
             ));
             continueLogin();
+            dialog.close();
         });
 
         dialog.setOnShown(event -> newPasswordField.requestFocus());
