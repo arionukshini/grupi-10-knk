@@ -4,7 +4,9 @@ import com.company.system.MainApp;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.DialogUtils;
 import com.company.system.utils.KeyboardNavigation;
+import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
@@ -12,13 +14,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -96,13 +102,104 @@ public class LoginController {
 
         if (user != null) {
             Session.setUser(user);
-            messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
-            messageLabel.setStyle("-fx-text-fill: green;");
-            showLoadingState();
+
+            if (user.mustChangePassword()) {
+                showRequiredPasswordChangeDialog(user);
+            } else {
+                continueLogin();
+            }
         } else {
             messageLabel.setText(LanguageManager.get("message.invalidCredentials"));
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    private void continueLogin() {
+        messageLabel.setText(LanguageManager.get("message.loginSuccessful"));
+        messageLabel.setStyle("-fx-text-fill: green;");
+        showLoadingState();
+    }
+
+    private void showRequiredPasswordChangeDialog(User user) {
+        Dialog<Void> dialog = new Dialog<>();
+        DialogUtils.style(dialog);
+        dialog.setTitle(LanguageManager.get("login.changeRequired.title"));
+        dialog.setHeaderText(LanguageManager.get("login.changeRequired.header"));
+        dialog.setOnCloseRequest(event -> event.consume());
+
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText(LanguageManager.get("login.changeRequired.newPassword"));
+
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText(LanguageManager.get("login.changeRequired.confirmPassword"));
+
+        Label message = new Label(LanguageManager.get("login.changeRequired.message"));
+        message.setWrapText(true);
+        message.getStyleClass().add("body-text");
+
+        Label error = new Label();
+        error.setWrapText(true);
+        error.getStyleClass().add("error-label");
+        error.setVisible(false);
+        error.setManaged(false);
+
+        VBox content = new VBox(12, message, newPasswordField, confirmPasswordField, error);
+        content.setPrefWidth(380);
+        dialog.getDialogPane().setContent(content);
+
+        ButtonType changeType = new ButtonType(LanguageManager.get("login.changeRequired.button"), ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(changeType);
+
+        Node changeButton = dialog.getDialogPane().lookupButton(changeType);
+        changeButton.addEventFilter(ActionEvent.ACTION, event -> {
+            String newPassword = newPasswordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+
+            if (newPassword == null || newPassword.isBlank() || confirmPassword == null || confirmPassword.isBlank()) {
+                showPasswordDialogError(error, LanguageManager.get("message.fillAllFields"));
+                event.consume();
+                return;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                showPasswordDialogError(error, LanguageManager.get("message.passwordsDoNotMatch"));
+                event.consume();
+                return;
+            }
+
+            if (PasswordUtils.verifyPassword(newPassword, user.getPasswordHash())) {
+                showPasswordDialogError(error, LanguageManager.get("message.passwordSameAsOld"));
+                event.consume();
+                return;
+            }
+
+            if (!UserService.changePasswordAndClearRequiredFlag(user.getId(), newPassword)) {
+                showPasswordDialogError(error, LanguageManager.get("user.password.notChanged"));
+                event.consume();
+                return;
+            }
+
+            Session.setUser(new User(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmployeeId(),
+                    user.getEmployeeName(),
+                    UserService.getPasswordHashByUsername(user.getUsername()),
+                    user.getRole(),
+                    user.getCreatedAt(),
+                    false
+            ));
+            continueLogin();
+        });
+
+        dialog.setOnShown(event -> newPasswordField.requestFocus());
+        dialog.showAndWait();
+    }
+
+    private void showPasswordDialogError(Label error, String message) {
+        error.setText(message);
+        error.setVisible(true);
+        error.setManaged(true);
     }
 
     private void showLoadingState() {
