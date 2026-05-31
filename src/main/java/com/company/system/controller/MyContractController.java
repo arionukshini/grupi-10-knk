@@ -77,7 +77,7 @@ public class MyContractController {
     }
 
     @FXML
-    private void handleExportPdf() {
+    private void handleExportTxt() {
         if (contract == null) {
             showAlert(Alert.AlertType.WARNING, "Paralajmërim", "Nuk ka kontratë për të eksportuar.");
             return;
