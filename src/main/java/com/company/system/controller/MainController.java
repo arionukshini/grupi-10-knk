@@ -5,6 +5,7 @@ import com.company.system.model.User;
 import com.company.system.service.LeaveRequestService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
 import javafx.animation.Interpolator;
@@ -576,8 +577,10 @@ public class MainController {
     }
 
     public void setContent(Node node) {
+        KeyboardNavigation.install(node);
         updateNotificationButton();
         contentArea.getChildren().setAll(node);
+        KeyboardNavigation.focusFirst(node);
     }
     public void setStatus(String message) { statusLabel.setText(message); }
 
@@ -743,7 +746,7 @@ public class MainController {
         ScrollPane scroll = new ScrollPane(page);
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("module-scroll");
-        contentArea.getChildren().setAll(scroll);
+        setContent(scroll);
         updateNotificationButton();
     }
 

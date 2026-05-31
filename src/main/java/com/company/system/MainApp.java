@@ -2,6 +2,7 @@ package com.company.system;
 
 import com.company.system.db.DBConnection;
 import com.company.system.model.User;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.Session;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -48,6 +49,8 @@ public class MainApp extends Application {
                     currentSceneHeight()
             );
 
+            KeyboardNavigation.install(scene);
+            KeyboardNavigation.focusFirst(scene.getRoot());
             primaryStage.setScene(scene);
             primaryStage.show();
 
@@ -69,6 +72,8 @@ public class MainApp extends Application {
                     currentSceneHeight()
             );
 
+            KeyboardNavigation.install(scene);
+            KeyboardNavigation.focusFirst(scene.getRoot());
             primaryStage.setScene(scene);
             primaryStage.show();
 
@@ -96,6 +101,8 @@ public class MainApp extends Application {
                     currentSceneHeight()
             );
 
+            KeyboardNavigation.install(scene);
+            KeyboardNavigation.focusFirst(scene.getRoot());
             primaryStage.setScene(scene);
             primaryStage.show();
 

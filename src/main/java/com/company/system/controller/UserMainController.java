@@ -4,6 +4,7 @@ import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
+import com.company.system.utils.KeyboardNavigation;
 import com.company.system.utils.PasswordUtils;
 import com.company.system.utils.Session;
 import javafx.animation.Interpolator;
@@ -367,7 +368,11 @@ public class UserMainController {
         }
     }
 
-    private void setContent(Node node) { contentArea.getChildren().setAll(node); }
+    private void setContent(Node node) {
+        KeyboardNavigation.install(node);
+        contentArea.getChildren().setAll(node);
+        KeyboardNavigation.focusFirst(node);
+    }
 
     private Node loadView(String fxmlPath) {
         try {
@@ -627,12 +632,47 @@ public class UserMainController {
         deleteAccountButton.getStyleClass().add("danger-text-button");
         deleteAccountButton.setOnAction(e -> confirmDeleteAccount(user));
 
+        configureSettingsNavigation(
+                languageBox,
+                currentPasswordField,
+                newPasswordField,
+                changePasswordButton,
+                logoutButton,
+                deleteAccountButton
+        );
+
         VBox actionsCard = new VBox(14, logoutButton, deleteAccountButton);
         actionsCard.getStyleClass().add("profile-card");
         actionsCard.setMaxWidth(900);
 
         root.getChildren().addAll(userCard, accountOptions, actionsCard);
         return wrap(root);
+    }
+
+    private void configureSettingsNavigation(
+            ComboBox<String> languageBox,
+            PasswordField currentPasswordField,
+            PasswordField newPasswordField,
+            Button changePasswordButton,
+            Button logoutButton,
+            Button deleteAccountButton
+    ) {
+        languageBox.setFocusTraversable(true);
+        currentPasswordField.setFocusTraversable(true);
+        newPasswordField.setFocusTraversable(true);
+        changePasswordButton.setFocusTraversable(true);
+        logoutButton.setFocusTraversable(true);
+        deleteAccountButton.setFocusTraversable(true);
+
+        languageBox.setAccessibleText(LanguageManager.get("account.language"));
+        currentPasswordField.setAccessibleText(LanguageManager.get("user.settings.currentPassword"));
+        newPasswordField.setAccessibleText(LanguageManager.get("user.settings.newPassword"));
+        changePasswordButton.setAccessibleText(LanguageManager.get("user.settings.changePassword"));
+        logoutButton.setAccessibleText(LanguageManager.get("account.logout"));
+        deleteAccountButton.setAccessibleText(LanguageManager.get("user.settings.deleteAccount"));
+
+        currentPasswordField.setOnAction(event -> newPasswordField.requestFocus());
+        newPasswordField.setOnAction(event -> changePasswordButton.fire());
     }
 
     private Node buildHelpView() {
