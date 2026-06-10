@@ -50,7 +50,7 @@ The app supports Albanian and English language switching, light and dark themes,
 
 ## Tech Stack
 
-- Java 17+
+- Java 21
 - JavaFX 21.0.6
 - Maven
 - MySQL
@@ -63,7 +63,7 @@ The app supports Albanian and English language switching, light and dark themes,
 
 Install these before running the project:
 
-- JDK 17 or newer
+- JDK 21
 - MySQL Server running locally
 - Maven is optional because the project includes Maven Wrapper scripts:
   - `mvnw` for macOS/Linux
