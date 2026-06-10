@@ -50,12 +50,9 @@ public class AdminLeaveRequestsController {
     }
 
     private void loadTexts() {
-        boolean sq = isAlbanian();
-        titleLabel.setText(sq ? "Kerkesat per pushime" : "Leave requests");
-        subtitleLabel.setText(sq
-                ? "Shqyrtoni kerkesat per pushim vjetor, pushim mjekesor dhe festa."
-                : "Review annual leave, medical leave and holiday requests.");
-        searchField.setPromptText(sq ? "Kerko sipas punetorit, llojit ose statusit" : "Search by employee, type or status");
+        titleLabel.setText(LanguageManager.get("leave.admin.title"));
+        subtitleLabel.setText(LanguageManager.get("leave.admin.subtitle"));
+        searchField.setPromptText(LanguageManager.get("leave.admin.search"));
     }
 
     private void loadRequests() {
@@ -88,14 +85,10 @@ public class AdminLeaveRequestsController {
                 .filter(request -> "Pending".equalsIgnoreCase(request.getStatus()))
                 .count();
 
-        pendingCountLabel.setText(isAlbanian()
-                ? pendingCount + " ne pritje"
-                : pendingCount + " pending");
+        pendingCountLabel.setText(String.format(LanguageManager.get("leave.pendingCount"), pendingCount));
 
         if (visibleRequests.isEmpty()) {
-            Label emptyLabel = new Label(isAlbanian()
-                    ? "Nuk ka kerkesa per t'u shfaqur."
-                    : "There are no requests to show.");
+            Label emptyLabel = new Label(LanguageManager.get("leave.empty"));
             emptyLabel.getStyleClass().add("empty-state-text");
             VBox emptyCard = new VBox(emptyLabel);
             emptyCard.getStyleClass().add("content-card");
@@ -111,18 +104,18 @@ public class AdminLeaveRequestsController {
     }
 
     private HBox createHeaderRow() {
-        Label employeeHeader = createHeaderLabel(isAlbanian() ? "Punetori" : "Employee", EMPLOYEE_COLUMN_WIDTH);
-        Label typeHeader = createHeaderLabel(isAlbanian() ? "Lloji" : "Type", TYPE_COLUMN_WIDTH);
-        Label dateHeader = createHeaderLabel(isAlbanian() ? "Datat" : "Dates", DATE_COLUMN_WIDTH);
-        Label daysHeader = createHeaderLabel(isAlbanian() ? "Dite pune" : "Work days", DAYS_COLUMN_WIDTH);
+        Label employeeHeader = createHeaderLabel(LanguageManager.get("leave.employee"), EMPLOYEE_COLUMN_WIDTH);
+        Label typeHeader = createHeaderLabel(LanguageManager.get("leave.type"), TYPE_COLUMN_WIDTH);
+        Label dateHeader = createHeaderLabel(LanguageManager.get("leave.dates"), DATE_COLUMN_WIDTH);
+        Label daysHeader = createHeaderLabel(LanguageManager.get("leave.workDays"), DAYS_COLUMN_WIDTH);
 
         HBox info = new HBox(18, employeeHeader, typeHeader, dateHeader, daysHeader);
         info.setAlignment(Pos.CENTER_LEFT);
         info.setMinWidth(0);
         HBox.setHgrow(info, Priority.ALWAYS);
 
-        Label statusHeader = createHeaderLabel(isAlbanian() ? "Statusi" : "Status", 82);
-        Button spacer = new Button(isAlbanian() ? "Hap" : "Open");
+        Label statusHeader = createHeaderLabel(LanguageManager.get("leave.status"), 82);
+        Button spacer = new Button(LanguageManager.get("leave.open"));
         spacer.getStyleClass().add("secondary-button");
         spacer.setVisible(false);
         spacer.setManaged(true);
@@ -147,7 +140,7 @@ public class AdminLeaveRequestsController {
         Label statusBadge = new Label(displayStatus(request));
         statusBadge.getStyleClass().addAll("status-badge", statusClass(request.getStatus()));
 
-        Button openButton = new Button(isAlbanian() ? "Hap" : "Open");
+        Button openButton = new Button(LanguageManager.get("leave.open"));
         openButton.getStyleClass().add("secondary-button");
         openButton.setOnAction(event -> openRequestDialog(request));
 
@@ -178,9 +171,9 @@ public class AdminLeaveRequestsController {
     private void openRequestDialog(LeaveRequest request) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(isAlbanian() ? "Kerkesa per pushim" : "Leave request");
+        alert.setTitle(LanguageManager.get("leave.request.title"));
         alert.setHeaderText(null);
-        ButtonType closeType = new ButtonType(isAlbanian() ? "Mbyll" : "Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType closeType = new ButtonType(LanguageManager.get("leave.close"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(closeType);
 
         Label title = new Label(request.getEmployeeName() + " - " + displayType(request));
@@ -189,12 +182,12 @@ public class AdminLeaveRequestsController {
 
         Label details = new Label(formatDateRange(request.getStartDate(), request.getEndDate())
                 + " | " + request.getWorkingDays() + " "
-                + (isAlbanian() ? "dite pune" : "work days")
+                + LanguageManager.get("leave.workDays").toLowerCase(Locale.ROOT)
                 + " | " + displayStatus(request));
         details.getStyleClass().add("page-subtitle");
         details.setWrapText(true);
 
-        Label messageTitle = new Label(isAlbanian() ? "Mesazhi i punetorit" : "Employee message");
+        Label messageTitle = new Label(LanguageManager.get("leave.employeeMessage"));
         messageTitle.getStyleClass().add("field-label");
 
         Label message = new Label(valueOrDash(request.getReason()));
@@ -203,34 +196,30 @@ public class AdminLeaveRequestsController {
         message.setMinHeight(Label.USE_PREF_SIZE);
 
         TextArea commentArea = new TextArea();
-        commentArea.setPromptText(isAlbanian()
-                ? "Komenti i adminit, minimumi 10 karaktere"
-                : "Admin comment, minimum 10 characters");
+        commentArea.setPromptText(LanguageManager.get("leave.adminComment.prompt"));
         commentArea.setText(request.getAdminResponse() == null ? "" : request.getAdminResponse());
         commentArea.setWrapText(true);
         commentArea.setPrefRowCount(3);
         commentArea.setEditable("Pending".equalsIgnoreCase(request.getStatus()));
         commentArea.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
 
-        Label commentHint = new Label(isAlbanian()
-                ? "Komenti i adminit eshte i detyrueshem dhe duhet te kete te pakten 10 karaktere."
-                : "Admin comment is required and must be at least 10 characters.");
+        Label commentHint = new Label(LanguageManager.get("leave.adminComment.hint"));
         commentHint.getStyleClass().add("field-label");
         commentHint.setWrapText(true);
 
-        Button approveButton = new Button(isAlbanian() ? "Prano" : "Accept");
+        Button approveButton = new Button(LanguageManager.get("leave.accept"));
         approveButton.getStyleClass().add("success-button");
         approveButton.setPrefWidth(92);
         approveButton.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
         approveButton.setOnAction(event -> handleDecision(alert, request, "Approved", commentArea.getText()));
 
-        Button rejectButton = new Button(isAlbanian() ? "Refuzo" : "Deny");
+        Button rejectButton = new Button(LanguageManager.get("leave.deny"));
         rejectButton.getStyleClass().add("danger-button");
         rejectButton.setPrefWidth(92);
         rejectButton.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
         rejectButton.setOnAction(event -> handleDecision(alert, request, "Rejected", commentArea.getText()));
 
-        Button closeButton = new Button(isAlbanian() ? "Mbyll" : "Close");
+        Button closeButton = new Button(LanguageManager.get("leave.close"));
         closeButton.getStyleClass().add("secondary-button");
         closeButton.setPrefWidth(92);
         closeButton.setOnAction(event -> {
@@ -262,9 +251,7 @@ public class AdminLeaveRequestsController {
 
     private void handleDecision(Alert parentAlert, LeaveRequest request, String status, String comment) {
         if (comment == null || comment.trim().length() < 10) {
-            showError(isAlbanian()
-                    ? "Komenti i adminit duhet te kete te pakten 10 karaktere."
-                    : "Admin comment must be at least 10 characters.");
+            showError(LanguageManager.get("leave.adminComment.invalid"));
             return;
         }
 
@@ -273,13 +260,9 @@ public class AdminLeaveRequestsController {
             parentAlert.close();
             loadRequests();
             MainController.refreshOpenShellNotifications();
-            showInfo(isAlbanian()
-                    ? "Kerkesa u perditesua me sukses."
-                    : "Request updated successfully.");
+            showInfo(LanguageManager.get("leave.update.success"));
         } else {
-            showError(isAlbanian()
-                    ? "Kerkesa nuk u perditesua."
-                    : "Request was not updated.");
+            showError(LanguageManager.get("leave.update.error"));
         }
     }
 
@@ -303,13 +286,13 @@ public class AdminLeaveRequestsController {
     private String displayType(LeaveRequest request) {
         String type = request.getRequestType();
         if (type == null || type.isBlank()) {
-            return isAlbanian() ? "Pushim vjetor" : "Annual leave";
+            return LanguageManager.get("leave.type.annual");
         }
 
         return switch (type) {
-            case "Annual Leave" -> isAlbanian() ? "Pushim vjetor" : "Annual leave";
-            case "Medical Leave" -> isAlbanian() ? "Pushim mjekesor" : "Medical leave";
-            case "Holiday" -> isAlbanian() ? "Feste" : "Holiday";
+            case "Annual Leave" -> LanguageManager.get("leave.type.annual");
+            case "Medical Leave" -> LanguageManager.get("leave.type.medical");
+            case "Holiday" -> LanguageManager.get("leave.type.holiday");
             default -> type;
         };
     }
@@ -317,12 +300,12 @@ public class AdminLeaveRequestsController {
     private String displayStatus(LeaveRequest request) {
         String status = request.getStatus();
         if ("Approved".equalsIgnoreCase(status)) {
-            return isAlbanian() ? "Pranuar" : "Approved";
+            return LanguageManager.get("leave.status.approved");
         }
         if ("Rejected".equalsIgnoreCase(status)) {
-            return isAlbanian() ? "Refuzuar" : "Rejected";
+            return LanguageManager.get("leave.status.rejected");
         }
-        return isAlbanian() ? "Ne pritje" : "Pending";
+        return LanguageManager.get("leave.status.pending");
     }
 
     private String statusClass(String status) {

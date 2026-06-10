@@ -3,6 +3,7 @@ package com.company.system.controller;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
+import com.company.system.utils.DialogUtils;
 import com.company.system.utils.KeyboardNavigation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -76,21 +77,19 @@ public class UsersController {
 
 
     private void loadTexts() {
-        boolean sq = isAlbanian();
-
         titleLabel.setText(LanguageManager.get("menu.users"));
-        searchField.setPromptText(sq ? "Kerko perdorues, punetor ose rol" : "Search by user, employee or role");
+        searchField.setPromptText(LanguageManager.get("users.search"));
         idColumn.setText(LanguageManager.get("table.id"));
-        usernameColumn.setText(sq ? "Perdoruesi" : "Username");
-        employeeColumn.setText(sq ? "Punetori" : "Employee");
+        usernameColumn.setText(LanguageManager.get("users.username"));
+        employeeColumn.setText(LanguageManager.get("users.employee"));
         roleColumn.setText(LanguageManager.get("account.role").replace(":", ""));
-        createdColumn.setText(sq ? "Krijuar" : "Created");
-        selectedTitleLabel.setText(sq ? "Zgjidhni nje perdorues" : "Select a user");
-        usernameDetailLabel.setText(sq ? "Perdoruesi" : "Username");
-        employeeDetailLabel.setText(sq ? "Punetori" : "Employee");
-        passwordHashDetailLabel.setText(sq ? "Hash i fjalekalimit" : "Password hash");
+        createdColumn.setText(LanguageManager.get("users.created"));
+        selectedTitleLabel.setText(LanguageManager.get("users.select"));
+        usernameDetailLabel.setText(LanguageManager.get("users.username"));
+        employeeDetailLabel.setText(LanguageManager.get("users.employee"));
+        passwordHashDetailLabel.setText(LanguageManager.get("users.passwordHash"));
         roleDetailLabel.setText(LanguageManager.get("account.role").replace(":", ""));
-        createdDetailLabel.setText(sq ? "Krijuar" : "Created");
+        createdDetailLabel.setText(LanguageManager.get("users.created"));
     }
 
     private void setupIcon() {
@@ -146,7 +145,7 @@ public class UsersController {
 
     private void showUserDetails(User user) {
         if (user == null) {
-            selectedTitleLabel.setText(isAlbanian() ? "Zgjidhni nje perdorues" : "Select a user");
+            selectedTitleLabel.setText(LanguageManager.get("users.select"));
             usernameValueLabel.setText("-");
             employeeIdValueLabel.setText("-");
             employeeValueLabel.setText("-");
@@ -209,7 +208,7 @@ public class UsersController {
             ctrl.setOnSuccess(this::loadUsers);
 
             Stage stage = new Stage();
-            stage.setTitle(isAlbanian() ? "Shto Perdorues te Ri" : "Add New User");
+            stage.setTitle(LanguageManager.get("users.add.title"));
             stage.initModality(Modality.APPLICATION_MODAL);
             Scene scene = new Scene(root);
             KeyboardNavigation.install(scene);
@@ -219,8 +218,7 @@ public class UsersController {
             stage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            showError("Gabim gjate hapjes se wizard-it.");
+            showError(LanguageManager.get("users.add.open.error"));
         }
     }
 
@@ -239,7 +237,7 @@ public class UsersController {
             ctrl.setOnSuccess(this::loadUsers);
 
             Stage stage = new Stage();
-            stage.setTitle(isAlbanian() ? "Edito Perdoruesin" : "Edit User");
+            stage.setTitle(LanguageManager.get("users.edit.title"));
             stage.initModality(Modality.APPLICATION_MODAL);
             Scene scene = new Scene(root, 420, 420);
             KeyboardNavigation.install(scene);
@@ -249,8 +247,7 @@ public class UsersController {
             stage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            showError("Gabim gjate hapjes se formes.");
+            showError(LanguageManager.get("users.edit.open.error"));
         }
     }
 
@@ -260,22 +257,22 @@ public class UsersController {
         if (selected == null) return;
 
         if (UserService.isOnlyAdmin(selected)) {
-            showError("Nuk mund te fshini administratorin e vetem.");
+            showError(LanguageManager.get("users.delete.onlyAdmin"));
             return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Fshi Perdoruesin");
-        confirm.setHeaderText("A jeni te sigurt?");
-        confirm.setContentText("Do te fshihet i gjithe rekordja e \""
-                + selected.getUsername() + "\" duke perfshire punonjesin.");
+        DialogUtils.style(confirm);
+        confirm.setTitle(LanguageManager.get("users.delete.title"));
+        confirm.setHeaderText(LanguageManager.get("users.delete.header"));
+        confirm.setContentText(String.format(LanguageManager.get("users.delete.content"), selected.getUsername()));
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.OK) {
                 boolean ok = UserService.deleteAccountAndEmployeeData(selected);
                 if (ok) {
                     loadUsers();
                 } else {
-                    showError("Gabim gjate fshirjes. Provoni perseri.");
+                    showError(LanguageManager.get("users.delete.error"));
                 }
             }
         });
@@ -283,7 +280,8 @@ public class UsersController {
 
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Gabim");
+        DialogUtils.style(alert);
+        alert.setTitle(LanguageManager.get("message.error.title"));
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();

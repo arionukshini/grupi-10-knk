@@ -12,40 +12,38 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Kontrolluesi i faqes "Pushimet e mia" për përdoruesin e zakonshëm (USER).
- *
- * Funksionalitetet:
- *  - Shikon listën e kërkesave të veta (Pending / Approved / Rejected)
- *  - Dërgon kërkesë të re pushimi
- *  - Anulon kërkesë që është ende Pending
- */
 public class UserLeaveRequestsController {
 
-    // ── FXML fushat ────────────────────────────────────────────────────────
+    private static final double TYPE_COLUMN_WIDTH = 160;
+    private static final double DATE_COLUMN_WIDTH = 165;
+    private static final double DAYS_COLUMN_WIDTH = 80;
+
     @FXML private Label titleLabel;
     @FXML private Label subtitleLabel;
-    @FXML private Label approvedDaysLabel;   // Numri i ditëve të aprovuara këtë vit
-    @FXML private Label pendingCountLabel;   // Numri i kërkesave në pritje
-    @FXML private Button newRequestBtn;      // Butoni "Kërko Pushim"
-    @FXML private VBox requestsBox;          // Kontejneri ku renditen rreshtat
+    @FXML private Label approvedDaysLabel;
+    @FXML private Label pendingCountLabel;
+    @FXML private Button newRequestBtn;
+    @FXML private VBox requestsBox;
 
     private final ObservableList<LeaveRequest> myRequests = FXCollections.observableArrayList();
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    // Gjerësia e kolonave (e njëjtë me admin view për konsistencë)
-    private static final double EMPLOYEE_COLUMN_WIDTH = 170;
-    private static final double TYPE_COLUMN_WIDTH     = 160;
-    private static final double DATE_COLUMN_WIDTH     = 165;
-    private static final double DAYS_COLUMN_WIDTH     = 80;
 
     @FXML
     public void initialize() {
@@ -53,356 +51,275 @@ public class UserLeaveRequestsController {
         loadMyRequests();
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // NGARKIMI I TË DHËNAVE
-    // ════════════════════════════════════════════════════════════════════════
-
     private void loadTexts() {
-        boolean sq = isAlbanian();
-        titleLabel.setText(sq ? "Pushimet e mia" : "My leave requests");
-        subtitleLabel.setText(sq
-                ? "Shikoni dhe menaxhoni kerkesat tuaja per pushim."
-                : "View and manage your leave requests.");
-        newRequestBtn.setText(sq ? "+ Kerko Pushim" : "+ Request Leave");
+        titleLabel.setText(LanguageManager.get("leave.user.title"));
+        subtitleLabel.setText(LanguageManager.get("leave.user.subtitle"));
+        newRequestBtn.setText("+ " + LanguageManager.get("leave.user.new"));
     }
 
-    /**
-     * Ngarkon vetëm kërkesat e punonjësit të loguar.
-     * Punonjësi shikon vetëm të dhënat e veta — jo të kolegëve.
-     */
     private void loadMyRequests() {
         User user = Session.getUser();
         if (user == null || user.getEmployeeId() == null) {
-            showEmptyState(isAlbanian()
-                    ? "Llogaria juaj nuk eshte e lidhur me nje punonjës."
-                    : "Your account is not linked to an employee.");
+            showEmptyState(LanguageManager.get("leave.user.notLinked"));
             return;
         }
 
-        // Merr kërkesat vetëm për employee_id-në e userit aktual
         myRequests.setAll(LeaveRequestService.getRequestsByEmployee(user.getEmployeeId()));
         renderRequests(myRequests);
         updateStats();
     }
 
-    /**
-     * Llogarit dhe shfaq statistikat:
-     * - Ditë pushimi të aprovuara këtë vit
-     * - Kërkesa në pritje
-     */
     private void updateStats() {
         int currentYear = LocalDate.now().getYear();
 
-        // Ditët e aprovuara për vitin aktual
         int approvedDays = myRequests.stream()
-                .filter(r -> "Approved".equalsIgnoreCase(r.getStatus()))
-                .filter(r -> r.getStartDate() != null &&
-                        r.getStartDate().toLocalDate().getYear() == currentYear)
+                .filter(request -> "Approved".equalsIgnoreCase(request.getStatus()))
+                .filter(request -> request.getStartDate() != null
+                        && request.getStartDate().toLocalDate().getYear() == currentYear)
                 .mapToInt(LeaveRequest::getWorkingDays)
                 .sum();
 
-        // Kërkesat në pritje
         long pendingCount = myRequests.stream()
-                .filter(r -> "Pending".equalsIgnoreCase(r.getStatus()))
+                .filter(request -> "Pending".equalsIgnoreCase(request.getStatus()))
                 .count();
 
-        boolean sq = isAlbanian();
-        approvedDaysLabel.setText(approvedDays + " " + (sq ? "dite te aprovuara" : "approved days"));
-        pendingCountLabel.setText(pendingCount + " " + (sq ? "ne pritje" : "pending"));
+        approvedDaysLabel.setText(String.format(LanguageManager.get("leave.user.approvedDays"), approvedDays));
+        pendingCountLabel.setText(String.format(LanguageManager.get("leave.user.pendingCount"), pendingCount));
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // RENDERIMI I LISTËS
-    // ════════════════════════════════════════════════════════════════════════
-
-    private void renderRequests(List<LeaveRequest> visible) {
+    private void renderRequests(List<LeaveRequest> visibleRequests) {
         requestsBox.getChildren().clear();
 
-        if (visible.isEmpty()) {
-            showEmptyState(isAlbanian()
-                    ? "Nuk keni kerkesa per pushim ende."
-                    : "You have no leave requests yet.");
+        if (visibleRequests.isEmpty()) {
+            showEmptyState(LanguageManager.get("leave.user.empty"));
             return;
         }
 
         requestsBox.getChildren().add(createHeaderRow());
-        for (LeaveRequest r : visible) {
-            requestsBox.getChildren().add(createRequestRow(r));
+        for (LeaveRequest request : visibleRequests) {
+            requestsBox.getChildren().add(createRequestRow(request));
         }
     }
 
-    /** Krijon rreshtin e header-it (titujt e kolonave). */
     private HBox createHeaderRow() {
-        boolean sq = isAlbanian();
-        Label typeH  = createHeaderLabel(sq ? "Lloji" : "Type", TYPE_COLUMN_WIDTH);
-        Label dateH  = createHeaderLabel(sq ? "Datat" : "Dates", DATE_COLUMN_WIDTH);
-        Label daysH  = createHeaderLabel(sq ? "Dite" : "Days", DAYS_COLUMN_WIDTH);
+        Label typeHeader = createHeaderLabel(LanguageManager.get("leave.type"), TYPE_COLUMN_WIDTH);
+        Label dateHeader = createHeaderLabel(LanguageManager.get("leave.dates"), DATE_COLUMN_WIDTH);
+        Label daysHeader = createHeaderLabel(LanguageManager.get("leave.days"), DAYS_COLUMN_WIDTH);
 
-        HBox info = new HBox(18, typeH, dateH, daysH);
+        HBox info = new HBox(18, typeHeader, dateHeader, daysHeader);
         info.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(info, Priority.ALWAYS);
 
-        Label statusH  = createHeaderLabel(sq ? "Statusi" : "Status", 82);
-        Button spacer = new Button(sq ? "Anulo" : "Cancel");
+        Label statusHeader = createHeaderLabel(LanguageManager.get("leave.status"), 82);
+        Button spacer = new Button(LanguageManager.get("leave.cancel"));
         spacer.getStyleClass().add("secondary-button");
         spacer.setVisible(false);
         spacer.setManaged(true);
 
-        HBox header = new HBox(14, info, statusH, spacer);
+        HBox header = new HBox(14, info, statusHeader, spacer);
         header.getStyleClass().add("leave-request-header");
         header.setAlignment(Pos.CENTER_LEFT);
         return header;
     }
 
-    /** Krijon një rresht për secilën kërkesë pushimi. */
-    private HBox createRequestRow(LeaveRequest r) {
-        Label typeLabel = createMetaLabel(displayType(r), TYPE_COLUMN_WIDTH);
+    private HBox createRequestRow(LeaveRequest request) {
+        Label typeLabel = createMetaLabel(displayType(request), TYPE_COLUMN_WIDTH);
         Label dateLabel = createMetaLabel(
-                formatDate(r.getStartDate()) + " - " + formatDate(r.getEndDate()),
+                formatDate(request.getStartDate()) + " - " + formatDate(request.getEndDate()),
                 DATE_COLUMN_WIDTH);
-        Label daysLabel = createMetaLabel(String.valueOf(r.getWorkingDays()), DAYS_COLUMN_WIDTH);
+        Label daysLabel = createMetaLabel(String.valueOf(request.getWorkingDays()), DAYS_COLUMN_WIDTH);
 
         HBox info = new HBox(18, typeLabel, dateLabel, daysLabel);
         info.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(info, Priority.ALWAYS);
 
-        // Badge i statusit me ngjyrë (green/orange/red)
-        Label statusBadge = new Label(displayStatus(r));
-        statusBadge.getStyleClass().addAll("status-badge", statusClass(r.getStatus()));
+        Label statusBadge = new Label(displayStatus(request));
+        statusBadge.getStyleClass().addAll("status-badge", statusClass(request.getStatus()));
 
-        // Butoni "Anulo" — aktiv vetëm nëse statusi është Pending
-        Button cancelBtn = new Button(isAlbanian() ? "Anulo" : "Cancel");
-        cancelBtn.getStyleClass().add("secondary-button");
-        cancelBtn.setDisable(!"Pending".equalsIgnoreCase(r.getStatus()));
-        cancelBtn.setOnAction(e -> confirmCancel(r));
+        Button cancelButton = new Button(LanguageManager.get("leave.cancel"));
+        cancelButton.getStyleClass().add("secondary-button");
+        cancelButton.setDisable(!"Pending".equalsIgnoreCase(request.getStatus()));
+        cancelButton.setOnAction(event -> confirmCancel(request));
 
-        HBox row = new HBox(14, info, statusBadge, cancelBtn);
+        HBox row = new HBox(14, info, statusBadge, cancelButton);
         row.getStyleClass().add("leave-request-row");
         row.setAlignment(Pos.CENTER_LEFT);
-
-        // Klik mbi rresht për të hapur detajet
-        row.setOnMouseClicked(e -> openDetailDialog(r));
-
+        row.setOnMouseClicked(event -> openDetailDialog(request));
         return row;
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // DIALOGU I DETAJEVE
-    // ════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Hap dialogun e detajeve të kërkesës.
-     * Shfaq arsyen, datat, dhe përgjigjen e adminit nëse ekziston.
-     */
-    private void openDetailDialog(LeaveRequest r) {
-        boolean sq = isAlbanian();
-
+    private void openDetailDialog(LeaveRequest request) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(sq ? "Detajet e kerkeses" : "Request details");
+        alert.setTitle(LanguageManager.get("leave.details.title"));
         alert.setHeaderText(null);
 
-        ButtonType closeType = new ButtonType(sq ? "Mbyll" : "Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType closeType = new ButtonType(LanguageManager.get("leave.close"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(closeType);
 
-        Label titleLbl = new Label(displayType(r));
-        titleLbl.getStyleClass().add("section-title");
+        Label title = new Label(displayType(request));
+        title.getStyleClass().add("section-title");
 
-        Label dateLbl = new Label(
-                formatDate(r.getStartDate()) + " — " + formatDate(r.getEndDate())
-                        + "  |  " + r.getWorkingDays() + " " + (sq ? "dite pune" : "work days")
-                        + "  |  " + displayStatus(r));
-        dateLbl.getStyleClass().add("page-subtitle");
-        dateLbl.setWrapText(true);
+        Label date = new Label(formatDate(request.getStartDate())
+                + " - " + formatDate(request.getEndDate())
+                + " | " + request.getWorkingDays() + " "
+                + LanguageManager.get("leave.workDays").toLowerCase(Locale.ROOT)
+                + " | " + displayStatus(request));
+        date.getStyleClass().add("page-subtitle");
+        date.setWrapText(true);
 
-        // Arsyeja e punonjësit
-        Label reasonTitle = new Label(sq ? "Arsyeja juaj:" : "Your reason:");
+        Label reasonTitle = new Label(LanguageManager.get("leave.reason.title"));
         reasonTitle.getStyleClass().add("field-label");
 
-        Label reasonText = new Label(r.getReason() == null || r.getReason().isBlank()
-                ? (sq ? "(pa arsye)" : "(no reason given)") : r.getReason());
-        reasonText.getStyleClass().add("body-text");
-        reasonText.setWrapText(true);
+        Label reason = new Label(request.getReason() == null || request.getReason().isBlank()
+                ? LanguageManager.get("leave.reason.none")
+                : request.getReason());
+        reason.getStyleClass().add("body-text");
+        reason.setWrapText(true);
 
-        VBox content = new VBox(10, titleLbl, dateLbl, reasonTitle, reasonText);
+        VBox content = new VBox(10, title, date, reasonTitle, reason);
 
-        // Shfaq përgjigjen e adminit nëse ekziston
-        if (r.getAdminResponse() != null && !r.getAdminResponse().isBlank()) {
-            Label adminTitle = new Label(sq ? "Pergjigja e adminit:" : "Admin response:");
+        if (request.getAdminResponse() != null && !request.getAdminResponse().isBlank()) {
+            Label adminTitle = new Label(LanguageManager.get("leave.adminResponse"));
             adminTitle.getStyleClass().add("field-label");
-            Label adminText = new Label(r.getAdminResponse());
-            adminText.getStyleClass().add("body-text");
-            adminText.setWrapText(true);
-            content.getChildren().addAll(adminTitle, adminText);
+            Label adminResponse = new Label(request.getAdminResponse());
+            adminResponse.getStyleClass().add("body-text");
+            adminResponse.setWrapText(true);
+            content.getChildren().addAll(adminTitle, adminResponse);
         }
+
+        Button closeButton = new Button(LanguageManager.get("leave.close"));
+        closeButton.getStyleClass().add("secondary-button");
+        closeButton.setOnAction(event -> {
+            alert.setResult(closeType);
+            alert.close();
+        });
+        content.getChildren().add(closeButton);
 
         content.setPadding(new Insets(8));
         content.setPrefWidth(480);
         alert.getDialogPane().setContent(content);
 
-        // Fshih butonin default të JavaFX
         Platform.runLater(() -> {
-            Button defaultBtn = (Button) alert.getDialogPane().lookupButton(closeType);
-            if (defaultBtn != null) { defaultBtn.setVisible(false); defaultBtn.setManaged(false); }
+            Button defaultButton = (Button) alert.getDialogPane().lookupButton(closeType);
+            if (defaultButton != null) {
+                defaultButton.setVisible(false);
+                defaultButton.setManaged(false);
+            }
         });
-
-        // Shto buton të dukshëm "Mbyll"
-        Button closeBtn = new Button(sq ? "Mbyll" : "Close");
-        closeBtn.getStyleClass().add("secondary-button");
-        closeBtn.setOnAction(e -> { alert.setResult(closeType); alert.close(); });
-        content.getChildren().add(closeBtn);
 
         alert.showAndWait();
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // KËRKESA E RE
-    // ════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Hap formularin për të dërguar kërkesë të re pushimi.
-     * Thirret nga butoni "+ Kërko Pushim".
-     */
     @FXML
     private void onNewRequest() {
-        boolean sq = isAlbanian();
         User user = Session.getUser();
         if (user == null || user.getEmployeeId() == null) {
-            showError(sq ? "Nuk jeni te lidhur me nje punonjës." : "No employee linked to your account.");
+            showError(LanguageManager.get("leave.user.notLinked"));
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         DialogUtils.style(alert);
-        alert.setTitle(sq ? "Kerko Pushim" : "Request Leave");
+        alert.setTitle(LanguageManager.get("leave.form.title"));
         alert.setHeaderText(null);
 
-        ButtonType submitType = new ButtonType(sq ? "Dergo" : "Submit", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelType = new ButtonType(sq ? "Anulo" : "Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType submitType = new ButtonType(LanguageManager.get("leave.submit"), ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelType = new ButtonType(LanguageManager.get("leave.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(submitType, cancelType);
 
-        // Lloji i pushimit
-        Label typeLabel = new Label(sq ? "Lloji i pushimit *" : "Leave type *");
+        Label typeLabel = new Label(LanguageManager.get("leave.form.type"));
         typeLabel.getStyleClass().add("field-label");
 
         ComboBox<String> typeCombo = new ComboBox<>();
         typeCombo.getItems().addAll(
-                sq ? "Pushim vjetor"   : "Annual Leave",
-                sq ? "Pushim mjekesor" : "Medical Leave",
-                sq ? "Feste"           : "Holiday"
+                LanguageManager.get("leave.type.annual"),
+                LanguageManager.get("leave.type.medical"),
+                LanguageManager.get("leave.type.holiday")
         );
-        typeCombo.setValue(sq ? "Pushim vjetor" : "Annual Leave");
+        typeCombo.setValue(LanguageManager.get("leave.type.annual"));
         typeCombo.setMaxWidth(Double.MAX_VALUE);
 
-        // Data e fillimit
-        Label startLabel = new Label(sq ? "Data e fillimit *" : "Start date *");
+        Label startLabel = new Label(LanguageManager.get("leave.form.startDate"));
         startLabel.getStyleClass().add("field-label");
         DatePicker startPicker = new DatePicker(LocalDate.now().plusDays(1));
         startPicker.setMaxWidth(Double.MAX_VALUE);
 
-        // Data e përfundimit
-        Label endLabel = new Label(sq ? "Data e mbarimit *" : "End date *");
+        Label endLabel = new Label(LanguageManager.get("leave.form.endDate"));
         endLabel.getStyleClass().add("field-label");
         DatePicker endPicker = new DatePicker(LocalDate.now().plusDays(1));
         endPicker.setMaxWidth(Double.MAX_VALUE);
 
-        // Arsyeja
-        Label reasonLabel = new Label(sq ? "Arsyeja (opsionale)" : "Reason (optional)");
+        Label reasonLabel = new Label(LanguageManager.get("leave.form.reason"));
         reasonLabel.getStyleClass().add("field-label");
         TextArea reasonArea = new TextArea();
-        reasonArea.setPromptText(sq ? "Shkruani arsyen e kerkeses..." : "Enter reason for your request...");
+        reasonArea.setPromptText(LanguageManager.get("leave.form.reasonPrompt"));
         reasonArea.setWrapText(true);
         reasonArea.setPrefRowCount(3);
-
-        Label errorLbl = new Label();
-        errorLbl.getStyleClass().add("error-label");
-        errorLbl.setVisible(false);
-        errorLbl.setWrapText(true);
 
         VBox content = new VBox(10,
                 typeLabel, typeCombo,
                 startLabel, startPicker,
                 endLabel, endPicker,
-                reasonLabel, reasonArea,
-                errorLbl);
+                reasonLabel, reasonArea);
         content.setPadding(new Insets(8));
         content.setPrefWidth(400);
         alert.getDialogPane().setContent(content);
 
-        // Proceso dërgimin
         alert.showAndWait().ifPresent(result -> {
-            if (result != submitType) return;
+            if (result != submitType) {
+                return;
+            }
 
-            // Validimi
             if (startPicker.getValue() == null || endPicker.getValue() == null) {
-                showError(sq ? "Datat jane te detyrueshme." : "Dates are required."); return;
+                showError(LanguageManager.get("leave.validation.datesRequired"));
+                return;
             }
             if (endPicker.getValue().isBefore(startPicker.getValue())) {
-                showError(sq ? "Data e mbarimit nuk mund te jete para fillimit." : "End date cannot be before start date."); return;
+                showError(LanguageManager.get("leave.validation.endBeforeStart"));
+                return;
             }
 
-            // Konverto llojin nga shqip në anglisht për DB
-            String typeEn = switch (typeCombo.getValue()) {
-                case "Pushim vjetor", "Annual Leave"     -> "Annual Leave";
-                case "Pushim mjekesor", "Medical Leave"  -> "Medical Leave";
-                case "Feste", "Holiday"                  -> "Holiday";
-                default                                   -> typeCombo.getValue();
-            };
-
-            boolean ok = LeaveRequestService.submitRequest(
+            boolean success = LeaveRequestService.submitRequest(
                     user.getEmployeeId(),
-                    typeEn,
+                    toDatabaseType(typeCombo.getValue()),
                     startPicker.getValue(),
                     endPicker.getValue(),
                     reasonArea.getText().trim()
             );
 
-            if (ok) {
-                showInfo(sq ? "Kerkesa u dergua me sukses!" : "Request submitted successfully!");
-                loadMyRequests(); // Ringarko listën
+            if (success) {
+                showInfo(LanguageManager.get("leave.submit.success"));
+                loadMyRequests();
             } else {
-                showError(sq ? "Gabim gjate dergimit. Provoni perseri." : "Failed to submit. Please try again.");
+                showError(LanguageManager.get("leave.submit.error"));
             }
         });
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ANULIMI I KËRKESËS
-    // ════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Kërkon konfirmim dhe anulon kërkesën nëse statusi është Pending.
-     */
-    private void confirmCancel(LeaveRequest r) {
-        boolean sq = isAlbanian();
+    private void confirmCancel(LeaveRequest request) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         DialogUtils.style(confirm);
-        confirm.setTitle(sq ? "Anulo kerkesen" : "Cancel request");
+        confirm.setTitle(LanguageManager.get("leave.cancel.title"));
         confirm.setHeaderText(null);
-        confirm.setContentText(sq
-                ? "A jeni te sigurt qe doni ta anuloni kerkesen per " + displayType(r) + "?"
-                : "Are you sure you want to cancel the " + displayType(r) + " request?");
+        confirm.setContentText(String.format(LanguageManager.get("leave.cancel.confirm"), displayType(request)));
 
-        confirm.showAndWait().ifPresent(btn -> {
-            if (btn == ButtonType.OK) {
-                boolean ok = LeaveRequestService.cancelRequest(r.getId());
-                if (ok) {
-                    showInfo(sq ? "Kerkesa u anulua." : "Request cancelled.");
+        confirm.showAndWait().ifPresent(button -> {
+            if (button == ButtonType.OK) {
+                boolean success = LeaveRequestService.cancelRequest(request.getId());
+                if (success) {
+                    showInfo(LanguageManager.get("leave.cancel.success"));
                     loadMyRequests();
                 } else {
-                    showError(sq ? "Gabim gjate anulimit." : "Failed to cancel request.");
+                    showError(LanguageManager.get("leave.cancel.error"));
                 }
             }
         });
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // METODA NDIHMËSE
-    // ════════════════════════════════════════════════════════════════════════
-
-    private void showEmptyState(String msg) {
+    private void showEmptyState(String message) {
         requestsBox.getChildren().clear();
-        Label empty = new Label(msg);
+        Label empty = new Label(message);
         empty.getStyleClass().add("empty-state-text");
         VBox card = new VBox(empty);
         card.getStyleClass().add("content-card");
@@ -410,73 +327,78 @@ public class UserLeaveRequestsController {
     }
 
     private Label createHeaderLabel(String text, double width) {
-        Label lbl = new Label(text);
-        lbl.getStyleClass().add("leave-request-header-label");
-        lbl.setPrefWidth(width);
-        lbl.setMaxWidth(width);
-        return lbl;
+        Label label = new Label(text);
+        label.getStyleClass().add("leave-request-header-label");
+        label.setPrefWidth(width);
+        label.setMaxWidth(width);
+        return label;
     }
 
     private Label createMetaLabel(String text, double width) {
-        Label lbl = new Label(text == null || text.isBlank() ? "-" : text);
-        lbl.getStyleClass().add("leave-request-meta");
-        lbl.setPrefWidth(width);
-        lbl.setMaxWidth(width);
-        return lbl;
+        Label label = new Label(text == null || text.isBlank() ? "-" : text);
+        label.getStyleClass().add("leave-request-meta");
+        label.setPrefWidth(width);
+        label.setMaxWidth(width);
+        return label;
     }
 
-    /** Konverton llojin e pushimit nga anglisht në gjuhën aktuale. */
-    private String displayType(LeaveRequest r) {
-        return switch (r.getRequestType() == null ? "" : r.getRequestType()) {
-            case "Annual Leave"  -> isAlbanian() ? "Pushim vjetor"   : "Annual Leave";
-            case "Medical Leave" -> isAlbanian() ? "Pushim mjekesor" : "Medical Leave";
-            case "Holiday"       -> isAlbanian() ? "Feste"           : "Holiday";
-            default              -> r.getRequestType();
+    private String displayType(LeaveRequest request) {
+        return switch (request.getRequestType() == null ? "" : request.getRequestType()) {
+            case "Annual Leave" -> LanguageManager.get("leave.type.annual");
+            case "Medical Leave" -> LanguageManager.get("leave.type.medical");
+            case "Holiday" -> LanguageManager.get("leave.type.holiday");
+            default -> request.getRequestType();
         };
     }
 
-    /** Konverton statusin nga anglisht në gjuhën aktuale. */
-    private String displayStatus(LeaveRequest r) {
-        return switch (r.getStatus() == null ? "" : r.getStatus()) {
-            case "Approved" -> isAlbanian() ? "Pranuar"  : "Approved";
-            case "Rejected" -> isAlbanian() ? "Refuzuar" : "Rejected";
-            default         -> isAlbanian() ? "Ne pritje" : "Pending";
+    private String toDatabaseType(String displayType) {
+        if (LanguageManager.get("leave.type.medical").equals(displayType)) {
+            return "Medical Leave";
+        }
+        if (LanguageManager.get("leave.type.holiday").equals(displayType)) {
+            return "Holiday";
+        }
+        return "Annual Leave";
+    }
+
+    private String displayStatus(LeaveRequest request) {
+        return switch (request.getStatus() == null ? "" : request.getStatus()) {
+            case "Approved" -> LanguageManager.get("leave.status.approved");
+            case "Rejected" -> LanguageManager.get("leave.status.rejected");
+            default -> LanguageManager.get("leave.status.pending");
         };
     }
 
-    /** Kthen CSS class-in sipas statusit për ngjyrën e badge-it. */
     private String statusClass(String status) {
         return switch (status == null ? "" : status) {
             case "Approved" -> "approved";
             case "Rejected" -> "rejected";
-            default         -> "pending";
+            default -> "pending";
         };
     }
 
     private String formatDate(java.sql.Date date) {
-        if (date == null) return "-";
+        if (date == null) {
+            return "-";
+        }
         return date.toLocalDate().format(dateFormatter);
     }
 
-    private void showInfo(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        DialogUtils.style(a);
-        a.setTitle(LanguageManager.get("message.success.title"));
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.style(alert);
+        alert.setTitle(LanguageManager.get("message.success.title"));
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
-    private void showError(String msg) {
-        Alert a = new Alert(Alert.AlertType.ERROR);
-        DialogUtils.style(a);
-        a.setTitle(LanguageManager.get("message.error.title"));
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
-    }
-
-    private boolean isAlbanian() {
-        return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogUtils.style(alert);
+        alert.setTitle(LanguageManager.get("message.error.title"));
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
