@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.model.dto.FullUserCreateRequestDto;
 import com.company.system.model.dto.UserUpdateRequestDto;
 import com.company.system.repository.UserProvisioningRepository;
@@ -51,7 +53,7 @@ public class WizardUserService {
         try {
             return userProvisioningRepository.createFullUser(request, PasswordUtils.hashPassword(tempPassword));
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -89,7 +91,7 @@ public class WizardUserService {
         try {
             return userRepository.update(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -98,7 +100,7 @@ public class WizardUserService {
         try {
             return userRepository.isEmployeeIdUnique(employeeId, excludeUserId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -107,7 +109,7 @@ public class WizardUserService {
         try {
             return userRepository.existsByUsername(username);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }

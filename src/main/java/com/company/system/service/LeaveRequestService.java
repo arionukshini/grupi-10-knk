@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.model.LeaveRequest;
 import com.company.system.model.dto.LeaveRequestCreateDto;
 import com.company.system.model.dto.LeaveRequestDecisionDto;
@@ -19,7 +21,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -28,7 +30,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.countPending();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return 0;
         }
     }
@@ -38,7 +40,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.updateStatus(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -47,7 +49,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.findByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -57,7 +59,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.save(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -66,7 +68,7 @@ public class LeaveRequestService {
         try {
             return leaveRequestRepository.deletePendingById(requestId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }

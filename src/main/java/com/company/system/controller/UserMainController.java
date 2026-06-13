@@ -1,5 +1,7 @@
 package com.company.system.controller;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.UserService;
@@ -414,7 +416,7 @@ public class UserMainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             return loader.load();
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return simplePlaceholder(LanguageManager.get("user.load.failed"));
         }
     }

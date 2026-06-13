@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.model.User;
 import com.company.system.model.dto.LoginRequestDto;
 import com.company.system.model.dto.PasswordResetRequestDto;
@@ -29,7 +31,7 @@ public class UserService {
                 return user;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
 
         return null;
@@ -52,7 +54,7 @@ public class UserService {
             );
             return userRepository.save(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -61,7 +63,7 @@ public class UserService {
         try {
             return userRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -85,7 +87,7 @@ public class UserService {
                 return employeeName;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
 
         return user.getUsername();
@@ -104,7 +106,7 @@ public class UserService {
         try {
             return userRepository.updatePasswordByUsername(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -117,7 +119,7 @@ public class UserService {
         try {
             return userRepository.findPasswordHashByUsername(username);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return null;
         }
     }
@@ -130,7 +132,7 @@ public class UserService {
         try {
             return userRepository.existsByUsername(username);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -143,7 +145,7 @@ public class UserService {
         try {
             return userRepository.updatePasswordByUserId(userId, PasswordUtils.hashPassword(newPassword));
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -156,7 +158,7 @@ public class UserService {
         try {
             return userRepository.findPasswordHashByUsernameAndEmail(username, email);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return null;
         }
     }
@@ -165,7 +167,7 @@ public class UserService {
         try {
             return userRepository.deleteById(userId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -178,7 +180,7 @@ public class UserService {
         try {
             return userRepository.countAdmins() <= 1;
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return true;
         }
     }
@@ -191,7 +193,7 @@ public class UserService {
         try {
             return userRepository.deleteAccountAndEmployeeData(user);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -200,7 +202,7 @@ public class UserService {
         try {
             return userRepository.findEmployeeIdByUserId(userId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return 0;
         }
     }

@@ -1,5 +1,7 @@
 package com.company.system.controller;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.User;
 import com.company.system.service.LeaveRequestService;
@@ -822,7 +824,7 @@ public class MainController {
         } catch (Exception ex) {
             statusLabel.setStyle("-fx-text-fill: red;");
             statusLabel.setText(LanguageManager.get("export.error") + ex.getMessage());
-            ex.printStackTrace();
+            AppLogger.error("Unexpected error", ex);
         }
     }
 
@@ -1171,7 +1173,7 @@ private String valueOrDash(String value) {
             setContent(view);
             setActiveButton(activeButton);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             setStatus(errorMessage);
         }
     }

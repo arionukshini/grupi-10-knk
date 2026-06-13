@@ -1,5 +1,7 @@
 package com.company.system;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.db.DBConnection;
 import com.company.system.model.User;
 import com.company.system.utils.KeyboardNavigation;
@@ -55,7 +57,7 @@ public class MainApp extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
     }
 
@@ -78,7 +80,7 @@ public class MainApp extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
     }
 
@@ -107,7 +109,7 @@ public class MainApp extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
     }
 

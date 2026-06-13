@@ -1,5 +1,7 @@
 package com.company.system.controller;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.model.Employee;
@@ -109,7 +111,7 @@ public class MyContractController {
 
             java.awt.Desktop.getDesktop().open(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             showAlert(Alert.AlertType.ERROR, "Gabim",
                     "Gabim gjate gjenerimit te PDF-se. Provoni perseri.");
         }

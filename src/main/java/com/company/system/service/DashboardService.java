@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.model.DashboardStats;
 import com.company.system.model.DepartmentStats;
 import com.company.system.model.SalaryByDepartmentStats;
@@ -20,7 +22,7 @@ public class DashboardService {
         try {
             return dashboardRepository.findDashboardStats();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new DashboardStats(0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     }
@@ -29,7 +31,7 @@ public class DashboardService {
         try {
             return dashboardRepository.findEmployeesPerDepartment();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -38,7 +40,7 @@ public class DashboardService {
         try {
             return dashboardRepository.findContractsByStatus();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             Map<String, Integer> statusCounts = new LinkedHashMap<>();
             statusCounts.put("Active", 0);
             statusCounts.put("Pending", 0);
@@ -51,7 +53,7 @@ public class DashboardService {
         try {
             return dashboardRepository.findAverageSalaryPerDepartment();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }

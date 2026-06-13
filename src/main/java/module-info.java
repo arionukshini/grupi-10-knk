@@ -5,6 +5,7 @@ module com.company.system {
     requires javafx.base;
     requires java.sql;
     requires java.desktop;
+    requires java.logging;
     requires org.apache.poi.ooxml;
     requires itextpdf;
 

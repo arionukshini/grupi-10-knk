@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.model.Contract;
 import com.company.system.repository.ContractRepository;
@@ -17,7 +19,7 @@ public class ContractService {
         try {
             return contractRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -26,7 +28,7 @@ public class ContractService {
         try {
             return contractRepository.findExpiringByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -47,7 +49,7 @@ public class ContractService {
         try {
             return contractRepository.update(contract);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -56,7 +58,7 @@ public class ContractService {
         try {
             return contractRepository.findLatestByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return null;
         }
     }
@@ -65,7 +67,7 @@ public class ContractService {
         try {
             return contractRepository.deleteById(id);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }

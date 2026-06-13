@@ -1,5 +1,7 @@
 package com.company.system.controller;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Contract;
 import com.company.system.model.Department;
@@ -247,7 +249,7 @@ public class UserDashboardController {
             }
             java.awt.Desktop.getDesktop().open(tempFile);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            AppLogger.error("Unexpected error", ex);
             showError(isAlbanian() ? "Gabim gjate gjenerimit te PDF-se." : "Error generating PDF.");
         }
     }

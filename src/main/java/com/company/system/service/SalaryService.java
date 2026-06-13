@@ -1,5 +1,7 @@
 package com.company.system.service;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.exceptions.InvalidPaymentException;
 import com.company.system.exceptions.InvalidSalaryException;
@@ -23,7 +25,7 @@ public class SalaryService {
         try {
             return salaryRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
@@ -32,7 +34,7 @@ public class SalaryService {
         try {
             return salaryRepository.findLatestByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return null;
         }
     }
@@ -61,7 +63,7 @@ public class SalaryService {
         try {
             return salaryRepository.deleteById(salaryId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
@@ -110,7 +112,7 @@ public class SalaryService {
         try {
             return salaryRepository.findHistoryByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
