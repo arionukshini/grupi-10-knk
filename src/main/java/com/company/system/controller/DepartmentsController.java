@@ -19,6 +19,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import static com.company.system.utils.Validator.departmentNameValidator;
+import static com.company.system.utils.Validator.descriptionValidator;
+import static com.company.system.utils.Validator.isNotBlank;
+
 public class DepartmentsController {
 
     private final ObservableList<Department> departments = FXCollections.observableArrayList();
@@ -153,12 +157,16 @@ public class DepartmentsController {
             return;
         }
 
-        if (DepartmentService.addDepartment(department)) {
-            loadDepartments();
-            clearForm();
-            showInfo(LanguageManager.get("departments.add.success"));
-        } else {
-            showError(LanguageManager.get("departments.add.error"));
+        try {
+            if (DepartmentService.addDepartment(department)) {
+                loadDepartments();
+                clearForm();
+                showInfo(LanguageManager.get("departments.add.success"));
+            } else {
+                showError(LanguageManager.get("departments.add.error"));
+            }
+        } catch (DatabaseOperationException e) {
+            e.showAlert();
         }
     }
 
@@ -217,8 +225,18 @@ public class DepartmentsController {
         String name = nameField.getText() == null ? "" : nameField.getText().trim();
         String description = descriptionField.getText() == null ? "" : descriptionField.getText().trim();
 
-        if (name.isEmpty()) {
+        if (!isNotBlank(name)) {
             showError(LanguageManager.get("departments.name.required"));
+            return null;
+        }
+
+        if (!departmentNameValidator(name)) {
+            showError(LanguageManager.get("departments.name.length"));
+            return null;
+        }
+
+        if (!descriptionValidator(description)) {
+            showError(LanguageManager.get("departments.description.length"));
             return null;
         }
 

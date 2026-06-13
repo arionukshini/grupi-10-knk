@@ -68,6 +68,10 @@
                 </VBox>
 
                 <HBox spacing="10">
+                    <Button fx:id="addButton"
+                            text="Add"
+                            styleClass="primary-button"
+                            onAction="#addDepartment"/>
                     <Button fx:id="updateButton"
                             text="Update"
                             styleClass="primary-button"
