@@ -9,7 +9,7 @@ Grupi 10 KNK project for an interactive desktop system that manages employees, d
 - Florentina Dervishaj
 - Edison Ukshini
 - Arijola Krasniqi
-- Alekta Thaqi
+- Alketa Thaqi
 
 ## Project Summary
 
@@ -87,7 +87,19 @@ Username: root
 Password: pass
 ```
 
-If your MySQL password is different, update `USER` and `PASSWORD` in `DBConnection.java` before running.
+You can override the defaults without editing source code by setting environment variables:
+
+```powershell
+$env:APP_DB_HOST = "localhost"
+$env:APP_DB_PORT = "3306"
+$env:APP_DB_NAME = "grupi_10"
+$env:APP_DB_USER = "root"
+$env:APP_DB_PASSWORD = "pass"
+```
+
+For group members using the same local setup (`root` / `pass`), no extra configuration is needed.
+If your MySQL password is different, set `APP_DB_PASSWORD` before running the app instead of editing the code.
+These environment variables are optional and only change the connection for your current terminal session.
 
 ## Demo Logins
 
@@ -107,7 +119,7 @@ Username: arjanita.lestrani
 Username: florentina.dervishaj
 Username: edison.ukshini
 Username: arijola.krasniqi
-Username: alekta.thaqi
+Username: alketa.thaqi
 Password: 1234
 Role: USER
 ```
@@ -125,7 +137,7 @@ From the project root:
 If `JAVA_HOME` is not set, set it first. Example:
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-22"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
 .\mvnw.cmd clean javafx:run
 ```
 
@@ -159,8 +171,12 @@ src/main/java/com/company/system
   db/              MySQL connection and database initialization
   exceptions/      Custom application exceptions
   i18n/            Language manager
+  mapper/          Database row to model mappers
   model/           Data models
-  service/         Business logic and database operations
+  model/dto/       Request DTOs used by services and repositories
+  repository/      Persistence interfaces
+  repository/jdbc/ JDBC repository implementations
+  service/         Business logic and orchestration
   utils/           Session, validation, dialogs, password, keyboard helpers
 
 src/main/resources
@@ -177,6 +193,6 @@ docs/screenshots  README screenshots
 
 - MySQL must be running before launching the app.
 - The database and demo data are created automatically if they do not exist.
-- If login fails on a fresh setup, confirm that the MySQL credentials in `DBConnection.java` match your local MySQL user.
+- If login fails on a fresh setup, confirm that MySQL is running and that the default credentials or `APP_DB_PASSWORD` match your local MySQL user.
 - If Maven cannot find Java, set `JAVA_HOME` to your installed JDK path.
 
