@@ -1,19 +1,24 @@
 package com.company.system.db;
 
+import com.company.system.utils.AppLogger;
 import com.company.system.utils.PasswordUtils;
 
 import java.sql.*;
 
 public class DBConnection {
 
+    private static final String HOST = envOrDefault("APP_DB_HOST", "localhost");
+    private static final String PORT = envOrDefault("APP_DB_PORT", "3306");
+    private static final String DATABASE = databaseName(envOrDefault("APP_DB_NAME", "grupi_10"));
+
     private static final String ROOT_URL =
-            "jdbc:mysql://localhost:3306/";
+            "jdbc:mysql://" + HOST + ":" + PORT + "/";
 
     private static final String URL =
-            "jdbc:mysql://localhost:3306/grupi_10";
+            ROOT_URL + DATABASE;
 
-    private static final String USER = "root";
-    private static final String PASSWORD = "pass";
+    private static final String USER = envOrDefault("APP_DB_USER", "root");
+    private static final String PASSWORD = envOrDefault("APP_DB_PASSWORD", "pass");
 
     // =========================
     // CONNECT TO DATABASE
@@ -31,8 +36,7 @@ public class DBConnection {
 
         } catch (SQLException e) {
 
-            System.out.println("Connection failed!");
-            e.printStackTrace();
+            AppLogger.error("Database connection failed", e);
 
             return null;
         }
@@ -46,23 +50,17 @@ public class DBConnection {
 
         try {
 
-            Connection rootConnection =
-                    DriverManager.getConnection(
-                            ROOT_URL,
-                            USER,
-                            PASSWORD
-                    );
-
-            Statement rootStatement =
-                    rootConnection.createStatement();
-
-            rootStatement.executeUpdate(
-                    "CREATE DATABASE IF NOT EXISTS grupi_10"
-            );
-
-            rootConnection.close();
+            try (
+                    Connection rootConnection = DriverManager.getConnection(ROOT_URL, USER, PASSWORD);
+                    Statement rootStatement = rootConnection.createStatement()
+            ) {
+                rootStatement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DATABASE);
+            }
 
             Connection conn = connect();
+            if (conn == null) {
+                return;
+            }
 
             Statement stmt = conn.createStatement();
 
@@ -262,7 +260,7 @@ public class DBConnection {
                         
                          ('Arijola', 'Krasniqi', 'arijola.krasniqi@company.com', '+38344111666', 'Sales Representative', 5, '2025-11-05', 900.00, 'Inactive'),
                         
-                         ('Alekta', 'Thaqi', 'alekta.thaqi@company.com', '+38344111777', 'System Administrator', 3, '2025-12-12', 1300.00, 'Active');
+                         ('Alketa', 'Thaqi', 'alketa.thaqi@company.com', '+38344111777', 'System Administrator', 3, '2025-12-12', 1300.00, 'Active');
                         """);
 
                 stmt.executeUpdate("""
@@ -325,21 +323,50 @@ public class DBConnection {
                         (5, 'Holiday', '2026-06-15', '2026-06-16', 'Personal holiday request.', 'Approved');
                         """);
 
-                System.out.println("Demo data inserted!");
+                AppLogger.info("Demo data inserted.");
             }
 
+            normalizeDemoNames(conn);
             seedDefaultAdmin(conn);
             seedEmployeeUsers(conn);
             conn.close();
 
-            System.out.println(
-                    "Database initialized successfully!"
-            );
+            AppLogger.info("Database initialized successfully.");
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+            AppLogger.error("Database initialization failed", e);
 
+        }
+    }
+
+    private static String envOrDefault(String key, String defaultValue) {
+        String value = System.getenv(key);
+        return value == null || value.isBlank() ? defaultValue : value;
+    }
+
+    private static String databaseName(String value) {
+        if (!value.matches("[A-Za-z0-9_]+")) {
+            throw new IllegalArgumentException("Database name must contain only letters, numbers, and underscores.");
+        }
+        return value;
+    }
+
+    private static void normalizeDemoNames(Connection conn) throws SQLException {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("""
+                    UPDATE employees
+                    SET first_name = 'Alketa',
+                        email = 'alketa.thaqi@company.com'
+                    WHERE first_name = 'Alekta'
+                      AND last_name = 'Thaqi'
+                    """);
+
+            stmt.executeUpdate("""
+                    UPDATE users
+                    SET username = 'alketa.thaqi'
+                    WHERE username = 'alekta.thaqi'
+                    """);
         }
     }
 
@@ -372,7 +399,7 @@ public class DBConnection {
                 {"Florentina", "Dervishaj", "florentina.dervishaj"},
                 {"Edison", "Ukshini", "edison.ukshini"},
                 {"Arijola", "Krasniqi", "arijola.krasniqi"},
-                {"Alekta", "Thaqi", "alekta.thaqi"}
+                {"Alketa", "Thaqi", "alketa.thaqi"}
         };
 
         String findEmployeeSql = "SELECT id FROM employees WHERE first_name = ? AND last_name = ?";
