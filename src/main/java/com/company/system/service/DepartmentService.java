@@ -1,13 +1,18 @@
 package com.company.system.service;
 
+
 import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.model.Department;
 import com.company.system.repository.DepartmentRepository;
 import com.company.system.repository.jdbc.JdbcDepartmentRepository;
+import com.company.system.utils.AppLogger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.company.system.utils.Validator.departmentNameValidator;
+import static com.company.system.utils.Validator.descriptionValidator;
 
 public class DepartmentService {
 
@@ -17,12 +22,16 @@ public class DepartmentService {
         try {
             return departmentRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return new ArrayList<>();
         }
     }
 
     public static boolean addDepartment(Department department) {
+        if (!isValidDepartment(department)) {
+            return false;
+        }
+
         try {
             boolean saved = departmentRepository.save(department);
             if (!saved) {
@@ -35,10 +44,14 @@ public class DepartmentService {
     }
 
     public static boolean updateDepartment(Department department) {
+        if (!isValidDepartment(department)) {
+            return false;
+        }
+
         try {
             return departmentRepository.update(department);
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            AppLogger.error("Failed to update department", e);
             return false;
         }
     }
@@ -47,7 +60,7 @@ public class DepartmentService {
         try {
             return departmentRepository.deleteById(departmentId);
         } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+            AppLogger.error("Failed to delete department", e);
             return false;
         }
     }
@@ -56,8 +69,18 @@ public class DepartmentService {
         try {
             return departmentRepository.findById(departmentId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return null;
         }
+    }
+
+    private static boolean isValidDepartment(Department department) {
+        if (department == null
+                || !departmentNameValidator(department.getName())
+                || !descriptionValidator(department.getDescription())) {
+            AppLogger.info("Invalid department data rejected.");
+            return false;
+        }
+        return true;
     }
 }
