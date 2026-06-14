@@ -1,9 +1,9 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Department;
-import com.company.system.model.Employee;
-import com.company.system.model.User;
+import com.company.system.models.Department;
+import com.company.system.models.Employee;
+import com.company.system.models.User;
 import com.company.system.service.DepartmentService;
 import com.company.system.service.EmployeeService;
 import com.company.system.utils.Session;

@@ -2,7 +2,7 @@ package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
 import com.company.system.exceptions.DatabaseOperationException;
-import com.company.system.model.Department;
+import com.company.system.models.Department;
 import com.company.system.service.DepartmentService;
 import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;

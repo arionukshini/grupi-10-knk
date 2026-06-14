@@ -3,12 +3,12 @@ package com.company.system.controller;
 
 import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Contract;
-import com.company.system.model.Department;
-import com.company.system.model.Employee;
-import com.company.system.model.LeaveRequest;
-import com.company.system.model.Salary;
-import com.company.system.model.User;
+import com.company.system.models.Contract;
+import com.company.system.models.Department;
+import com.company.system.models.Employee;
+import com.company.system.models.LeaveRequest;
+import com.company.system.models.Salary;
+import com.company.system.models.User;
 import com.company.system.service.ContractPdfService;
 import com.company.system.service.ContractService;
 import com.company.system.service.DepartmentService;

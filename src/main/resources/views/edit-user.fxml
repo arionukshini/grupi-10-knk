@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml"
@@ -11,50 +15,41 @@
       prefWidth="420"
       styleClass="wizard-root">
 
-    <!-- Header -->
     <HBox styleClass="wizard-topbar" alignment="CENTER_LEFT">
         <padding><Insets top="14" right="20" bottom="14" left="20"/></padding>
-        <Label fx:id="titleLabel" text="Edito Përdoruesin" styleClass="wizard-title"/>
+        <Label fx:id="titleLabel" styleClass="wizard-title"/>
     </HBox>
 
-    <!-- Content -->
     <VBox spacing="16" VBox.vgrow="ALWAYS">
         <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
 
-        <!-- Employee ID -->
         <VBox spacing="4">
-            <Label text="Employee ID" styleClass="field-label"/>
-            <TextField fx:id="employeeIdField" promptText="p.sh. 5" styleClass="wizard-field"/>
-            <Label text="Duhet të jetë unik. Lëre bosh nëse nuk ka lidhje." styleClass="field-hint-muted"/>
+            <Label fx:id="employeeIdLabel" styleClass="field-label"/>
+            <TextField fx:id="employeeIdField" styleClass="wizard-field"/>
+            <Label fx:id="employeeIdHintLabel" styleClass="field-hint-muted"/>
         </VBox>
 
-        <!-- Username -->
         <VBox spacing="4">
-            <Label text="Username *" styleClass="field-label"/>
+            <Label fx:id="usernameLabel" styleClass="field-label"/>
             <TextField fx:id="usernameField" styleClass="wizard-field"/>
         </VBox>
 
-        <!-- New Password -->
         <VBox spacing="4">
-            <Label text="Fjalëkalim i ri (opsional)" styleClass="field-label"/>
-            <PasswordField fx:id="newPasswordField" promptText="Lëre bosh nëse nuk ndryshon" styleClass="wizard-field"/>
+            <Label fx:id="newPasswordLabel" styleClass="field-label"/>
+            <PasswordField fx:id="newPasswordField" styleClass="wizard-field"/>
         </VBox>
 
-        <!-- Confirm Password -->
         <VBox spacing="4">
-            <Label text="Konfirmo fjalëkalimin" styleClass="field-label"/>
-            <PasswordField fx:id="confirmPasswordField" promptText="Ripërsërit fjalëkalimin" styleClass="wizard-field"/>
+            <Label fx:id="confirmPasswordLabel" styleClass="field-label"/>
+            <PasswordField fx:id="confirmPasswordField" styleClass="wizard-field"/>
         </VBox>
 
-        <!-- Error label -->
         <Label fx:id="errorLabel" text="" styleClass="error-label" wrapText="true" visible="false"/>
 
-        <!-- Buttons -->
         <HBox spacing="12" alignment="CENTER_RIGHT">
             <padding><Insets top="8" bottom="0"/></padding>
-            <Button fx:id="cancelBtn" text="Anulo" styleClass="wizard-back-btn" onAction="#onCancel"/>
-            <Button fx:id="saveBtn" text="✓ Ruaj ndryshimet" styleClass="wizard-next-btn" onAction="#onSave"/>
+            <Button fx:id="cancelBtn" styleClass="wizard-back-btn" onAction="#onCancel"/>
+            <Button fx:id="saveBtn" styleClass="wizard-next-btn" onAction="#onSave"/>
         </HBox>
     </VBox>
-
 </VBox>

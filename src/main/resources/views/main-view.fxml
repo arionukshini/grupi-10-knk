@@ -21,7 +21,6 @@
                 <Insets top="0" right="18" bottom="0" left="12"/>
             </padding>
             <Button fx:id="menuToggleButton"
-                    text="☰"
                     styleClass="icon-button"
                     onAction="#toggleSidebar"/>
             <Label text="Contract Manager"
@@ -97,7 +96,6 @@
             </HBox>
 
             <Button fx:id="themeButton2"
-                    text="⚙"
                     styleClass="footer-icon-button"
                     visible="false"
                     managed="false"

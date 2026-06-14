@@ -3,7 +3,7 @@ package com.company.system.controller;
 
 import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.User;
+import com.company.system.models.User;
 import com.company.system.service.LeaveRequestService;
 import com.company.system.service.UserService;
 import com.company.system.utils.DialogUtils;
@@ -238,7 +238,7 @@ public class MainController {
         if (user == null || user.getEmployeeId() == null) return;
         if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
 
-        List<com.company.system.model.Contract> expiring =
+        List<com.company.system.models.Contract> expiring =
                 com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
 
         if (expiring.isEmpty()) return;
@@ -247,7 +247,7 @@ public class MainController {
         StringBuilder message = new StringBuilder();
         message.append(LanguageManager.get("contract.expiring.intro"));
 
-        for (com.company.system.model.Contract c : expiring) {
+        for (com.company.system.models.Contract c : expiring) {
             message.append(LanguageManager.get("contract.expiring.itemPrefix"))
                     .append(c.getContractType())
                     .append(LanguageManager.get("contract.expiring.statusSuffix"))
@@ -276,7 +276,7 @@ public class MainController {
         if (user == null || user.getEmployeeId() == null) return;
         if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
 
-        List<com.company.system.model.Contract> expiring =
+        List<com.company.system.models.Contract> expiring =
                 com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
 
         if (expiring.isEmpty()) return;
@@ -287,7 +287,7 @@ public class MainController {
                 ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
                 : "The following contracts will expire within 14 days:\n\n");
 
-        for (com.company.system.model.Contract contract : expiring) {
+        for (com.company.system.models.Contract contract : expiring) {
             message.append("- ").append(contract.getContractType())
                     .append(" - ").append(sq ? "Skadon" : "Expires")
                     .append(": ").append(contract.getEndDate()).append("\n");

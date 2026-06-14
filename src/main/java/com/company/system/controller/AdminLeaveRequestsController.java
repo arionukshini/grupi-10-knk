@@ -1,7 +1,7 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.LeaveRequest;
+import com.company.system.models.LeaveRequest;
 import com.company.system.service.LeaveRequestService;
 import com.company.system.utils.DialogUtils;
 import javafx.collections.FXCollections;

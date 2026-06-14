@@ -1,8 +1,8 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Salary;
-import com.company.system.model.User;
+import com.company.system.models.Salary;
+import com.company.system.models.User;
 import com.company.system.service.SalaryService;
 import com.company.system.service.UserService;
 import com.company.system.utils.Session;

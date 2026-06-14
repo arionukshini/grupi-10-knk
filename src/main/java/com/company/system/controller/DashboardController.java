@@ -1,9 +1,9 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.DashboardStats;
-import com.company.system.model.DepartmentStats;
-import com.company.system.model.SalaryByDepartmentStats;
+import com.company.system.models.DashboardStats;
+import com.company.system.models.DepartmentStats;
+import com.company.system.models.SalaryByDepartmentStats;
 import com.company.system.service.DashboardService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
