@@ -5,10 +5,9 @@ import com.company.system.utils.AppLogger;
 import com.company.system.exceptions.DatabaseOperationException;
 import com.company.system.exceptions.InvalidPaymentException;
 import com.company.system.exceptions.InvalidSalaryException;
-import com.company.system.model.Salary;
-import com.company.system.model.dto.SalaryCalculationRequestDto;
+import com.company.system.models.Salary;
+import com.company.system.models.dto.SalaryCalculationRequestDto;
 import com.company.system.repository.SalaryRepository;
-import com.company.system.repository.jdbc.JdbcSalaryRepository;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -19,7 +18,7 @@ public class SalaryService {
 
     private static final double STANDARD_WORK_DAYS = 22.0;
     private static final double STANDARD_WORK_HOURS = 8.0;
-    private static final SalaryRepository salaryRepository = new JdbcSalaryRepository();
+    private static final SalaryRepository salaryRepository = new SalaryRepository();
 
     public static List<Salary> getAllSalaries() {
         try {

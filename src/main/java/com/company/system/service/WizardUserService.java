@@ -2,12 +2,10 @@ package com.company.system.service;
 
 
 import com.company.system.utils.AppLogger;
-import com.company.system.model.dto.FullUserCreateRequestDto;
-import com.company.system.model.dto.UserUpdateRequestDto;
+import com.company.system.models.dto.FullUserCreateRequestDto;
+import com.company.system.models.dto.UserUpdateRequestDto;
 import com.company.system.repository.UserProvisioningRepository;
 import com.company.system.repository.UserRepository;
-import com.company.system.repository.jdbc.JdbcUserProvisioningRepository;
-import com.company.system.repository.jdbc.JdbcUserRepository;
 import com.company.system.utils.PasswordUtils;
 
 import java.security.SecureRandom;
@@ -17,8 +15,8 @@ import java.time.LocalDate;
 public class WizardUserService {
 
     private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-    private static final UserRepository userRepository = new JdbcUserRepository();
-    private static final UserProvisioningRepository userProvisioningRepository = new JdbcUserProvisioningRepository();
+    private static final UserRepository userRepository = new UserRepository();
+    private static final UserProvisioningRepository userProvisioningRepository = new UserProvisioningRepository();
 
     public static boolean createFullUser(
             String firstName, String lastName, String email, String phone,

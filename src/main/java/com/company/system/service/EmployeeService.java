@@ -4,9 +4,8 @@ package com.company.system.service;
 import com.company.system.utils.AppLogger;
 import com.company.system.exceptions.InvalidEmailException;
 import com.company.system.exceptions.InvalidSalaryException;
-import com.company.system.model.Employee;
+import com.company.system.models.Employee;
 import com.company.system.repository.EmployeeRepository;
-import com.company.system.repository.jdbc.JdbcEmployeeRepository;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import static com.company.system.utils.Validator.statusValidator;
 
 public class EmployeeService {
 
-    private static final EmployeeRepository employeeRepository = new JdbcEmployeeRepository();
+    private static final EmployeeRepository employeeRepository = new EmployeeRepository();
 
     public static List<Employee> getAllEmployees() {
         try {

@@ -2,11 +2,10 @@ package com.company.system.service;
 
 
 import com.company.system.utils.AppLogger;
-import com.company.system.model.LeaveRequest;
-import com.company.system.model.dto.LeaveRequestCreateDto;
-import com.company.system.model.dto.LeaveRequestDecisionDto;
+import com.company.system.models.LeaveRequest;
+import com.company.system.models.dto.LeaveRequestCreateDto;
+import com.company.system.models.dto.LeaveRequestDecisionDto;
 import com.company.system.repository.LeaveRequestRepository;
-import com.company.system.repository.jdbc.JdbcLeaveRequestRepository;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ import java.util.List;
 
 public class LeaveRequestService {
 
-    private static final LeaveRequestRepository leaveRequestRepository = new JdbcLeaveRequestRepository();
+    private static final LeaveRequestRepository leaveRequestRepository = new LeaveRequestRepository();
 
     public static List<LeaveRequest> getAllRequests() {
         try {

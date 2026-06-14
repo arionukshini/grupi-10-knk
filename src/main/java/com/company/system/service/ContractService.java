@@ -3,9 +3,8 @@ package com.company.system.service;
 
 import com.company.system.utils.AppLogger;
 import com.company.system.exceptions.DatabaseOperationException;
-import com.company.system.model.Contract;
+import com.company.system.models.Contract;
 import com.company.system.repository.ContractRepository;
-import com.company.system.repository.jdbc.JdbcContractRepository;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public class ContractService {
 
-    private static final ContractRepository contractRepository = new JdbcContractRepository();
+    private static final ContractRepository contractRepository = new ContractRepository();
 
     public static List<Contract> getAllContracts() {
         try {

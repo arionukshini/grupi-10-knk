@@ -2,11 +2,10 @@ package com.company.system.service;
 
 
 import com.company.system.utils.AppLogger;
-import com.company.system.model.DashboardStats;
-import com.company.system.model.DepartmentStats;
-import com.company.system.model.SalaryByDepartmentStats;
+import com.company.system.models.DashboardStats;
+import com.company.system.models.DepartmentStats;
+import com.company.system.models.SalaryByDepartmentStats;
 import com.company.system.repository.DashboardRepository;
-import com.company.system.repository.jdbc.JdbcDashboardRepository;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 public class DashboardService {
 
-    private static final DashboardRepository dashboardRepository = new JdbcDashboardRepository();
+    private static final DashboardRepository dashboardRepository = new DashboardRepository();
 
     public static DashboardStats getDashboardStats() {
         try {

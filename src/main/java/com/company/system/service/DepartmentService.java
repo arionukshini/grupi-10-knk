@@ -2,9 +2,8 @@ package com.company.system.service;
 
 
 import com.company.system.exceptions.DatabaseOperationException;
-import com.company.system.model.Department;
+import com.company.system.models.Department;
 import com.company.system.repository.DepartmentRepository;
-import com.company.system.repository.jdbc.JdbcDepartmentRepository;
 import com.company.system.utils.AppLogger;
 
 import java.sql.SQLException;
@@ -16,7 +15,7 @@ import static com.company.system.utils.Validator.descriptionValidator;
 
 public class DepartmentService {
 
-    private static final DepartmentRepository departmentRepository = new JdbcDepartmentRepository();
+    private static final DepartmentRepository departmentRepository = new DepartmentRepository();
 
     public static List<Department> getAllDepartments() {
         try {

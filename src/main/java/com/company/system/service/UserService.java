@@ -2,12 +2,11 @@ package com.company.system.service;
 
 
 import com.company.system.utils.AppLogger;
-import com.company.system.model.User;
-import com.company.system.model.dto.LoginRequestDto;
-import com.company.system.model.dto.PasswordResetRequestDto;
-import com.company.system.model.dto.UserRegistrationRequestDto;
+import com.company.system.models.User;
+import com.company.system.models.dto.LoginRequestDto;
+import com.company.system.models.dto.PasswordResetRequestDto;
+import com.company.system.models.dto.UserRegistrationRequestDto;
 import com.company.system.repository.UserRepository;
-import com.company.system.repository.jdbc.JdbcUserRepository;
 import com.company.system.utils.PasswordUtils;
 
 import java.sql.SQLException;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class UserService {
 
-    private static final UserRepository userRepository = new JdbcUserRepository();
+    private static final UserRepository userRepository = new UserRepository();
 
     public static User login(String username, String password) {
         LoginRequestDto request = new LoginRequestDto(username, password);
