@@ -3,7 +3,12 @@ package com.company.system.db;
 import com.company.system.utils.AppLogger;
 import com.company.system.utils.PasswordUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBConnection {
 

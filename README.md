@@ -171,11 +171,10 @@ src/main/java/com/company/system
   db/              MySQL connection and database initialization
   exceptions/      Custom application exceptions
   i18n/            Language manager
-  mapper/          Database row to model mappers
-  model/           Data models
-  model/dto/       Request DTOs used by services and repositories
-  repository/      Persistence interfaces
-  repository/jdbc/ JDBC repository implementations
+  models/          Data models
+  models/dto/      Request DTOs used by services and repositories
+  models/mappers/  Database row to model mappers
+  repository/      Generic base repository and concrete persistence classes
   service/         Business logic and orchestration
   utils/           Session, validation, dialogs, password, keyboard helpers
 
