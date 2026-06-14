@@ -1,6 +1,6 @@
 package com.company.system.controller;
 
-
+import com.company.system.i18n.LanguageManager;
 import com.company.system.model.Salary;
 import com.company.system.model.User;
 import com.company.system.service.SalaryService;
@@ -15,18 +15,39 @@ import java.util.List;
 
 public class MySalaryController {
 
+    @FXML private Label titleLabel;
+    @FXML private Label subtitleLabel;
     @FXML private Label employeeNameLabel;
+    @FXML private Label monthlySalaryTitleLabel;
+    @FXML private Label grossSalaryLabelTitle;
     @FXML private Label grossSalaryLabel;
+    @FXML private Label netSalaryLabelTitle;
     @FXML private Label netSalaryLabel;
+    @FXML private Label bonusDeductionsTitleLabel;
+    @FXML private Label bonusLabelTitle;
     @FXML private Label bonusLabel;
+    @FXML private Label deductionsLabelTitle;
     @FXML private Label deductionsLabel;
+    @FXML private Label workTimeTitleLabel;
+    @FXML private Label workedDaysTitleLabel;
     @FXML private Label workedDaysLabel;
+    @FXML private Label vacationDaysTitleLabel;
     @FXML private Label vacationDaysLabel;
+    @FXML private Label workHoursTitleLabel;
     @FXML private Label workHoursLabel;
+    @FXML private Label overtimeTitleLabel;
+    @FXML private Label overtimeHoursTitleLabel;
     @FXML private Label overtimeHoursLabel;
+    @FXML private Label dailyRateTitleLabel;
     @FXML private Label dailyRateLabel;
+    @FXML private Label overtimePayTitleLabel;
     @FXML private Label overtimePayLabel;
+    @FXML private Label historyTitleLabel;
+    @FXML private Label calculateTitleLabel;
+    @FXML private Label workedDaysInputLabel;
+    @FXML private Label calculatedSalaryTitleLabel;
     @FXML private Label calculatedSalaryLabel;
+    @FXML private Label calculationHintLabel;
     @FXML private TextField workedDaysInput;
     @FXML private VBox historyContainer;
 
@@ -34,24 +55,23 @@ public class MySalaryController {
 
     @FXML
     public void initialize() {
-        User user = Session.getUser();
+        applyTranslations();
 
+        User user = Session.getUser();
         if (user == null) {
-            showEmpty("Nuk ka user të kyçur.");
+            showEmpty(LanguageManager.get("user.salary.noUser"));
             return;
         }
 
         int employeeId = UserService.getEmployeeIdByUserId(user.getId());
-
         if (employeeId <= 0) {
-            showEmpty("Useri nuk është i lidhur me punëtor.");
+            showEmpty(LanguageManager.get("user.salary.noEmployee"));
             return;
         }
 
         latestSalary = SalaryService.getLatestSalaryByEmployeeId(employeeId);
-
         if (latestSalary == null) {
-            showEmpty("Nuk ka pagë të regjistruar.");
+            showEmpty(LanguageManager.get("user.salary.noRecord"));
             return;
         }
 
@@ -61,6 +81,30 @@ public class MySalaryController {
         workedDaysInput.setText(String.valueOf(latestSalary.getWorkedDays()));
         workedDaysInput.textProperty().addListener((obs, oldValue, newValue) -> calculateByWorkedDays());
         calculateByWorkedDays();
+    }
+
+    private void applyTranslations() {
+        titleLabel.setText(LanguageManager.get("user.salary.title"));
+        subtitleLabel.setText(LanguageManager.get("user.salary.subtitle"));
+        monthlySalaryTitleLabel.setText(LanguageManager.get("user.salary.monthlyTitle"));
+        grossSalaryLabelTitle.setText(LanguageManager.get("user.salary.gross"));
+        netSalaryLabelTitle.setText(LanguageManager.get("user.salary.net"));
+        bonusDeductionsTitleLabel.setText(LanguageManager.get("user.salary.bonusDeductionsTitle"));
+        bonusLabelTitle.setText(LanguageManager.get("user.salary.bonus"));
+        deductionsLabelTitle.setText(LanguageManager.get("user.salary.deductions"));
+        workTimeTitleLabel.setText(LanguageManager.get("user.salary.workTimeTitle"));
+        workedDaysTitleLabel.setText(LanguageManager.get("user.salary.workedDays"));
+        vacationDaysTitleLabel.setText(LanguageManager.get("user.salary.vacationDays"));
+        workHoursTitleLabel.setText(LanguageManager.get("user.salary.workHours"));
+        overtimeTitleLabel.setText(LanguageManager.get("user.salary.overtimeTitle"));
+        overtimeHoursTitleLabel.setText(LanguageManager.get("user.salary.overtimeHours"));
+        dailyRateTitleLabel.setText(LanguageManager.get("user.salary.dailyRate"));
+        overtimePayTitleLabel.setText(LanguageManager.get("user.salary.overtimePay"));
+        historyTitleLabel.setText(LanguageManager.get("user.salary.historyTitle"));
+        calculateTitleLabel.setText(LanguageManager.get("user.salary.calculateTitle"));
+        workedDaysInputLabel.setText(LanguageManager.get("user.salary.workedDays"));
+        calculatedSalaryTitleLabel.setText(LanguageManager.get("user.salary.calculatedSalary"));
+        calculationHintLabel.setText(LanguageManager.get("user.salary.calculationHint"));
     }
 
     private void showSalary(Salary salary) {
@@ -98,17 +142,18 @@ public class MySalaryController {
         historyContainer.getChildren().clear();
 
         if (history == null || history.isEmpty()) {
-            historyContainer.getChildren().add(new Label("Nuk ka histori të pagave."));
+            historyContainer.getChildren().add(new Label(LanguageManager.get("user.salary.noHistory")));
             return;
         }
 
         for (Salary salary : history) {
-            Label card = new Label(
-                    "Data: " + salary.getPaymentDate()
-                            + " | Bruto: " + formatMoney(salary.getGrossSalary())
-                            + " | Bonus: " + formatMoney(salary.getBonus())
-                            + " | Neto: " + formatMoney(salary.getNetSalary())
-            );
+            Label card = new Label(String.format(
+                    LanguageManager.get("user.salary.historyItem"),
+                    salary.getPaymentDate(),
+                    formatMoney(salary.getGrossSalary()),
+                    formatMoney(salary.getBonus()),
+                    formatMoney(salary.getNetSalary())
+            ));
 
             card.getStyleClass().addAll("info-card", "body-text");
             historyContainer.getChildren().add(card);
@@ -120,6 +165,6 @@ public class MySalaryController {
     }
 
     private String formatMoney(double value) {
-        return String.format("%.2f €", value);
+        return String.format("%.2f EUR", value);
     }
 }

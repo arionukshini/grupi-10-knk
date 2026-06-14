@@ -16,109 +16,97 @@
                 <Insets top="24" right="24" bottom="24" left="24"/>
             </padding>
 
-            <!-- HEADER -->
             <HBox alignment="CENTER_LEFT" spacing="12">
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="My Contract" styleClass="page-title"/>
+                    <Label fx:id="titleLabel" text="My Contract" styleClass="page-title"/>
                     <Label fx:id="statusBadgeLabel" text="-" styleClass="page-subtitle"/>
                 </VBox>
                 <Button fx:id="exportPdfButton"
-                        text="Eksporto Kontratën PDF"
+                        text="Export Contract PDF"
                         onAction="#handleExportPdf"
                         styleClass="primary-button"/>
             </HBox>
 
-            <!-- MAIN CONTENT -->
             <HBox spacing="20" alignment="TOP_LEFT">
-
-                <!-- LEFT: CONTRACT DETAILS -->
                 <VBox spacing="16" HBox.hgrow="ALWAYS">
-
-                    <!-- SECTION 1: INFORMACIONI KRYESOR -->
                     <VBox spacing="12" styleClass="content-card">
-                        <Label text="Informacioni i kontratës" styleClass="section-title"/>
+                        <Label fx:id="contractInfoTitleLabel" text="Contract information" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Lloji i kontratës" styleClass="info-card-label"/>
+                                <Label fx:id="contractTypeTitleLabel" text="Contract type" styleClass="info-card-label"/>
                                 <Label fx:id="contractTypeLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Statusi" styleClass="info-card-label"/>
+                                <Label fx:id="statusTitleLabel" text="Status" styleClass="info-card-label"/>
                                 <Label fx:id="statusLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
-                    <!-- SECTION 2: DATAT -->
                     <VBox spacing="12" styleClass="content-card">
-                        <Label text="Periudha e kontratës" styleClass="section-title"/>
+                        <Label fx:id="contractPeriodTitleLabel" text="Contract period" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="salary-card-gross">
-                                <Label text="Data e fillimit" styleClass="salary-card-label"/>
+                                <Label fx:id="startDateTitleLabel" text="Start date" styleClass="salary-card-label"/>
                                 <Label fx:id="startDateLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="salary-card-net">
-                                <Label text="Data e mbarimit" styleClass="salary-card-label"/>
+                                <Label fx:id="endDateTitleLabel" text="End date" styleClass="salary-card-label"/>
                                 <Label fx:id="endDateLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
 
-                    <!-- SECTION 3: PAGA -->
                     <VBox spacing="12" styleClass="content-card">
-                        <Label text="Paga bazë e kontratës" styleClass="section-title"/>
+                        <Label fx:id="contractSalaryTitleLabel" text="Contract salary" styleClass="section-title"/>
                         <VBox spacing="5" styleClass="salary-card-net">
-                            <Label text="Paga mujore" styleClass="salary-card-label"/>
+                            <Label fx:id="monthlySalaryTitleLabel" text="Monthly salary" styleClass="salary-card-label"/>
                             <Label fx:id="salaryLabel" text="-" styleClass="salary-card-value-green"/>
                         </VBox>
                     </VBox>
 
-                    <!-- SECTION 4: PUNETORI -->
                     <VBox spacing="12" styleClass="content-card">
-                        <Label text="Të dhënat e punëtorit" styleClass="section-title"/>
+                        <Label fx:id="employeeInfoTitleLabel" text="Employee information" styleClass="section-title"/>
                         <HBox spacing="12">
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="Emri" styleClass="info-card-label"/>
+                                <Label fx:id="employeeNameTitleLabel" text="Name" styleClass="info-card-label"/>
                                 <Label fx:id="employeeNameLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                             <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="info-card">
-                                <Label text="ID Punëtori" styleClass="info-card-label"/>
+                                <Label fx:id="employeeIdTitleLabel" text="Employee ID" styleClass="info-card-label"/>
                                 <Label fx:id="employeeIdLabel" text="-" styleClass="info-card-value"/>
                             </VBox>
                         </HBox>
                     </VBox>
-
                 </VBox>
 
-                <!-- RIGHT: KONTRATA ID + INFO SHTESE -->
                 <VBox spacing="12" styleClass="content-card" minWidth="220" maxWidth="240">
-                    <Label text="Detajet" styleClass="section-title"/>
+                    <Label fx:id="detailsTitleLabel" text="Details" styleClass="section-title"/>
                     <Separator/>
 
                     <VBox spacing="5" styleClass="info-card">
-                        <Label text="Contract ID" styleClass="info-card-label"/>
+                        <Label fx:id="contractIdTitleLabel" text="Contract ID" styleClass="info-card-label"/>
                         <Label fx:id="contractIdLabel" text="-" styleClass="info-card-value"/>
                     </VBox>
 
                     <VBox spacing="5" styleClass="info-card">
-                        <Label text="Lloji" styleClass="info-card-label"/>
+                        <Label fx:id="contractTypeSideTitleLabel" text="Type" styleClass="info-card-label"/>
                         <Label fx:id="contractTypeLabel2" text="-" styleClass="info-card-value"/>
                     </VBox>
 
                     <VBox spacing="5" styleClass="info-card">
-                        <Label text="Statusi" styleClass="info-card-label"/>
+                        <Label fx:id="statusSideTitleLabel" text="Status" styleClass="info-card-label"/>
                         <Label fx:id="statusLabel2" text="-" styleClass="info-card-value"/>
                     </VBox>
 
                     <Separator/>
 
-                    <Label text="Kliko 'Eksporto Kontratën PDF' për të shkarkuar kontratën tënde."
+                    <Label fx:id="exportHintLabel"
+                           text="Click Export Contract PDF to download your contract."
                            wrapText="true"
                            style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
                 </VBox>
-
             </HBox>
-
         </VBox>
     </content>
 </ScrollPane>

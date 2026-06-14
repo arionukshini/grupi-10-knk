@@ -23,6 +23,23 @@ import java.io.FileOutputStream;
 
 public class MyContractController {
 
+    @FXML private Label titleLabel;
+    @FXML private Label contractInfoTitleLabel;
+    @FXML private Label contractTypeTitleLabel;
+    @FXML private Label statusTitleLabel;
+    @FXML private Label contractPeriodTitleLabel;
+    @FXML private Label startDateTitleLabel;
+    @FXML private Label endDateTitleLabel;
+    @FXML private Label contractSalaryTitleLabel;
+    @FXML private Label monthlySalaryTitleLabel;
+    @FXML private Label employeeInfoTitleLabel;
+    @FXML private Label employeeNameTitleLabel;
+    @FXML private Label employeeIdTitleLabel;
+    @FXML private Label detailsTitleLabel;
+    @FXML private Label contractIdTitleLabel;
+    @FXML private Label contractTypeSideTitleLabel;
+    @FXML private Label statusSideTitleLabel;
+    @FXML private Label exportHintLabel;
     @FXML private Label employeeNameLabel;
     @FXML private Label employeeIdLabel;
     @FXML private Label contractIdLabel;
@@ -41,6 +58,8 @@ public class MyContractController {
 
     @FXML
     public void initialize() {
+        applyTranslations();
+
         User user = Session.getUser();
 
         if (user == null) {
@@ -67,6 +86,27 @@ public class MyContractController {
         showContract(contract);
     }
 
+    private void applyTranslations() {
+        titleLabel.setText(LanguageManager.get("user.contract.title"));
+        contractInfoTitleLabel.setText(LanguageManager.get("profile.contractInfo"));
+        contractTypeTitleLabel.setText(LanguageManager.get("user.contract.type"));
+        statusTitleLabel.setText(LanguageManager.get("user.contract.status"));
+        contractPeriodTitleLabel.setText(LanguageManager.get("user.contract.period"));
+        startDateTitleLabel.setText(LanguageManager.get("user.contract.startDate"));
+        endDateTitleLabel.setText(LanguageManager.get("user.contract.endDate"));
+        contractSalaryTitleLabel.setText(LanguageManager.get("user.contract.salaryTitle"));
+        monthlySalaryTitleLabel.setText(LanguageManager.get("user.salary.monthlyTitle"));
+        employeeInfoTitleLabel.setText(LanguageManager.get("user.contract.employeeInfo"));
+        employeeNameTitleLabel.setText(LanguageManager.get("user.department.name"));
+        employeeIdTitleLabel.setText(LanguageManager.get("salaries.employeeId"));
+        detailsTitleLabel.setText(LanguageManager.get("user.contract.details"));
+        contractIdTitleLabel.setText(LanguageManager.get("user.contract.contractId"));
+        contractTypeSideTitleLabel.setText(LanguageManager.get("leave.type"));
+        statusSideTitleLabel.setText(LanguageManager.get("user.contract.status"));
+        exportHintLabel.setText(LanguageManager.get("user.contract.exportHint"));
+        exportPdfButton.setText(LanguageManager.get("user.contract.exportPdf"));
+    }
+
     private void showContract(Contract c) {
         employeeNameLabel.setText(c.getEmployeeName() != null ? c.getEmployeeName() : "-");
         employeeIdLabel.setText(String.valueOf(c.getEmployeeId()));
@@ -74,10 +114,10 @@ public class MyContractController {
         contractTypeLabel.setText(c.getContractType() != null ? c.getContractType() : "-");
         contractTypeLabel2.setText(c.getContractType() != null ? c.getContractType() : "-");
         startDateLabel.setText(c.getStartDate() != null ? c.getStartDate().toString() : "-");
-        endDateLabel.setText(c.getEndDate() != null ? c.getEndDate().toString() : "Pa afat");
+        endDateLabel.setText(c.getEndDate() != null ? c.getEndDate().toString() : LanguageManager.get("user.contract.noEndDate"));
         salaryLabel.setText(String.format("%.2f EUR", c.getSalary()));
 
-        String status = c.getStatus() != null ? c.getStatus() : "-";
+        String status = displayStatus(c.getStatus());
         statusLabel.setText(status);
         statusLabel2.setText(status);
         statusBadgeLabel.setText(LanguageManager.get("user.contract.status") + ": " + status);
@@ -86,16 +126,18 @@ public class MyContractController {
     @FXML
     private void handleExportPdf() {
         if (contract == null || employee == null) {
-            showAlert(Alert.AlertType.WARNING, "Paralajmerim", "Nuk ka kontrate per te eksportuar.");
+            showAlert(Alert.AlertType.WARNING,
+                    LanguageManager.get("user.message.warning"),
+                    LanguageManager.get("user.contract.export.noContract"));
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Ruaj kontraten si PDF");
+        fileChooser.setTitle(LanguageManager.get("user.contract.export.saveTitle"));
         fileChooser.setInitialFileName("kontrata_" +
                 contract.getEmployeeName().replace(" ", "_") + ".pdf");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("PDF File", "*.pdf")
+                new FileChooser.ExtensionFilter(LanguageManager.get("file.pdf"), "*.pdf")
         );
 
         File file = fileChooser.showSaveDialog(exportPdfButton.getScene().getWindow());
@@ -106,19 +148,32 @@ public class MyContractController {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(pdfBytes);
             }
-            showAlert(Alert.AlertType.INFORMATION, "Sukses",
-                    "Kontrata PDF u ruajt me sukses:\n" + file.getAbsolutePath());
+            showAlert(Alert.AlertType.INFORMATION,
+                    LanguageManager.get("user.message.success"),
+                    LanguageManager.get("user.contract.export.success") + "\n" + file.getAbsolutePath());
 
             java.awt.Desktop.getDesktop().open(file);
         } catch (Exception e) {
             AppLogger.error("Unexpected error", e);
-            showAlert(Alert.AlertType.ERROR, "Gabim",
-                    "Gabim gjate gjenerimit te PDF-se. Provoni perseri.");
+            showAlert(Alert.AlertType.ERROR,
+                    LanguageManager.get("user.message.error"),
+                    LanguageManager.get("user.contract.export.error"));
         }
     }
 
     private void showEmpty(String message) {
         if (statusBadgeLabel != null) statusBadgeLabel.setText(message);
+    }
+
+    private String displayStatus(String status) {
+        return switch (status == null ? "" : status) {
+            case "Active" -> LanguageManager.get("status.active");
+            case "Pending" -> LanguageManager.get("status.pending");
+            case "Expired" -> LanguageManager.get("status.expired");
+            case "Inactive" -> LanguageManager.get("status.inactive");
+            case "Suspended" -> LanguageManager.get("status.suspended");
+            default -> status == null || status.isBlank() ? "-" : status;
+        };
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
