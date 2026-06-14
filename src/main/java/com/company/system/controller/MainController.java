@@ -341,6 +341,7 @@ public class MainController {
         setIconOnlyButton(languageButton, ICON_LANGUAGE);
         setIconOnlyButton(helpFooterButton, ICON_HELP);
         setIconOnlyButton(themeButton2, ICON_SETTINGS);
+        menuToggleButton.setText("\u2630");
         updateNotificationButton();
         updateSidebarLabels();
         updateLoggedInUser();
