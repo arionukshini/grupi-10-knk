@@ -22,11 +22,17 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -47,6 +53,8 @@ public class UserDashboardController {
     @FXML private Label salaryTitleLabel;
     @FXML private Label departmentTitleLabel;
     @FXML private Label colleaguesTitleLabel;
+    @FXML private Label documentsTitleLabel;
+    @FXML private Label notificationsTitleLabel;
     @FXML private VBox employeeDetailsBox;
     @FXML private VBox contractDetailsBox;
     @FXML private VBox salaryDetailsBox;
@@ -72,16 +80,16 @@ public class UserDashboardController {
     }
 
     private void loadTexts() {
-        titleLabel.setText(LanguageManager.get("dashboard.title"));
-        subtitleLabel.setText(isAlbanian()
-                ? "Permbledhje personale e punes, kontrates, pages dhe departamentit tuaj."
-                : "Personal overview of your work, contract, salary and department.");
-        employeeTitleLabel.setText(isAlbanian() ? "Informata personale" : "Personal details");
+        titleLabel.setText(LanguageManager.get("user.dashboard"));
+        subtitleLabel.setText(LanguageManager.get("user.dashboard.subtitle"));
+        employeeTitleLabel.setText(LanguageManager.get("user.dashboard.personalInfo"));
         contractTitleLabel.setText(LanguageManager.get("profile.contractInfo"));
         if (salaryTitleLabel != null)
-            salaryTitleLabel.setText(isAlbanian() ? "Informata te pages" : "Salary information");
+            salaryTitleLabel.setText(LanguageManager.get("user.dashboard.salaryInfo"));
         departmentTitleLabel.setText(LanguageManager.get("profile.departmentInfo"));
         colleaguesTitleLabel.setText(LanguageManager.get("profile.colleagues"));
+        documentsTitleLabel.setText(LanguageManager.get("user.dashboard.documents"));
+        notificationsTitleLabel.setText(LanguageManager.get("user.dashboard.notifications"));
     }
 
     private void setupColleaguesTable() {
@@ -104,7 +112,7 @@ public class UserDashboardController {
 
         if (greetingLabel != null) {
             String name = user != null ? user.getUsername() : "-";
-            greetingLabel.setText((isAlbanian() ? "Pershendetje, " : "Welcome, ") + name + "!");
+            greetingLabel.setText(String.format(LanguageManager.get("user.dashboard.greeting"), name));
         }
 
         if (user == null || user.getEmployeeId() == null) {
@@ -143,7 +151,7 @@ public class UserDashboardController {
                 createDetail(LanguageManager.get("profile.position") + ": " + valueOrDash(employee == null ? null : employee.getPosition())),
                 createDetail(LanguageManager.get("profile.hireDate") + ": " + formatSqlDate(employee == null ? null : employee.getHireDate())),
                 createDetail(LanguageManager.get("profile.baseSalary") + ": " + formatCurrency(employee == null ? 0 : employee.getBaseSalary())),
-                createDetail(LanguageManager.get("profile.employeeStatus") + ": " + valueOrDash(employee == null ? null : employee.getStatus())),
+                createDetail(LanguageManager.get("profile.employeeStatus") + ": " + displayStatus(employee == null ? null : employee.getStatus())),
                 createDetail(LanguageManager.get("profile.department") + ": " + valueOrDash(department == null ? null : department.getName()))
         );
     }
@@ -157,7 +165,7 @@ public class UserDashboardController {
                 createDetail(LanguageManager.get("profile.contractType") + ": " + valueOrDash(contract.getContractType())),
                 createDetail(LanguageManager.get("profile.contractStart") + ": " + formatSqlDate(contract.getStartDate())),
                 createDetail(LanguageManager.get("profile.contractEnd") + ": " + formatSqlDate(contract.getEndDate())),
-                createDetail(LanguageManager.get("profile.contractStatus") + ": " + valueOrDash(contract.getStatus())),
+                createDetail(LanguageManager.get("profile.contractStatus") + ": " + displayStatus(contract.getStatus())),
                 createDetail(LanguageManager.get("contracts.salary") + ": " + formatCurrency(contract.getSalary()))
         );
     }
@@ -165,16 +173,15 @@ public class UserDashboardController {
     private void loadSalaryDetails(Salary salary) {
         if (salaryDetailsBox == null) return;
         if (salary == null) {
-            salaryDetailsBox.getChildren().setAll(createDetail(
-                    isAlbanian() ? "Nuk u gjeten informata per page." : "No salary information found."));
+            salaryDetailsBox.getChildren().setAll(createDetail(LanguageManager.get("user.dashboard.noSalary")));
             return;
         }
         salaryDetailsBox.getChildren().setAll(
-                createDetail((isAlbanian() ? "Paga bruto" : "Gross salary") + ": " + formatCurrency(salary.getGrossSalary())),
-                createDetail((isAlbanian() ? "Bonusi" : "Bonus") + ": " + formatCurrency(salary.getBonus())),
-                createDetail((isAlbanian() ? "Zbritjet" : "Deductions") + ": " + formatCurrency(salary.getDeductions())),
-                createDetail((isAlbanian() ? "Paga neto" : "Net salary") + ": " + formatCurrency(salary.getNetSalary())),
-                createDetail((isAlbanian() ? "Data e pageses" : "Payment date") + ": " + formatSqlDate(salary.getPaymentDate()))
+                createDetail(LanguageManager.get("user.salary.gross") + ": " + formatCurrency(salary.getGrossSalary())),
+                createDetail(LanguageManager.get("user.salary.bonus") + ": " + formatCurrency(salary.getBonus())),
+                createDetail(LanguageManager.get("user.salary.deductions") + ": " + formatCurrency(salary.getDeductions())),
+                createDetail(LanguageManager.get("user.salary.net") + ": " + formatCurrency(salary.getNetSalary())),
+                createDetail(LanguageManager.get("user.salary.paymentDate") + ": " + formatSqlDate(salary.getPaymentDate()))
         );
     }
 
@@ -194,9 +201,9 @@ public class UserDashboardController {
         documentsBox.getChildren().clear();
 
         String[][] docs = {
-                {"Kontrata e punes", "contract"},
-                {"Rregullorja e punes", "regulations"},
-                {"Mbrojtja e te dhenave personale", "data"},
+                {LanguageManager.get("user.dashboard.doc.contract"), "contract"},
+                {LanguageManager.get("user.dashboard.doc.regulations"), "regulations"},
+                {LanguageManager.get("user.dashboard.doc.data"), "data"},
         };
 
         HBox row = null;
@@ -218,7 +225,7 @@ public class UserDashboardController {
         name.getStyleClass().add("body-text");
         HBox.setHgrow(name, Priority.ALWAYS);
 
-        Button readBtn = new Button(isAlbanian() ? "Lexo" : "Read");
+        Button readBtn = new Button(LanguageManager.get("user.dashboard.read"));
         readBtn.getStyleClass().add("btn-secondary");
 
         switch (type) {
@@ -237,7 +244,7 @@ public class UserDashboardController {
 
     private void openContractPdf(String title, Employee employee, Contract contract) {
         if (employee == null || contract == null) {
-            showInfo(isAlbanian() ? "Nuk ka kontrate aktive per te shfaqur." : "No active contract found.");
+            showInfo(LanguageManager.get("user.dashboard.noActiveContract"));
             return;
         }
         try {
@@ -250,7 +257,7 @@ public class UserDashboardController {
             java.awt.Desktop.getDesktop().open(tempFile);
         } catch (Exception ex) {
             AppLogger.error("Unexpected error", ex);
-            showError(isAlbanian() ? "Gabim gjate gjenerimit te PDF-se." : "Error generating PDF.");
+            showError(LanguageManager.get("user.contract.export.error"));
         }
     }
 
@@ -269,7 +276,7 @@ public class UserDashboardController {
         textArea.setStyle("-fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-background-color: white;");
         VBox.setVgrow(textArea, Priority.ALWAYS);
 
-        Button closeBtn = new Button(isAlbanian() ? "Mbyll" : "Close");
+        Button closeBtn = new Button(LanguageManager.get("leave.close"));
         closeBtn.getStyleClass().add("btn-secondary");
         closeBtn.setOnAction(e -> stage.close());
 
@@ -284,6 +291,32 @@ public class UserDashboardController {
 
     private String buildRegulationsText(Employee employee) {
         String name = employee != null ? employee.getFirstName() + " " + employee.getLastName() : "-";
+        if (!isAlbanian()) {
+            return """
+INTERNAL WORK REGULATIONS
+Centrix Solutions LLC
+
+Employee: %s
+
+1. Purpose
+These internal work regulations define the rights and responsibilities of the employer and employees during employment.
+
+2. Scope
+This regulation applies to all employees of Centrix Solutions LLC, including full-time, part-time, and fixed-term employees.
+
+3. Conduct
+Employees are expected to communicate professionally, respect colleagues and clients, and protect confidential company information.
+
+4. Working Hours
+The standard schedule is 08:00 - 16:00, Monday through Friday. Any schedule change must be approved by the manager.
+
+5. Leave
+Annual leave, medical leave, and family leave are handled according to applicable labor law and company procedures.
+
+Centrix Solutions LLC
+Rr. Lidhjes se Prizrenit, Nr. 15, Prishtine
+""".formatted(name);
+        }
         return """
 RREGULLORJA E BRENDSHME E PUNËS
 Centrix Solutions SH.P.K
@@ -336,6 +369,34 @@ Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
 
     private String buildDataProtectionText(Employee employee) {
         String name = employee != null ? employee.getFirstName() + " " + employee.getLastName() : "-";
+        if (!isAlbanian()) {
+            return """
+PERSONAL DATA PROTECTION POLICY
+Centrix Solutions LLC
+
+Employee: %s
+
+1. Introduction
+Centrix Solutions LLC is committed to protecting personal data for employees, clients, and partners according to applicable law.
+
+2. Data We Process
+The company may process identification data, contact data, employment data, and payroll-related financial data.
+
+3. Purpose
+Personal data is processed only for employment contracts, legal and tax obligations, and human resources administration.
+
+4. Storage
+Data is stored only for the required period. Access is limited to authorized personnel.
+
+5. Employee Rights
+Employees may request access to their personal data, correction of inaccurate data, and information about processing.
+
+Contact: hr@centrixsolutions.com
+
+Centrix Solutions LLC
+Rr. Lidhjes se Prizrenit, Nr. 15, Prishtine
+""".formatted(name);
+        }
         return """
 POLITIKA E MBROJTJES SË TË DHËNAVE PERSONALE
 Centrix Solutions SH.P.K
@@ -412,20 +473,21 @@ Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
         dot.setStyle("-fx-background-color: " + dotColor + "; -fx-background-radius: 5;");
 
         String statusText = switch (status) {
-            case "Approved" -> isAlbanian() ? "Kerkesa juaj per pushim eshte aprovuar" : "Your leave request was approved";
-            case "Rejected" -> isAlbanian() ? "Kerkesa juaj per pushim eshte refuzuar" : "Your leave request was rejected";
-            default -> isAlbanian() ? "Kerkesa juaj per pushim eshte procesuar" : "Your leave request is pending";
+            case "Approved" -> LanguageManager.get("user.dashboard.notification.approved");
+            case "Rejected" -> LanguageManager.get("user.dashboard.notification.rejected");
+            default -> LanguageManager.get("user.dashboard.notification.pending");
         };
 
         Label titleLbl = new Label(statusText);
         titleLbl.setWrapText(true);
         titleLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
-        String dateRange = formatDate(r.getStartDate()) + " deri " + formatDate(r.getEndDate());
-        String detail = isAlbanian()
-                ? "Pushimi juaj per datat " + dateRange + " eshte " +
-                (status.equals("Approved") ? "aprovuar" : status.equals("Rejected") ? "refuzuar" : "ne pritje") + "."
-                : "Your leave request for " + dateRange + " is " + status.toLowerCase() + ".";
+        String dateRange = formatDate(r.getStartDate()) + " - " + formatDate(r.getEndDate());
+        String detail = String.format(
+                LanguageManager.get("user.dashboard.notification.detail"),
+                dateRange,
+                displayStatus(status)
+        );
 
         Label detailLbl = new Label(detail);
         detailLbl.setWrapText(true);
@@ -444,7 +506,7 @@ Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
     }
 
     private VBox createEmptyNotif() {
-        Label lbl = new Label(isAlbanian() ? "Nuk keni njoftime aktualisht." : "No notifications at this time.");
+        Label lbl = new Label(LanguageManager.get("user.dashboard.noNotifications"));
         lbl.getStyleClass().add("body-text");
         VBox box = new VBox(lbl);
         box.setPadding(new Insets(16));
@@ -459,9 +521,9 @@ Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
     private String formatTimestamp(Timestamp ts) {
         if (ts == null) return "";
         long days = (System.currentTimeMillis() - ts.getTime()) / (1000 * 60 * 60 * 24);
-        if (days == 0) return isAlbanian() ? "sot" : "today";
-        if (days == 1) return isAlbanian() ? "dje" : "yesterday";
-        return days + (isAlbanian() ? " dite me pare" : " days ago");
+        if (days == 0) return LanguageManager.get("user.dashboard.today");
+        if (days == 1) return LanguageManager.get("user.dashboard.yesterday");
+        return String.format(LanguageManager.get("user.dashboard.daysAgo"), days);
     }
 
     private Label createDetail(String text) {
@@ -482,6 +544,18 @@ Rr. Lidhjes së Prizrenit, Nr. 15, Prishtinë
 
     private String valueOrDash(String value) {
         return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private String displayStatus(String status) {
+        return switch (status == null ? "" : status) {
+            case "Approved" -> LanguageManager.get("leave.status.approved");
+            case "Rejected" -> LanguageManager.get("leave.status.rejected");
+            case "Active" -> LanguageManager.get("status.active");
+            case "Inactive" -> LanguageManager.get("status.inactive");
+            case "Suspended" -> LanguageManager.get("status.suspended");
+            case "Expired" -> LanguageManager.get("status.expired");
+            default -> LanguageManager.get("leave.status.pending");
+        };
     }
 
     private void showInfo(String msg) {

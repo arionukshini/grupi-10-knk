@@ -30,7 +30,7 @@
                 <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="560">
                     <VBox styleClass="profile-card" spacing="12">
                         <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-                        <Label text="Dokumente te rendesishme:" styleClass="section-title"/>
+                        <Label fx:id="documentsTitleLabel" text="Important documents" styleClass="section-title"/>
                         <VBox fx:id="documentsBox" spacing="8"/>
                     </VBox>
                 </VBox>
@@ -38,7 +38,8 @@
                 <VBox spacing="12" prefWidth="360" minWidth="300">
                     <VBox styleClass="profile-card" spacing="0" VBox.vgrow="ALWAYS">
                         <padding><Insets top="18" right="0" bottom="0" left="0"/></padding>
-                        <Label text="Njoftimet e fundit"
+                        <Label fx:id="notificationsTitleLabel"
+                               text="Latest notifications"
                                styleClass="section-title"
                                style="-fx-padding: 0 18 12 18;"/>
                         <VBox fx:id="notificationsBox" spacing="0"/>
