@@ -1,6 +1,8 @@
 package com.company.system.controller;
 
 
+import com.company.system.controller.support.ContractExpiryNotifier;
+import com.company.system.controller.support.HelpViewFactory;
 import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.models.User;
@@ -131,7 +133,7 @@ public class MainController {
         setupContextMenu();
         applyRolePermissions();
         showDashboard();
-        checkExpiringContractsPopup();
+        ContractExpiryNotifier.showForCurrentUser();
     }
 
     @FXML
@@ -230,85 +232,6 @@ public class MainController {
             if (contextMenu.isShowing()) contextMenu.hide();
             contextMenu.show(mainShell, event.getScreenX(), event.getScreenY());
             event.consume();
-        });
-    }
-
-    private void checkExpiringContracts() {
-        User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null) return;
-        if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
-
-        List<com.company.system.models.Contract> expiring =
-                com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
-
-        if (expiring.isEmpty()) return;
-
-        boolean sq = isAlbanian();
-        StringBuilder message = new StringBuilder();
-        message.append(LanguageManager.get("contract.expiring.intro"));
-
-        for (com.company.system.models.Contract c : expiring) {
-            message.append(LanguageManager.get("contract.expiring.itemPrefix"))
-                    .append(c.getContractType())
-                    .append(LanguageManager.get("contract.expiring.statusSuffix"))
-                    .append(LanguageManager.get("contract.expiring.expires")).append(": ").append(c.getEndDate()).append("\n");}
-
-        message.append(LanguageManager.get("contract.expiring.footer"));
-
-
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            DialogUtils.style(alert);
-            alert.setTitle(LanguageManager.get("contract.expiring.alertTitle"));
-            alert.setHeaderText(LanguageManager.get("contract.expiring.alertHeader"));
-            Label content = new Label(message.toString());
-            content.setWrapText(true);
-            content.setMaxWidth(400);
-            content.setStyle("-fx-font-size: 13px;");
-            alert.getDialogPane().setContent(content);
-            alert.getDialogPane().setPrefWidth(480);
-            alert.showAndWait();
-        });
-    }
-
-    private void checkExpiringContractsPopup() {
-        User user = Session.getUser();
-        if (user == null || user.getEmployeeId() == null) return;
-        if ("ADMIN".equalsIgnoreCase(user.getRole())) return;
-
-        List<com.company.system.models.Contract> expiring =
-                com.company.system.service.ContractService.getExpiringContractsForEmployee(user.getEmployeeId());
-
-        if (expiring.isEmpty()) return;
-
-        boolean sq = isAlbanian();
-        StringBuilder message = new StringBuilder();
-        message.append(sq
-                ? "Kontratat tuaja te meposhtme do te skadojne brenda 14 diteve:\n\n"
-                : "The following contracts will expire within 14 days:\n\n");
-
-        for (com.company.system.models.Contract contract : expiring) {
-            message.append("- ").append(contract.getContractType())
-                    .append(" - ").append(sq ? "Skadon" : "Expires")
-                    .append(": ").append(contract.getEndDate()).append("\n");
-        }
-
-        message.append(sq
-                ? "\nJu lutem kontaktoni administratorin per rinovim."
-                : "\nPlease contact the administrator for renewal.");
-
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            DialogUtils.style(alert);
-            alert.setTitle(sq ? "Paralajmerim - Kontrata" : "Warning - Contract");
-            alert.setHeaderText(sq ? "Kontrata juaj po skadon!" : "Your contract is expiring!");
-            Label content = new Label(message.toString());
-            content.setWrapText(true);
-            content.setMaxWidth(400);
-            content.setStyle("-fx-font-size: 13px;");
-            alert.getDialogPane().setContent(content);
-            alert.getDialogPane().setPrefWidth(480);
-            alert.showAndWait();
         });
     }
 
@@ -834,114 +757,7 @@ public class MainController {
         recordNavigation("help"); currentView = "help";
         setStatus(LanguageManager.get("status.help"));
         clearActiveButton();
-        setContent(createAdminHelpView());
-    }
-
-    public static Node createAdminHelpView() {
-        boolean sq = isAlbanianLocale();
-        Label title = new Label(LanguageManager.get("help.title"));
-        title.getStyleClass().add("page-title");
-
-        Label intro = new Label(LanguageManager.get("help.admin.intro"));
-        intro.setWrapText(true);
-        intro.getStyleClass().add("body-text");
-
-        VBox sections = new VBox(14);
-        sections.getChildren().addAll(
-                createHelpSection(LanguageManager.get("help.admin.navigation.title"),
-                        LanguageManager.get("help.admin.navigation.line1"),
-                        LanguageManager.get("help.admin.navigation.line2"),
-                        LanguageManager.get("help.admin.navigation.line3")),
-                createHelpSection(LanguageManager.get("help.admin.shortcuts.title"),
-                "Ctrl+E - " + LanguageManager.get("menu.employees"),
-                        "Ctrl+K - " + LanguageManager.get("menu.contracts"),
-                        "Ctrl+S - " + LanguageManager.get("menu.salaries"),
-                        "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "Ctrl+R - " + LanguageManager.get("menu.departments"),
-                        "Ctrl+U - " + LanguageManager.get("menu.users"),
-                        "Ctrl+P - " + LanguageManager.get("menu.profile"),
-                        "Ctrl+L - " + LanguageManager.get("menu.language"),
-                        "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.admin.shortcuts.back"),
-                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.admin.shortcuts.forward"),
-                        "F5 - " + LanguageManager.get("help.admin.shortcuts.refresh"),
-                        "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(LanguageManager.get("help.admin.context.title"),
-                        LanguageManager.get("help.admin.context.line1"),
-                        LanguageManager.get("help.admin.context.line2")),
-                createHelpSection(LanguageManager.get("help.admin.language.title"),
-                        LanguageManager.get("help.admin.language.line1"),
-                        LanguageManager.get("help.admin.language.line2")),
-                createHelpSection(LanguageManager.get("help.admin.account.title"),
-                        LanguageManager.get("help.admin.account.line1"),
-                        LanguageManager.get("help.admin.account.line2"))
-        );
-
-        return wrapHelpView(title, intro, sections);
-    }
-
-    public static Node createUserHelpView() {
-        boolean sq = isAlbanianLocale();
-        Label title = new Label(LanguageManager.get("help.title"));
-        title.getStyleClass().add("page-title");
-
-        Label intro = new Label(LanguageManager.get("help.user.intro"));
-        intro.setWrapText(true);
-        intro.getStyleClass().add("body-text");
-
-        VBox sections = new VBox(14);
-        sections.getChildren().addAll(
-                createHelpSection(LanguageManager.get("help.user.navigation.title"),
-                        LanguageManager.get("help.user.navigation.line1"),
-                        LanguageManager.get("help.user.navigation.line2")),
-                createHelpSection(LanguageManager.get("help.user.shortcuts.title"),
-                        "Ctrl+D - " + LanguageManager.get("menu.dashboard"),
-                        "Ctrl+K - " + LanguageManager.get("help.user.shortcuts.contracts"),
-                        "Ctrl+S - " + LanguageManager.get("help.user.shortcuts.salaries"),
-                        "Ctrl+R - " + LanguageManager.get("help.user.shortcuts.departments"),
-                        "Ctrl+P - " + LanguageManager.get("menu.profile"),
-                        "Ctrl+L - " + LanguageManager.get("menu.language"),
-                        "Ctrl+H / F1 - " + LanguageManager.get("menu.help"),
-                        "Alt+Left / Mouse Back - " + LanguageManager.get("help.user.shortcuts.back"),
-                        "Alt+Right / Mouse Forward - " + LanguageManager.get("help.user.shortcuts.forward"),
-                        "F5 - " + LanguageManager.get("help.user.shortcuts.refresh"),
-                        "Esc - " + LanguageManager.get("menu.exit")),
-                createHelpSection(LanguageManager.get("help.user.context.title"),
-                        LanguageManager.get("help.user.context.line1"),
-                        LanguageManager.get("help.user.context.line2"))
-        );
-
-        return wrapHelpView(title, intro, sections);
-    }
-
-    private static ScrollPane wrapHelpView(Label title, Label intro, VBox sections) {
-        VBox helpView = new VBox(18, title, intro, sections);
-        helpView.getStyleClass().add("profile-page");
-        helpView.setStyle("-fx-padding: 26;");
-        ScrollPane scrollPane = new ScrollPane(helpView);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.getStyleClass().add("module-scroll");
-        return scrollPane;
-    }
-
-    private static VBox createHelpSection(String sectionTitle, String... lines) {
-        Label title = new Label(sectionTitle);
-        title.getStyleClass().add("section-title");
-        VBox content = new VBox(6, title);
-        for (String line : lines) {
-            Label item = new Label("• " + line);
-            item.setWrapText(true);
-            item.getStyleClass().add("body-text");
-            content.getChildren().add(item);
-        }
-        content.getStyleClass().add("content-card");
-        return content;
-    }
-
-    private static boolean isAlbanianLocale() {
-        return "sq".equals(LanguageManager.getCurrentLocale().getLanguage());
+        setContent(HelpViewFactory.createAdminHelpView());
     }
 
     @FXML

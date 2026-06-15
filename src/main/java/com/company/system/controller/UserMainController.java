@@ -1,6 +1,7 @@
 package com.company.system.controller;
 
 
+import com.company.system.controller.support.HelpViewFactory;
 import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.models.User;
@@ -240,7 +241,7 @@ public class UserMainController {
         currentView = "help";
         setStatus(LanguageManager.get("user.status.help"));
         clearActiveButton();
-        setContent(MainController.createUserHelpView());
+        setContent(HelpViewFactory.createUserHelpView());
     }
 
     // ★ E RE: Shfaq faqen e pushimeve
