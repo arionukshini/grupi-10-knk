@@ -1,5 +1,7 @@
 package com.company.system.controller;
 
+
+import com.company.system.utils.AppLogger;
 import com.company.system.i18n.LanguageManager;
 import com.company.system.service.UserService;
 import com.company.system.utils.KeyboardNavigation;
@@ -173,7 +175,7 @@ public class ResetPasswordController {
             KeyboardNavigation.focusFirst(root);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
     }
 }

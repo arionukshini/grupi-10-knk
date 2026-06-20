@@ -1,4 +1,4 @@
-package com.company.system.model;
+package com.company.system.models;
 
 public class SalaryByDepartmentStats {
 

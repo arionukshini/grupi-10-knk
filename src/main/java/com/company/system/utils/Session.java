@@ -1,6 +1,6 @@
 package com.company.system.utils;
 
-import com.company.system.model.User;
+import com.company.system.models.User;
 
 public class Session {
 

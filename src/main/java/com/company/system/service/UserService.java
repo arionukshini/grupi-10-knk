@@ -1,135 +1,70 @@
 package com.company.system.service;
 
-import com.company.system.db.DBConnection;
-import com.company.system.model.User;
+
+import com.company.system.utils.AppLogger;
+import com.company.system.models.User;
+import com.company.system.models.dto.LoginRequestDto;
+import com.company.system.models.dto.PasswordResetRequestDto;
+import com.company.system.models.dto.UserRegistrationRequestDto;
+import com.company.system.repository.UserRepository;
 import com.company.system.utils.PasswordUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
 
+    private static final UserRepository userRepository = new UserRepository();
+
     public static User login(String username, String password) {
+        LoginRequestDto request = new LoginRequestDto(username, password);
 
-        String sql = "SELECT * FROM users WHERE username = ? ";
+        if (isBlank(request.username()) || isBlank(request.password())) {
+            return null;
+        }
 
-        try (Connection conn = DBConnection.connect()) {
-
-            if (conn == null || username == null || username.isBlank() || password == null || password.isBlank()) {
-                return null;
+        try {
+            User user = userRepository.findByUsername(request.username());
+            if (user != null && PasswordUtils.verifyPassword(request.password(), user.getPasswordHash())) {
+                return user;
             }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username.trim());
-
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    String storedHash = rs.getString("password_hash");
-
-                    if (PasswordUtils.verifyPassword(password, storedHash)) {
-                        Object employeeIdValue = rs.getObject("employee_id");
-                        Integer employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
-
-                        return new User(
-                                rs.getInt("id"),
-                                rs.getString("username"),
-                                employeeId,
-                                getEmployeeName(employeeId, conn),
-                                storedHash,
-                                rs.getString("role"),
-                                rs.getTimestamp("created_at"),
-                                rs.getBoolean("must_change_password")
-                        );
-                    }
-
-                }
-            }
-        }catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            AppLogger.error("Unexpected error", e);
         }
 
         return null;
     }
 
     public static boolean register(String username, String password) {
-
-        String sql ="INSERT INTO users (username,password_hash, role) VALUES (?, ?, ?)";
-
-        try (Connection conn = DBConnection.connect()) {
-
-            if (conn == null || username == null || username.isBlank() || password == null || password.isBlank()) {
-                return false;
-            }
-            if (userExists(username, conn)) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username.trim());
-                stmt.setString(2, PasswordUtils.hashPassword(password));
-                stmt.setString(3, "USER");
-
-                return stmt.executeUpdate() > 0;
-            }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (isBlank(username) || isBlank(password)) {
+            return false;
         }
 
-        return false;
+        try {
+            if (userRepository.existsByUsername(username)) {
+                return false;
+            }
+
+            UserRegistrationRequestDto request = new UserRegistrationRequestDto(
+                    username,
+                    PasswordUtils.hashPassword(password),
+                    "USER"
+            );
+            return userRepository.save(request);
+        } catch (SQLException e) {
+            AppLogger.error("Unexpected error", e);
+            return false;
+        }
     }
 
     public static List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        String sql = """
-                SELECT u.id,
-                       u.employee_id,
-                       CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-                       u.username,
-                       u.password_hash,
-                       u.role,
-                       u.created_at,
-                       u.must_change_password
-                FROM users u
-                LEFT JOIN employees e ON u.employee_id = e.id
-                ORDER BY u.id
-                """;
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return users;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    Object employeeIdValue = rs.getObject("employee_id");
-                    Integer employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
-
-                    users.add(new User(
-                            rs.getInt("id"),
-                            rs.getString("username"),
-                            employeeId,
-                            rs.getString("employee_name"),
-                            rs.getString("password_hash"),
-                            rs.getString("role"),
-                            rs.getTimestamp("created_at"),
-                            rs.getBoolean("must_change_password")
-                    ));
-                }
-            }
+        try {
+            return userRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return new ArrayList<>();
         }
-
-        return users;
     }
 
     public static String getDisplayName(User user) {
@@ -137,7 +72,7 @@ public class UserService {
             return "-";
         }
 
-        if (user.getEmployeeName() != null && !user.getEmployeeName().isBlank()) {
+        if (!isBlank(user.getEmployeeName())) {
             return user.getEmployeeName();
         }
 
@@ -145,172 +80,95 @@ public class UserService {
             return user.getUsername();
         }
 
-        String sql = "SELECT CONCAT(first_name, ' ', last_name) AS employee_name FROM employees WHERE id = ?";
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return user.getUsername();
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, user.getEmployeeId());
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        String employeeName = rs.getString("employee_name");
-
-                        if (employeeName != null && !employeeName.isBlank()) {
-                            return employeeName;
-                        }
-                    }
-                }
+        try {
+            String employeeName = userRepository.findEmployeeNameById(user.getEmployeeId());
+            if (!isBlank(employeeName)) {
+                return employeeName;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
         }
 
         return user.getUsername();
     }
 
     public static boolean resetPassword(String username, String newPassword) {
+        if (isBlank(username) || isBlank(newPassword)) {
+            return false;
+        }
 
-        String sql = "UPDATE users SET password_hash = ?, must_change_password = FALSE WHERE username = ?";
+        PasswordResetRequestDto request = new PasswordResetRequestDto(
+                username,
+                PasswordUtils.hashPassword(newPassword)
+        );
 
-        try (Connection conn = DBConnection.connect()) {
-
-            if (conn == null || username == null || username.isBlank() || newPassword == null || newPassword.isBlank()) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                stmt.setString(1, PasswordUtils.hashPassword(newPassword));
-                stmt.setString(2, username.trim());
-
-                return stmt.executeUpdate() > 0;
-            }
+        try {
+            return userRepository.updatePasswordByUsername(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
-        public static String getPasswordHashByUsername(String username) {
 
-            String sql = "SELECT password_hash FROM users WHERE username = ?";
-
-            try (Connection conn = DBConnection.connect()) {
-
-                if (conn == null || username == null || username.isBlank()) {
-                    return null;
-                }
-
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, username.trim());
-
-                    ResultSet rs = stmt.executeQuery();
-
-                    if (rs.next()) {
-                        return rs.getString("password_hash");
-                    }
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
+    public static String getPasswordHashByUsername(String username) {
+        if (isBlank(username)) {
             return null;
         }
-    public static boolean userExists(String username) {
-        String sql = "SELECT 1 FROM users WHERE username = ?";
 
-        try (Connection conn = DBConnection.connect()) {
-
-            if (conn == null || username == null || username.isBlank()) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username.trim());
-
-                ResultSet rs = stmt.executeQuery();
-                return rs.next();
-            }
-
+        try {
+            return userRepository.findPasswordHashByUsername(username);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return null;
+        }
+    }
+
+    public static boolean userExists(String username) {
+        if (isBlank(username)) {
+            return false;
         }
 
-        return false;
+        try {
+            return userRepository.existsByUsername(username);
+        } catch (SQLException e) {
+            AppLogger.error("Unexpected error", e);
+            return false;
+        }
     }
 
     public static boolean changePasswordAndClearRequiredFlag(int userId, String newPassword) {
-        String sql = "UPDATE users SET password_hash = ?, must_change_password = FALSE WHERE id = ?";
+        if (userId <= 0 || isBlank(newPassword)) {
+            return false;
+        }
 
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null || userId <= 0 || newPassword == null || newPassword.isBlank()) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, PasswordUtils.hashPassword(newPassword));
-                stmt.setInt(2, userId);
-                return stmt.executeUpdate() > 0;
-            }
+        try {
+            return userRepository.updatePasswordByUserId(userId, PasswordUtils.hashPassword(newPassword));
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
 
     public static String getPasswordHashByUsernameAndEmail(String username, String email) {
-        String sql = """
-                SELECT u.password_hash
-                FROM users u
-                JOIN employees e ON u.employee_id = e.id
-                WHERE u.username = ? AND LOWER(e.email) = LOWER(?)
-                """;
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null || username == null || username.isBlank() || email == null || email.isBlank()) {
-                return null;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username.trim());
-                stmt.setString(2, email.trim());
-
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    return rs.getString("password_hash");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (isBlank(username) || isBlank(email)) {
+            return null;
         }
 
-        return null;
+        try {
+            return userRepository.findPasswordHashByUsernameAndEmail(username, email);
+        } catch (SQLException e) {
+            AppLogger.error("Unexpected error", e);
+            return null;
+        }
     }
 
     public static boolean deleteUser(int userId) {
-        String sql = "DELETE FROM users WHERE id = ?";
-
-        try (Connection conn = DBConnection.connect()) {
-
-            if (conn == null) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, userId);
-                return stmt.executeUpdate() > 0;
-            }
-
+        try {
+            return userRepository.deleteById(userId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return false;
         }
-
-        return false;
     }
 
     public static boolean isOnlyAdmin(User user) {
@@ -318,20 +176,10 @@ public class UserService {
             return false;
         }
 
-        String sql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'";
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return true;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                rs.next();
-                return rs.getInt(1) <= 1;
-            }
+        try {
+            return userRepository.countAdmins() <= 1;
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return true;
         }
     }
@@ -341,155 +189,24 @@ public class UserService {
             return false;
         }
 
-        String userSql = "SELECT employee_id, role FROM users WHERE id = ?";
-        String adminCountSql = "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'";
-        String deleteSalaryHistorySql = """
-                DELETE FROM salary_history
-                WHERE employee_id = ?
-                   OR salary_id IN (
-                       SELECT id
-                       FROM salaries
-                       WHERE employee_id = ?
-                   )
-                """;
-        String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
-        String deleteContractsSql = "DELETE FROM contracts WHERE employee_id = ?";
-        String deleteVacationRequestsSql = "DELETE FROM vacation_requests WHERE employee_id = ?";
-        String deleteUserSql = "DELETE FROM users WHERE id = ?";
-        String deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return false;
-            }
-
-            conn.setAutoCommit(false);
-
-            try (
-                    PreparedStatement userStmt = conn.prepareStatement(userSql);
-                    PreparedStatement adminCountStmt = conn.prepareStatement(adminCountSql);
-                    PreparedStatement historyStmt = conn.prepareStatement(deleteSalaryHistorySql);
-                    PreparedStatement salariesStmt = conn.prepareStatement(deleteSalariesSql);
-                    PreparedStatement contractsStmt = conn.prepareStatement(deleteContractsSql);
-                    PreparedStatement vacationRequestsStmt = conn.prepareStatement(deleteVacationRequestsSql);
-                    PreparedStatement deleteUserStmt = conn.prepareStatement(deleteUserSql);
-                    PreparedStatement deleteEmployeeStmt = conn.prepareStatement(deleteEmployeeSql)
-            ) {
-                userStmt.setInt(1, user.getId());
-
-                Integer employeeId = null;
-                String role;
-                try (ResultSet userRs = userStmt.executeQuery()) {
-                    if (!userRs.next()) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    Object employeeIdValue = userRs.getObject("employee_id");
-                    employeeId = employeeIdValue == null ? null : ((Number) employeeIdValue).intValue();
-                    role = userRs.getString("role");
-                }
-
-                if ("ADMIN".equalsIgnoreCase(role)) {
-                    try (ResultSet adminRs = adminCountStmt.executeQuery()) {
-                        adminRs.next();
-
-                        if (adminRs.getInt(1) <= 1) {
-                            conn.rollback();
-                            return false;
-                        }
-                    }
-                }
-
-                deleteUserStmt.setInt(1, user.getId());
-                boolean deletedUser = deleteUserStmt.executeUpdate() > 0;
-
-                if (!deletedUser) {
-                    conn.rollback();
-                    return false;
-                }
-
-                if (employeeId != null) {
-                    historyStmt.setInt(1, employeeId);
-                    historyStmt.setInt(2, employeeId);
-                    historyStmt.executeUpdate();
-
-                    salariesStmt.setInt(1, employeeId);
-                    salariesStmt.executeUpdate();
-
-                    contractsStmt.setInt(1, employeeId);
-                    contractsStmt.executeUpdate();
-
-                    vacationRequestsStmt.setInt(1, employeeId);
-                    vacationRequestsStmt.executeUpdate();
-
-                    deleteEmployeeStmt.setInt(1, employeeId);
-                    deleteEmployeeStmt.executeUpdate();
-                }
-
-                conn.commit();
-                return true;
-            } catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-            } finally {
-                conn.setAutoCommit(true);
-            }
+        try {
+            return userRepository.deleteAccountAndEmployeeData(user);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return false;
         }
-
-        return false;
     }
 
-        private static boolean userExists(String username, Connection conn) throws SQLException {
-            String sql = "SELECT 1 FROM users WHERE username = ?";
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username.trim());
-
-                ResultSet rs = stmt.executeQuery();
-                return rs.next();
-            }
-        }
-
-        private static String getEmployeeName(Integer employeeId, Connection conn) throws SQLException {
-            if (employeeId == null || employeeId <= 0) {
-                return null;
-            }
-
-            String sql = "SELECT CONCAT(first_name, ' ', last_name) AS employee_name FROM employees WHERE id = ?";
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, employeeId);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getString("employee_name");
-                    }
-                }
-            }
-
-            return null;
-        }
     public static int getEmployeeIdByUserId(int userId) {
-        String sql = "SELECT employee_id FROM users WHERE id = ?";
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, userId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("employee_id");
-                }
-            }
-
+        try {
+            return userRepository.findEmployeeIdByUserId(userId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return 0;
         }
+    }
 
-        return 0;
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

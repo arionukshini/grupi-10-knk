@@ -1,7 +1,9 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Employee;
+import com.company.system.models.Department;
+import com.company.system.models.Employee;
+import com.company.system.service.DepartmentService;
 import com.company.system.service.EmployeeService;
 import com.company.system.utils.DialogUtils;
 import javafx.application.Platform;
@@ -11,17 +13,37 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 import java.sql.Date;
 import java.time.LocalDate;
 
+import static com.company.system.utils.Validator.emailValidator;
+import static com.company.system.utils.Validator.employeeNameValidator;
+import static com.company.system.utils.Validator.hireDateValidator;
+import static com.company.system.utils.Validator.isNotBlank;
+import static com.company.system.utils.Validator.phoneValidator;
+import static com.company.system.utils.Validator.positionValidator;
+import static com.company.system.utils.Validator.salaryValidator;
+import static com.company.system.utils.Validator.statusValidator;
+
 public class EmployeesController {
 
     private final ObservableList<Employee> employees = FXCollections.observableArrayList();
+    private final ObservableList<Department> departments = FXCollections.observableArrayList();
     private FilteredList<Employee> filteredEmployees;
 
     @FXML
@@ -85,7 +107,7 @@ public class EmployeesController {
     private TextField positionField;
 
     @FXML
-    private TextField departmentIdField;
+    private ComboBox<Department> departmentCombo;
 
     @FXML
     private DatePicker hireDatePicker;
@@ -112,6 +134,7 @@ public class EmployeesController {
     public void initialize() {
         loadTexts();
         setupTable();
+        setupDepartmentCombo();
         setupSearch();
         setupSelection();
         loadEmployees();
@@ -139,7 +162,7 @@ public class EmployeesController {
         emailField.setPromptText(LanguageManager.get("employees.email"));
         phoneField.setPromptText(LanguageManager.get("employees.phone"));
         positionField.setPromptText(LanguageManager.get("employees.position"));
-        departmentIdField.setPromptText(LanguageManager.get("employees.departmentId"));
+        departmentCombo.setPromptText(LanguageManager.get("employees.department"));
         hireDatePicker.setPromptText(LanguageManager.get("employees.hireDate"));
         salaryField.setPromptText(LanguageManager.get("employees.baseSalary"));
 
@@ -163,6 +186,29 @@ public class EmployeesController {
         hireDateColumn.setCellValueFactory(new PropertyValueFactory<>("hireDate"));
         salaryColumn.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+    }
+
+    private void setupDepartmentCombo() {
+        departmentCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Department department) {
+                if (department == null) {
+                    return "";
+                }
+                return department.getId() + " - " + department.getName();
+            }
+
+            @Override
+            public Department fromString(String value) {
+                return null;
+            }
+        });
+        loadDepartments();
+    }
+
+    private void loadDepartments() {
+        departments.setAll(DepartmentService.getAllDepartments());
+        departmentCombo.setItems(departments);
     }
 
     private void setupSearch() {
@@ -212,10 +258,17 @@ public class EmployeesController {
         emailField.setText(employee.getEmail());
         phoneField.setText(employee.getPhone());
         positionField.setText(employee.getPosition());
-        departmentIdField.setText(String.valueOf(employee.getDepartmentId()));
+        selectDepartment(employee.getDepartmentId());
         hireDatePicker.setValue(employee.getHireDate().toLocalDate());
         salaryField.setText(String.valueOf(employee.getBaseSalary()));
         statusField.setValue(employee.getStatus());
+    }
+
+    private void selectDepartment(int departmentId) {
+        departments.stream()
+                .filter(department -> department.getId() == departmentId)
+                .findFirst()
+                .ifPresent(department -> departmentCombo.getSelectionModel().select(department));
     }
 
     @FXML
@@ -400,7 +453,8 @@ public class EmployeesController {
         emailField.clear();
         phoneField.clear();
         positionField.clear();
-        departmentIdField.clear();
+        loadDepartments();
+        departmentCombo.getSelectionModel().clearSelection();
         hireDatePicker.setValue(null);
         salaryField.clear();
         statusField.setValue("Active");
@@ -408,19 +462,80 @@ public class EmployeesController {
 
     private Employee readForm(int id) {
         try {
-            String firstName = firstNameField.getText().trim();
-            String lastName = lastNameField.getText().trim();
-            String email = emailField.getText().trim();
-            String phone = phoneField.getText().trim();
-            String position = positionField.getText().trim();
-            int departmentId = Integer.parseInt(departmentIdField.getText().trim());
+            String firstName = fieldValue(firstNameField);
+            String lastName = fieldValue(lastNameField);
+            String email = fieldValue(emailField);
+            String phone = fieldValue(phoneField);
+            String position = fieldValue(positionField);
+            String salaryText = fieldValue(salaryField);
+            Department department = departmentCombo.getValue();
             LocalDate hireDate = hireDatePicker.getValue();
-            double salary = Double.parseDouble(salaryField.getText().trim());
             String status = statusField.getValue();
 
-            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
-                    || position.isEmpty() || hireDate == null || status.isEmpty()) {
-                showError(LanguageManager.get("message.fillRequiredFields"));
+            if (!isNotBlank(firstName)) {
+                showError(LanguageManager.get("employees.firstName.required"));
+                return null;
+            }
+
+            if (!isNotBlank(lastName)) {
+                showError(LanguageManager.get("employees.lastName.required"));
+                return null;
+            }
+
+            if (!employeeNameValidator(firstName) || !employeeNameValidator(lastName)) {
+                showError(LanguageManager.get("employees.name.length"));
+                return null;
+            }
+
+            if (!emailValidator(email)) {
+                showError(LanguageManager.get("employees.email.error"));
+                return null;
+            }
+
+            if (!phoneValidator(phone)) {
+                showError(LanguageManager.get("employees.phone.error"));
+                return null;
+            }
+
+            if (!isNotBlank(position)) {
+                showError(LanguageManager.get("employees.position.required"));
+                return null;
+            }
+
+            if (!positionValidator(position)) {
+                showError(LanguageManager.get("employees.position.length"));
+                return null;
+            }
+
+            if (department == null) {
+                showError(LanguageManager.get("employees.department.required"));
+                return null;
+            }
+
+            if (hireDate == null) {
+                showError(LanguageManager.get("employees.hireDate.required"));
+                return null;
+            }
+
+            if (!hireDateValidator(Date.valueOf(hireDate))) {
+                showError(LanguageManager.get("employees.hireDate.future"));
+                return null;
+            }
+
+            if (!isNotBlank(salaryText)) {
+                showError(LanguageManager.get("employees.salary.error"));
+                return null;
+            }
+
+            double salary = Double.parseDouble(salaryText);
+
+            if (!salaryValidator(salary)) {
+                showError(LanguageManager.get("employees.salary.error"));
+                return null;
+            }
+
+            if (!statusValidator(status)) {
+                showError(LanguageManager.get("employees.status.required"));
                 return null;
             }
 
@@ -431,7 +546,7 @@ public class EmployeesController {
                     email,
                     phone,
                     position,
-                    departmentId,
+                    department.getId(),
                     Date.valueOf(hireDate),
                     salary,
                     status
@@ -441,6 +556,10 @@ public class EmployeesController {
             showError(LanguageManager.get("employees.number.error"));
             return null;
         }
+    }
+
+    private String fieldValue(TextField field) {
+        return field.getText() == null ? "" : field.getText().trim();
     }
 
     private void showInfo(String message) {

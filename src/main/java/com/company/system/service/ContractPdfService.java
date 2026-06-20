@@ -1,26 +1,38 @@
 package com.company.system.service;
 
-import com.company.system.model.Contract;
-import com.company.system.model.Employee;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.company.system.models.Contract;
+import com.company.system.models.Employee;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
 
 public class ContractPdfService {
 
-    private static final BaseColor COLOR_DARK   = new BaseColor(15, 40, 80);   // Navy
-    private static final BaseColor COLOR_ACCENT = new BaseColor(59, 130, 246); // Blue
-    private static final BaseColor COLOR_LIGHT  = new BaseColor(240, 245, 255);
-    private static final BaseColor COLOR_LINE   = new BaseColor(200, 215, 240);
-
-    private static final DateTimeFormatter DATE_FMT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final BaseColor COLOR_DARK = new BaseColor(15, 40, 80);
+    private static final BaseColor COLOR_ACCENT = new BaseColor(59, 130, 246);
+    private static final BaseColor COLOR_LIGHT = new BaseColor(240, 245, 255);
+    private static final BaseColor COLOR_LINE = new BaseColor(200, 215, 240);
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static byte[] generateContractPdf(Employee employee, Contract contract)
-            throws Exception {
-
+            throws DocumentException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Document doc = new Document(PageSize.A4, 72, 72, 72, 72);
         PdfWriter writer = PdfWriter.getInstance(doc, out);
@@ -28,48 +40,41 @@ public class ContractPdfService {
         writer.setPageEvent(new ContractPageEvent());
 
         doc.open();
-
         addCoverPage(doc, employee, contract);
         doc.newPage();
-
         addContractBody(doc, employee, contract);
-
         doc.close();
+
         return out.toByteArray();
     }
 
-
     private static void addCoverPage(Document doc, Employee employee, Contract contract)
             throws DocumentException {
-
         doc.add(Chunk.NEWLINE);
         doc.add(Chunk.NEWLINE);
         doc.add(Chunk.NEWLINE);
 
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 28, COLOR_DARK);
-        Paragraph title = new Paragraph("KONTRATË PUNE", titleFont);
+        Paragraph title = new Paragraph("KONTRATE PUNE", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         doc.add(title);
 
         doc.add(Chunk.NEWLINE);
         doc.add(Chunk.NEWLINE);
-
         addHorizontalLine(doc, COLOR_ACCENT, 2);
-
         doc.add(Chunk.NEWLINE);
 
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA, 12, COLOR_DARK);
-        Paragraph nemes = new Paragraph("Në mes:", labelFont);
-        nemes.setAlignment(Element.ALIGN_LEFT);
-        doc.add(nemes);
-
+        Paragraph between = new Paragraph("Ne mes:", labelFont);
+        between.setAlignment(Element.ALIGN_LEFT);
+        doc.add(between);
         doc.add(Chunk.NEWLINE);
 
         addCoverBlock(doc, "Centrix Solutions SH.P.K",
-                "Rr. Lidhjes së Prizrenit, Nr. 15, 10000, Prishtinë, Kosovë\n" +
+                "Rr. Lidhjes se Prizrenit, Nr. 15, 10000, Prishtine, Kosove\n" +
                         "Numri i biznesit: 920453217\n" +
-                        "I përfaqësuar sipas autorizimit nga:\n" +
-                        "Erion Cana – Director HR and Administration",
+                        "I perfaqesuar sipas autorizimit nga:\n" +
+                        "Erion Cana - Director HR and Administration",
                 true);
 
         doc.add(Chunk.NEWLINE);
@@ -89,12 +94,11 @@ public class ContractPdfService {
 
         doc.add(Chunk.NEWLINE);
         doc.add(Chunk.NEWLINE);
-
         addHorizontalLine(doc, COLOR_LINE, 1);
         doc.add(Chunk.NEWLINE);
 
         Font dateFont = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
-        String dateStr = "Data e nënshkrimit: " +
+        String dateStr = "Data e nenshkrimit: " +
                 (contract.getStartDate() != null
                         ? contract.getStartDate().toLocalDate().format(DATE_FMT)
                         : "-");
@@ -103,11 +107,11 @@ public class ContractPdfService {
         doc.add(datePar);
     }
 
-    private static void addCoverBlock(Document doc, String name, String detail,
-                                      boolean isCompany) throws DocumentException {
-        Font nameFont  = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14,
+    private static void addCoverBlock(Document doc, String name, String detail, boolean isCompany)
+            throws DocumentException {
+        Font nameFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14,
                 isCompany ? COLOR_DARK : COLOR_ACCENT);
-        Font detFont   = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
+        Font detFont = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
 
         PdfPTable table = new PdfPTable(1);
         table.setWidthPercentage(85);
@@ -120,7 +124,7 @@ public class ContractPdfService {
         cell.setBackgroundColor(isCompany ? COLOR_LIGHT : BaseColor.WHITE);
 
         Paragraph namePar = new Paragraph(name, nameFont);
-        Paragraph detPar  = new Paragraph("\n" + detail, detFont);
+        Paragraph detPar = new Paragraph("\n" + detail, detFont);
         detPar.setLeading(16);
 
         cell.addElement(namePar);
@@ -129,22 +133,20 @@ public class ContractPdfService {
         doc.add(table);
     }
 
-
     private static void addContractBody(Document doc, Employee employee, Contract contract)
             throws DocumentException {
-
-        String empName     = employee.getFirstName() + " " + employee.getLastName();
-        String position    = nvl(employee.getPosition());
-        String baseSalary  = String.format("%.2f", employee.getBaseSalary());
-        String startDate   = contract.getStartDate() != null
+        String empName = employee.getFirstName() + " " + employee.getLastName();
+        String position = nvl(employee.getPosition());
+        String baseSalary = String.format("%.2f", employee.getBaseSalary());
+        String startDate = contract.getStartDate() != null
                 ? contract.getStartDate().toLocalDate().format(DATE_FMT) : "-";
-        String endDate     = contract.getEndDate() != null
+        String endDate = contract.getEndDate() != null
                 ? contract.getEndDate().toLocalDate().format(DATE_FMT) : "-";
         String contractType = nvl(contract.getContractType());
         int workHours = contractType.equalsIgnoreCase("Part-Time") ? 84 : 168;
 
         Font h1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, COLOR_DARK);
-        Paragraph mainTitle = new Paragraph("KONTRATË PUNE", h1);
+        Paragraph mainTitle = new Paragraph("KONTRATE PUNE", h1);
         mainTitle.setAlignment(Element.ALIGN_CENTER);
         mainTitle.setSpacingAfter(4);
         doc.add(mainTitle);
@@ -152,83 +154,76 @@ public class ContractPdfService {
         addHorizontalLine(doc, COLOR_ACCENT, 2);
         doc.add(Chunk.NEWLINE);
 
-        addSection(doc, "1. Pozita dhe përgjegjësitë");
-        addClause(doc, "1.1", "Punonjësi angazhohet në pozitën **" + position + "**. " +
-                "Detyrat dhe përgjegjësitë e vendit të punës do të përcaktohen me një aneks të veçantë, " +
-                "e cila është pjesë përbërëse e kësaj kontrate.");
-        addClause(doc, "1.2", "Punonjësi është i obliguar që të kryej të gjitha detyrat të cilat mund " +
-                "të i kërkohen nga punëdhënësi lidhur me pozitën e tij.");
-        addClause(doc, "1.3", "Punonjësi është i obliguar që të veproj në përputhje me të gjitha aktet " +
-                "e brendshme të kompanisë.");
+        addSection(doc, "1. Pozita dhe pergjegjesite");
+        addClause(doc, "1.1", "Punonjesi angazhohet ne poziten **" + position + "**. " +
+                "Detyrat dhe pergjegjesite e vendit te punes do te percaktohen me nje aneks te vecante, " +
+                "i cili eshte pjese perberese e kesaj kontrate.");
+        addClause(doc, "1.2", "Punonjesi eshte i obliguar te kryeje te gjitha detyrat qe mund " +
+                "t'i kerkohen nga punedhenesi lidhur me poziten e tij.");
+        addClause(doc, "1.3", "Punonjesi eshte i obliguar te veproje ne perputhje me te gjitha aktet " +
+                "e brendshme te kompanise.");
 
-        addSection(doc, "2. Kohëzgjatja");
-        addClause(doc, "2.1", "Punonjësi do t'i kryejë detyrat e saktësuara në këtë kontratë për kohë " +
-                "të caktuar dhe me orar të pjesëshem dhe në ankesin e veçantë, duke filluar nga **" +
-                startDate + "** deri më **" + endDate + "**.");
-        addClause(doc, "2.2", "Në rast se punonjësi nuk e fillon punën në ditën e caktuar sipas kësaj " +
-                "kontrate, do të konsiderohet se nuk ka themeluar marrëdhënie pune, përveç nëse është " +
-                "penguar të fillojë punën për shkaqe të arsyeshme.");
-        addClause(doc, "2.3", "Puna provuese e punonjësit zgjatë gjashtë (6) muaj. Gjatë periudhës " +
-                "provuese të punës, punëdhënësi dhe punonjësi, mund ta ndërpresin marrëdhënien e punës, " +
-                "me njoftim paraprak prej shtatë (7) ditësh.");
+        addSection(doc, "2. Kohezgjatja");
+        addClause(doc, "2.1", "Punonjesi do t'i kryeje detyrat e saktesuara ne kete kontrate per kohe " +
+                "te caktuar, duke filluar nga **" + startDate + "** deri me **" + endDate + "**.");
+        addClause(doc, "2.2", "Nese punonjesi nuk e fillon punen ne diten e caktuar sipas kesaj kontrate, " +
+                "do te konsiderohet se nuk ka themeluar marredhenie pune, pervec nese eshte penguar " +
+                "per shkaqe te arsyeshme.");
+        addClause(doc, "2.3", "Puna provuese zgjat gjashte (6) muaj. Gjate kesaj periudhe, punedhenesi " +
+                "dhe punonjesi mund ta nderpresin marredhenien e punes me njoftim paraprak prej shtate (7) ditesh.");
 
         addSection(doc, "3. Paga dhe benefitet financiare");
-        addClause(doc, "3.1", "Punonjësit i caktohet paga bazë për punën të cilën e kryen për " +
-                "punëdhënësin, në lartësi prej **" + baseSalary + " Euro** bruto që realizohet në " +
-                "mënyrë periodike për çdo muaj. Kjo pagë korrespondon me punën në kohëzgjatje prej " +
-                workHours + " orë në muaj.");
-        addClause(doc, "3.2", "Paga shtesë, bonuset si dhe komisionet që mund t'i shtohen pagës bazë " +
-                "të punonjësit në bazë të performancës, do të rregullohen me anë të Rregullores së Brendshme.");
-        addClause(doc, "3.3", "Punëdhënësi do t'i përmbush obligimet tatimore dhe kontributet pensionale " +
-                "për punonjësin në përputhje me legjislacionin në fuqi.");
-        addClause(doc, "3.4", "Paga do t'i paguhet punonjësit në fund të muajit përkatës dhe më së " +
-                "largu deri më datën 10 të muajit vijues.");
+        addClause(doc, "3.1", "Punonjesit i caktohet paga baze per punen qe kryen per punedhenesin, " +
+                "ne vlere prej **" + baseSalary + " Euro** bruto. Kjo page korrespondon me punen ne " +
+                "kohezgjatje prej " + workHours + " ore ne muaj.");
+        addClause(doc, "3.2", "Paga shtese, bonuset dhe komisionet qe mund t'i shtohen pages baze " +
+                "do te rregullohen me Rregulloren e Brendshme.");
+        addClause(doc, "3.3", "Punedhenesi do t'i permbushe obligimet tatimore dhe kontributet pensionale " +
+                "ne perputhje me legjislacionin ne fuqi.");
+        addClause(doc, "3.4", "Paga do t'i paguhet punonjesit ne fund te muajit perkates dhe jo me vone " +
+                "se data 10 e muajit vijues.");
 
-        addSection(doc, "4. Orari i punës");
-        addClause(doc, "4.1", "Punonjësi themelon marrëdhënie pune me orar të pjesëshem prej " +
-                workHours + " orë në muaj (apo 20 orë/për javë).");
-        addClause(doc, "4.2", "Për shkak të natyrës specifike të punës, punonjësi mund të angazhohet " +
-                "në punë edhe gjatë ditëve të vikendit, për të cilat do të kompenzohet në përputhje me " +
-                "këtë kontratë të punës dhe në përputhje me Ligjin e Punës.");
-        addClause(doc, "4.3", "Në fillim të çdo jave, punëdhënësi do të bëjë të ditur orarin dhe orët " +
-                "e punës për punonjësin për javën vijuese.");
+        addSection(doc, "4. Orari i punes");
+        addClause(doc, "4.1", "Punonjesi themelon marredhenie pune me orar prej " +
+                workHours + " ore ne muaj.");
+        addClause(doc, "4.2", "Per shkak te natyres se punes, punonjesi mund te angazhohet edhe gjate " +
+                "diteve te vikendit, me kompensim sipas kesaj kontrate dhe Ligjit te Punes.");
+        addClause(doc, "4.3", "Ne fillim te cdo jave, punedhenesi do ta beje te ditur orarin dhe oret " +
+                "e punes per javen vijuese.");
 
         addSection(doc, "5. Konfidencialiteti");
-        addClause(doc, "5.1", "Punonjësi është i detyruar të ruaj konfidencialitetin e të gjitha " +
-                "informacioneve të kompanisë, klientëve dhe partnerëve gjatë dhe pas përfundimit " +
-                "të marrëdhënies së punës.");
-        addClause(doc, "5.2", "Shkelja e detyrimit të konfidencialitetit do të konsiderohet shkelje " +
-                "e rëndë e detyrave të punës dhe mund të rezultojë me ndërprerje të menjëhershme " +
-                "të kontratës.");
+        addClause(doc, "5.1", "Punonjesi eshte i detyruar te ruaje konfidencialitetin e te gjitha " +
+                "informacioneve te kompanise, klienteve dhe partnereve gjate dhe pas perfundimit " +
+                "te marredhenies se punes.");
+        addClause(doc, "5.2", "Shkelja e detyrimit te konfidencialitetit konsiderohet shkelje e rende " +
+                "e detyrave te punes dhe mund te rezultoje me nderprerje te menjehershme te kontrates.");
 
         addSection(doc, "6. Pushimet dhe lejet");
-        addClause(doc, "6.1", "Punonjësi ka të drejtë në pushim vjetor të paguar sipas legjislacionit " +
-                "në fuqi të Republikës së Kosovës.");
-        addClause(doc, "6.2", "Pushimi vjetor do të planifikohet me marrëveshje mes punëdhënësit " +
-                "dhe punonjësit, duke marrë parasysh nevojat e punës.");
+        addClause(doc, "6.1", "Punonjesi ka te drejte ne pushim vjetor te paguar sipas legjislacionit " +
+                "ne fuqi te Republikes se Kosoves.");
+        addClause(doc, "6.2", "Pushimi vjetor planifikohet me marreveshje mes punedhenesit dhe punonjesit, " +
+                "duke marre parasysh nevojat e punes.");
 
-        addSection(doc, "7. Ndërprerja e kontratës");
-        addClause(doc, "7.1", "Kjo kontratë mund të ndërpritet me marrëveshje të ndërsjelltë, " +
-                "me njoftim paraprak prej 30 ditësh ose me shkaqe të arsyeshme sipas Ligjit të Punës.");
-        addClause(doc, "7.2", "Punëdhënësi rezervon të drejtën e ndërprerjes së menjëhershme të " +
-                "kontratës në rast të shkeljes së rëndë të detyrave të punës.");
+        addSection(doc, "7. Nderprerja e kontrates");
+        addClause(doc, "7.1", "Kjo kontrate mund te nderpritet me marreveshje te ndersjellte, me njoftim " +
+                "paraprak prej 30 ditesh ose me shkaqe te arsyeshme sipas Ligjit te Punes.");
+        addClause(doc, "7.2", "Punedhenesi rezervon te drejten e nderprerjes se menjehershme te kontrates " +
+                "ne rast te shkeljes se rende te detyrave te punes.");
 
         doc.add(Chunk.NEWLINE);
         doc.add(Chunk.NEWLINE);
         addHorizontalLine(doc, COLOR_LINE, 1);
         doc.add(Chunk.NEWLINE);
-
         addSignatureSection(doc, empName, startDate);
 
         doc.add(Chunk.NEWLINE);
-        Font footerFont = FontFactory.getFont(FontFactory.HELVETICA, 9,
-                new BaseColor(120, 130, 150));
-        Paragraph footer = new Paragraph("Centrix Solutions Headquarters – Rr. Lidhjes së Prizrenit, Nr. 15, 10000, Prishtinë, Kosovë",
+        Font footerFont = FontFactory.getFont(FontFactory.HELVETICA, 9, new BaseColor(120, 130, 150));
+        Paragraph footer = new Paragraph(
+                "Centrix Solutions Headquarters - Rr. Lidhjes se Prizrenit, Nr. 15, 10000, Prishtine, Kosove",
                 footerFont);
         footer.setAlignment(Element.ALIGN_CENTER);
         doc.add(footer);
     }
-
 
     private static void addSection(Document doc, String title) throws DocumentException {
         doc.add(Chunk.NEWLINE);
@@ -241,7 +236,7 @@ public class ContractPdfService {
 
     private static void addClause(Document doc, String number, String text)
             throws DocumentException {
-        Font numFont  = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, COLOR_ACCENT);
+        Font numFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, COLOR_ACCENT);
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, COLOR_DARK);
 
@@ -249,7 +244,6 @@ public class ContractPdfService {
         p.setIndentationLeft(16);
         p.setLeading(16);
         p.setSpacingAfter(4);
-
         p.add(new Chunk(number + "  ", numFont));
 
         String[] parts = text.split("\\*\\*");
@@ -264,6 +258,7 @@ public class ContractPdfService {
             throws DocumentException {
         PdfPTable line = new PdfPTable(1);
         line.setWidthPercentage(100);
+
         PdfPCell cell = new PdfPCell();
         cell.setBorderWidthTop(width);
         cell.setBorderColorTop(color);
@@ -272,13 +267,14 @@ public class ContractPdfService {
         cell.setBorderWidthRight(0);
         cell.setFixedHeight(1);
         line.addCell(cell);
+
         doc.add(line);
     }
 
     private static void addSignatureSection(Document doc, String empName, String date)
             throws DocumentException {
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, COLOR_DARK);
-        Font lineFont  = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
+        Font lineFont = FontFactory.getFont(FontFactory.HELVETICA, 11, COLOR_DARK);
 
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100);
@@ -286,19 +282,19 @@ public class ContractPdfService {
 
         PdfPCell left = new PdfPCell();
         left.setBorder(Rectangle.NO_BORDER);
-        left.addElement(new Paragraph("Punëdhënësi:", labelFont));
+        left.addElement(new Paragraph("Punedhenesi:", labelFont));
         left.addElement(new Paragraph("Centrix Solutions SH.P.K", lineFont));
         left.addElement(new Paragraph("Amir Brajshori", lineFont));
         left.addElement(Chunk.NEWLINE);
-        left.addElement(new Paragraph("Nënshkrimi: ________________", lineFont));
+        left.addElement(new Paragraph("Nenshkrimi: ________________", lineFont));
         left.addElement(new Paragraph("Data: " + date, lineFont));
 
         PdfPCell right = new PdfPCell();
         right.setBorder(Rectangle.NO_BORDER);
-        right.addElement(new Paragraph("Punonjësi:", labelFont));
+        right.addElement(new Paragraph("Punonjesi:", labelFont));
         right.addElement(new Paragraph(empName, lineFont));
         right.addElement(Chunk.NEWLINE);
-        right.addElement(new Paragraph("Nënshkrimi: ________________", lineFont));
+        right.addElement(new Paragraph("Nenshkrimi: ________________", lineFont));
         right.addElement(new Paragraph("Data: " + date, lineFont));
 
         table.addCell(left);
@@ -306,12 +302,11 @@ public class ContractPdfService {
         doc.add(table);
     }
 
-    private static String nvl(String v) {
-        return v == null || v.isBlank() ? "-" : v;
+    private static String nvl(String value) {
+        return value == null || value.isBlank() ? "-" : value;
     }
 
-
-    static class ContractPageEvent extends PdfPageEventHelper {
+    private static class ContractPageEvent extends PdfPageEventHelper {
         private final Font headerFont = FontFactory.getFont(
                 FontFactory.HELVETICA, 9, new BaseColor(120, 130, 150));
 
@@ -320,7 +315,7 @@ public class ContractPdfService {
             PdfContentByte cb = writer.getDirectContent();
 
             ColumnText.showTextAligned(cb, Element.ALIGN_LEFT,
-                    new Phrase("Centrix Solutions SH.P.K – Kontratë Pune", headerFont),
+                    new Phrase("Centrix Solutions SH.P.K - Kontrate Pune", headerFont),
                     document.leftMargin(), document.top() + 10, 0);
 
             ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT,

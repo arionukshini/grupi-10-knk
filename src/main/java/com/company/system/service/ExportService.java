@@ -1,14 +1,29 @@
 package com.company.system.service;
 
-import com.company.system.model.Contract;
-import com.company.system.model.Department;
-import com.company.system.model.Employee;
-import com.company.system.model.Salary;
-import com.company.system.model.User;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import org.apache.poi.ss.usermodel.*;
+import com.company.system.models.Contract;
+import com.company.system.models.Department;
+import com.company.system.models.Employee;
+import com.company.system.models.Salary;
+import com.company.system.models.User;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;

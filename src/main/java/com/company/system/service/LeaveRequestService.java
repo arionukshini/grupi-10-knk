@@ -1,11 +1,12 @@
 package com.company.system.service;
 
-import com.company.system.db.DBConnection;
-import com.company.system.model.LeaveRequest;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import com.company.system.utils.AppLogger;
+import com.company.system.models.LeaveRequest;
+import com.company.system.models.dto.LeaveRequestCreateDto;
+import com.company.system.models.dto.LeaveRequestDecisionDto;
+import com.company.system.repository.LeaveRequestRepository;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,189 +14,61 @@ import java.util.List;
 
 public class LeaveRequestService {
 
+    private static final LeaveRequestRepository leaveRequestRepository = new LeaveRequestRepository();
+
     public static List<LeaveRequest> getAllRequests() {
-        List<LeaveRequest> requests = new ArrayList<>();
-        String sql = """
-                SELECT vr.id,
-                       vr.employee_id,
-                       CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-                       vr.request_type,
-                       vr.start_date,
-                       vr.end_date,
-                       vr.reason,
-                       vr.status,
-                       vr.admin_response,
-                       vr.requested_at,
-                       vr.reviewed_at
-                FROM vacation_requests vr
-                JOIN employees e ON vr.employee_id = e.id
-                ORDER BY
-                    CASE vr.status
-                        WHEN 'Pending' THEN 0
-                        WHEN 'Approved' THEN 1
-                        ELSE 2
-                    END,
-                    vr.requested_at DESC
-                """;
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return requests;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    requests.add(mapRequest(rs));
-                }
-            }
+        try {
+            return leaveRequestRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return new ArrayList<>();
         }
-
-        return requests;
     }
 
     public static int getPendingCount() {
-        String sql = "SELECT COUNT(*) FROM vacation_requests WHERE status = 'Pending'";
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return 0;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
+        try {
+            return leaveRequestRepository.countPending();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return 0;
         }
-
-        return 0;
     }
 
     public static boolean updateStatus(int requestId, String status, String adminResponse) {
-        String sql = """
-                UPDATE vacation_requests
-                SET status = ?,
-                    admin_response = ?,
-                    reviewed_at = CURRENT_TIMESTAMP
-                WHERE id = ?
-                """;
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) {
-                return false;
-            }
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, status);
-                stmt.setString(2, adminResponse == null || adminResponse.isBlank() ? null : adminResponse.trim());
-                stmt.setInt(3, requestId);
-                return stmt.executeUpdate() > 0;
-            }
+        LeaveRequestDecisionDto request = new LeaveRequestDecisionDto(requestId, status, adminResponse);
+        try {
+            return leaveRequestRepository.updateStatus(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return false;
         }
-
-        return false;
     }
 
     public static List<LeaveRequest> getRequestsByEmployee(int employeeId) {
-        List<LeaveRequest> requests = new ArrayList<>();
-        String sql = """
-                SELECT vr.id,
-                       vr.employee_id,
-                       CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-                       vr.request_type,
-                       vr.start_date,
-                       vr.end_date,
-                       vr.reason,
-                       vr.status,
-                       vr.admin_response,
-                       vr.requested_at,
-                       vr.reviewed_at
-                FROM vacation_requests vr
-                JOIN employees e ON vr.employee_id = e.id
-                WHERE vr.employee_id = ?
-                ORDER BY
-                    CASE vr.status
-                        WHEN 'Pending'  THEN 0
-                        WHEN 'Approved' THEN 1
-                        ELSE 2
-                    END,
-                    vr.requested_at DESC
-                """;
-
-        try (Connection conn = DBConnection.connect()) {
-            if (conn == null) return requests;
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, employeeId);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) requests.add(mapRequest(rs));
-                }
-            }
+        try {
+            return leaveRequestRepository.findByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return new ArrayList<>();
         }
-        return requests;
     }
 
-    public static boolean submitRequest(int employeeId, String type,
-                                        LocalDate startDate, LocalDate endDate,
-                                        String reason) {
-        String sql = """
-                INSERT INTO vacation_requests
-                    (employee_id, request_type, start_date, end_date, reason, status)
-                VALUES (?, ?, ?, ?, ?, 'Pending')
-                """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, employeeId);
-            stmt.setString(2, type);
-            stmt.setDate(3, java.sql.Date.valueOf(startDate));
-            stmt.setDate(4, java.sql.Date.valueOf(endDate));
-            stmt.setString(5, reason.isBlank() ? null : reason);
-            return stmt.executeUpdate() > 0;
+    public static boolean submitRequest(int employeeId, String type, LocalDate startDate, LocalDate endDate, String reason) {
+        LeaveRequestCreateDto request = new LeaveRequestCreateDto(employeeId, type, startDate, endDate, reason);
+        try {
+            return leaveRequestRepository.save(request);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
     }
 
     public static boolean cancelRequest(int requestId) {
-        String sql = """
-                DELETE FROM vacation_requests
-                WHERE id = ? AND status = 'Pending'
-                """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, requestId);
-            return stmt.executeUpdate() > 0;
+        try {
+            return leaveRequestRepository.deletePendingById(requestId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
             return false;
         }
-    }
-
-    private static LeaveRequest mapRequest(ResultSet rs) throws SQLException {
-        return new LeaveRequest(
-                rs.getInt("id"),
-                rs.getInt("employee_id"),
-                rs.getString("employee_name"),
-                rs.getString("request_type"),
-                rs.getDate("start_date"),
-                rs.getDate("end_date"),
-                rs.getString("reason"),
-                rs.getString("status"),
-                rs.getString("admin_response"),
-                rs.getTimestamp("requested_at"),
-                rs.getTimestamp("reviewed_at")
-        );
     }
 }

@@ -1,7 +1,7 @@
 package com.company.system.controller;
 
 import com.company.system.i18n.LanguageManager;
-import com.company.system.model.Department;
+import com.company.system.models.Department;
 import com.company.system.service.DepartmentService;
 import com.company.system.service.UserService;
 import com.company.system.service.WizardUserService;

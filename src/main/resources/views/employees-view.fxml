@@ -54,7 +54,7 @@
                     <TextField fx:id="emailField" promptText="Email" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
                     <TextField fx:id="phoneField" promptText="Telefoni" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                     <TextField fx:id="positionField" promptText="Pozita" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <TextField fx:id="departmentIdField" promptText="Department ID" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                    <ComboBox fx:id="departmentCombo" prefWidth="180" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
                     <DatePicker fx:id="hireDatePicker" promptText="Data e punesimit" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                     <TextField fx:id="salaryField" promptText="Paga baze" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                     <ComboBox fx:id="statusField" value="Active" prefWidth="150" GridPane.rowIndex="2" GridPane.columnIndex="2">
@@ -69,6 +69,7 @@
                 </GridPane>
 
                 <HBox spacing="10">
+                    <Button fx:id="addButton" text="Shto" onAction="#addEmployee" styleClass="primary-button"/>
                     <Button fx:id="updateButton" text="Perditeso" onAction="#updateEmployee" styleClass="primary-button"/>
                     <Button fx:id="deleteButton" text="Fshi" onAction="#deleteEmployee" styleClass="danger-button"/>
                     <Button fx:id="clearButton" text="Pastro" onAction="#clearForm" styleClass="secondary-button"/>

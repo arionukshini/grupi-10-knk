@@ -1,223 +1,66 @@
 package com.company.system.service;
 
-import com.company.system.db.DBConnection;
-import com.company.system.exceptions.DatabaseOperationException;
-import com.company.system.exceptions.InvalidPaymentException;
-import com.company.system.exceptions.InvalidSalaryException;
-import com.company.system.model.Salary;
 
-import java.sql.*;
+import com.company.system.utils.AppLogger;
+import com.company.system.exceptions.DatabaseOperationException;
+import com.company.system.models.Salary;
+import com.company.system.models.dto.SalaryCalculationRequestDto;
+import com.company.system.repository.SalaryRepository;
+
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SalaryService {
 
-    private static final double STANDARD_WORK_DAYS = 22.0;
-    private static final double STANDARD_WORK_HOURS = 8.0;
+    private static final SalaryRepository salaryRepository = new SalaryRepository();
 
     public static List<Salary> getAllSalaries() {
-
-        List<Salary> salaries = new ArrayList<>();
-
-        String sql = """
-                SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
-                FROM salaries s
-                JOIN employees e ON s.employee_id = e.id
-                ORDER BY s.payment_date DESC
-                """;
-
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()
-        ) {
-
-            while (rs.next()) {
-
-                salaries.add(new Salary(
-                        rs.getInt("id"),
-                        rs.getInt("employee_id"),
-                        rs.getString("employee_name"),
-                        rs.getDouble("gross_salary"),
-                        rs.getDouble("bonus"),
-                        rs.getDouble("deductions"),
-                        rs.getInt("worked_days"),
-                        rs.getInt("vacation_days"),
-                        rs.getDouble("work_hours"),
-                        rs.getDouble("overtime_hours"),
-                        rs.getDouble("daily_rate"),
-                        rs.getDouble("overtime_pay"),
-                        rs.getDouble("net_salary"),
-                        rs.getDate("payment_date")
-                ));
-            }
-
+        try {
+            return salaryRepository.findAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return new ArrayList<>();
         }
-
-        return salaries;
     }
+
     public static Salary getLatestSalaryByEmployeeId(int employeeId) {
-        String sql = """
-            SELECT s.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name
-            FROM salaries s
-            JOIN employees e ON s.employee_id = e.id
-            WHERE s.employee_id = ?
-            ORDER BY s.payment_date DESC, s.id DESC
-            LIMIT 1
-            """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, employeeId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Salary(
-                            rs.getInt("id"),
-                            rs.getInt("employee_id"),
-                            rs.getString("employee_name"),
-                            rs.getDouble("gross_salary"),
-                            rs.getDouble("bonus"),
-                            rs.getDouble("deductions"),
-                            rs.getInt("worked_days"),
-                            rs.getInt("vacation_days"),
-                            rs.getDouble("work_hours"),
-                            rs.getDouble("overtime_hours"),
-                            rs.getDouble("daily_rate"),
-                            rs.getDouble("overtime_pay"),
-                            rs.getDouble("net_salary"),
-                            rs.getDate("payment_date")
-                    );
-                }
-            }
+        try {
+            return salaryRepository.findLatestByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return null;
         }
-
-        return null;
     }
+
     public static boolean addSalary(Salary salary) {
-
-        String sql = """
-                INSERT INTO salaries
-                (
-                    employee_id,
-                    gross_salary,
-                    bonus,
-                    deductions,
-                    worked_days,
-                    vacation_days,
-                    work_hours,
-                    overtime_hours,
-                    daily_rate,
-                    overtime_pay,
-                    net_salary,
-                    payment_date
-                )
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setInt(1, salary.getEmployeeId());
-            stmt.setDouble(2, salary.getGrossSalary());
-            stmt.setDouble(3, salary.getBonus());
-            stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getWorkedDays());
-            stmt.setInt(6, salary.getVacationDays());
-            stmt.setDouble(7, salary.getWorkHours());
-            stmt.setDouble(8, salary.getOvertimeHours());
-            stmt.setDouble(9, salary.getDailyRate());
-            stmt.setDouble(10, salary.getOvertimePay());
-            stmt.setDouble(11, salary.getNetSalary());
-            stmt.setDate(12, salary.getPaymentDate());
-
-            int affected = stmt.executeUpdate();
-
-            return affected > 0;
-
+        try {
+            return salaryRepository.save(salary);
         } catch (SQLException e) {
             throw new DatabaseOperationException("exception.salary.save.database", e);
         }
     }
 
     public static boolean updateSalary(Salary salary) {
-
-        String sql = """
-                UPDATE salaries
-                SET
-                    employee_id = ?,
-                    gross_salary = ?,
-                    bonus = ?,
-                    deductions = ?,
-                    worked_days = ?,
-                    vacation_days = ?,
-                    work_hours = ?,
-                    overtime_hours = ?,
-                    daily_rate = ?,
-                    overtime_pay = ?,
-                    net_salary = ?,
-                    payment_date = ?
-                WHERE id = ?
-                """;
-
-        try (
-                Connection conn = DBConnection.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-
-            stmt.setInt(1, salary.getEmployeeId());
-            stmt.setDouble(2, salary.getGrossSalary());
-            stmt.setDouble(3, salary.getBonus());
-            stmt.setDouble(4, salary.getDeductions());
-            stmt.setInt(5, salary.getWorkedDays());
-            stmt.setInt(6, salary.getVacationDays());
-            stmt.setDouble(7, salary.getWorkHours());
-            stmt.setDouble(8, salary.getOvertimeHours());
-            stmt.setDouble(9, salary.getDailyRate());
-            stmt.setDouble(10, salary.getOvertimePay());
-            stmt.setDouble(11, salary.getNetSalary());
-            stmt.setDate(12, salary.getPaymentDate());
-            stmt.setInt(13, salary.getId());
-
-            int updated = stmt.executeUpdate();
-            if (updated == 0) {
+        try {
+            boolean updated = salaryRepository.update(salary);
+            if (!updated) {
                 throw new DatabaseOperationException("exception.salary.update.notFound");
             }
-
             return true;
-
         } catch (SQLException e) {
             throw new DatabaseOperationException("exception.salary.update.database", e);
         }
     }
 
     public static boolean deleteSalary(int salaryId) {
-
-        String deleteHistorySql = "DELETE FROM salary_history WHERE salary_id = ?";
-        String deleteSalarySql = "DELETE FROM salaries WHERE id = ?";
-
-        try (Connection conn = DBConnection.connect()) {
-
-            try (PreparedStatement stmt1 = conn.prepareStatement(deleteHistorySql)) {
-                stmt1.setInt(1, salaryId);
-                stmt1.executeUpdate();
-            }
-
-            try (PreparedStatement stmt2 = conn.prepareStatement(deleteSalarySql)) {
-                stmt2.setInt(1, salaryId);
-                return stmt2.executeUpdate() > 0;
-            }
-
+        try {
+            return salaryRepository.deleteById(salaryId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return false;
         }
-
-        return false;
     }
 
     public static Salary calculateSalary(
@@ -232,7 +75,8 @@ public class SalaryService {
             double deductions,
             Date paymentDate
     ) {
-        validatePaymentInput(
+        SalaryCalculationRequestDto request = new SalaryCalculationRequestDto(
+                id,
                 employeeId,
                 monthlySalary,
                 workedDays,
@@ -244,192 +88,28 @@ public class SalaryService {
                 paymentDate
         );
 
-        double dailyRate = monthlySalary / STANDARD_WORK_DAYS;
-
-        int paidDays = Math.max(0, Math.min((workedDays + vacationDays), (int) STANDARD_WORK_DAYS));
-        double basePay = dailyRate * paidDays;
-        double overtimePay = overtimeHours * (dailyRate / STANDARD_WORK_HOURS) * 1.5;
-
-        double grossSalary = basePay + overtimePay;
-
-        double netSalary = grossSalary + bonus - deductions;
-
-        if (netSalary < 0) {
-            throw new InvalidPaymentException("exception.payment.netNegative");
-        }
-
-        return new Salary(
-                id,
-                employeeId,
-                grossSalary,
-                bonus,
-                deductions,
-                workedDays,
-                vacationDays,
-                workHours,
-                overtimeHours,
-                dailyRate,
-                overtimePay,
-                netSalary,
-                paymentDate
-        );
+        return SalaryCalculator.calculate(request);
     }
 
     public static boolean addSalaryHistory(Salary salary) {
-
-        String sql = """
-                INSERT INTO salary_history
-                (
-                    salary_id,
-                    employee_id,
-                    gross_salary,
-                    bonus,
-                    deductions,
-                    net_salary,
-                    payment_date
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, salary.getId());
-            stmt.setInt(2, salary.getEmployeeId());
-            stmt.setDouble(3, salary.getGrossSalary());
-            stmt.setDouble(4, salary.getBonus());
-            stmt.setDouble(5, salary.getDeductions());
-            stmt.setDouble(6, salary.getNetSalary());
-            stmt.setDate(7, salary.getPaymentDate());
-
-            int inserted = stmt.executeUpdate();
-            if (inserted == 0) {
+        try {
+            boolean inserted = salaryRepository.saveHistory(salary);
+            if (!inserted) {
                 throw new DatabaseOperationException("exception.payment.history.notInserted");
             }
-
             return true;
-
         } catch (SQLException e) {
             throw new DatabaseOperationException("exception.payment.history.database", e);
         }
     }
 
-    private static void validatePaymentInput(
-            int employeeId,
-            double monthlySalary,
-            int workedDays,
-            int vacationDays,
-            double workHours,
-            double overtimeHours,
-            double bonus,
-            double deductions,
-            Date paymentDate
-    ) {
-        if (employeeId <= 0) {
-            throw new InvalidPaymentException("exception.payment.employeePositive");
-        }
-        if (monthlySalary <= 0) {
-            throw new InvalidSalaryException(monthlySalary, "salaries.baseSalary");
-        }
-        if (workedDays < 0 || workedDays > STANDARD_WORK_DAYS) {
-            throw new InvalidPaymentException("exception.payment.workedDaysRange");
-        }
-        if (vacationDays < 0 || vacationDays > STANDARD_WORK_DAYS) {
-            throw new InvalidPaymentException("exception.payment.vacationDaysRange");
-        }
-        if (workedDays + vacationDays > STANDARD_WORK_DAYS) {
-            throw new InvalidPaymentException("exception.payment.totalDaysRange");
-        }
-        if (workHours < 0 || overtimeHours < 0) {
-            throw new InvalidPaymentException("exception.payment.hoursNegative");
-        }
-        if (bonus < 0) {
-            throw new InvalidSalaryException(bonus, "salaries.bonus");
-        }
-        if (deductions < 0) {
-            throw new InvalidSalaryException(deductions, "salaries.deductions");
-        }
-        if (paymentDate == null) {
-            throw new InvalidPaymentException("exception.payment.dateRequired");
-        }
-    }
-
     public static List<Salary> getSalaryHistory(int employeeId) {
-
-        List<Salary> salaries = new ArrayList<>();
-
-        String sql = """
-                SELECT *
-                FROM salary_history
-                WHERE employee_id = ?
-                ORDER BY payment_date DESC
-                """;
-
-        try (Connection conn = DBConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, employeeId);
-
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-
-                Salary salary = new Salary(
-                        0, // id not needed for history view
-                        rs.getInt("employee_id"),
-                        rs.getDouble("gross_salary"),
-                        rs.getDouble("bonus"),
-                        rs.getDouble("deductions"),
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        rs.getDouble("net_salary"),
-                        rs.getDate("payment_date")
-                );
-
-                salaries.add(salary);
-            }
-
+        try {
+            return salaryRepository.findHistoryByEmployeeId(employeeId);
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return salaries;
-    }
-
-    private static void insertHistory(Connection conn, Salary salary, int salaryId) {
-
-        String sql = """
-                INSERT INTO salary_history
-                (
-                    salary_id,
-                    employee_id,
-                    gross_salary,
-                    bonus,
-                    deductions,
-                    net_salary,
-                    payment_date
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """;
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, salaryId);
-            stmt.setInt(2, salary.getEmployeeId());
-            stmt.setDouble(3, salary.getGrossSalary());
-            stmt.setDouble(4, salary.getBonus());
-            stmt.setDouble(5, salary.getDeductions());
-            stmt.setDouble(6, salary.getNetSalary());
-            stmt.setDate(7, salary.getPaymentDate());
-
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            AppLogger.error("Unexpected error", e);
+            return new ArrayList<>();
         }
     }
+
 }
